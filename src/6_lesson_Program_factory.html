@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>6_lesson_Program_factory</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+</head>
+<body>
+<blockquote>
+<p><strong>Lesson 6: Implementing the Program Factory for Multiple Escrow Smart Contracts</strong></p>
+</blockquote>
+<p><strong>Lesson Summary</strong></p>
+<ul>
+<li><blockquote>
+<p>In the previous <strong>(2<sup>nd</sup>)</strong> tutorial, we created an escrow smart contract that facilitated an agreement between two parties.</p>
+</blockquote></li>
+<li><blockquote>
+<p>However, the escrow contract became useless after the deal was over and had to be initialized again for new deals with new parties.</p>
+</blockquote></li>
+<li><blockquote>
+<p>In this tutorial, we’ll learn how to write an Escrow Factory smart contract that creates multiple instances of the escrow contract template from the previous tutorial.</p>
+</blockquote></li>
+<li><blockquote>
+<p>The Escrow Factory smart contract eliminates the need to upload and initialize the same escrow contract template for every new deal.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Finally, we’ll test the Escrow Factory smart contract by deploying it to the blockchain and creating multiple escrow contract instances using the factory.</p>
+</blockquote></li>
+</ul>
+<p><strong>Lesson Objectives</strong></p>
+<p>By the end of this lesson, you should:</p>
+<ul>
+<li><blockquote>
+<p>Understand how to create a factory smart contract</p>
+</blockquote></li>
+<li><blockquote>
+<p>Explain how to initialize a new contract instance using a factory contract</p>
+</blockquote></li>
+<li><blockquote>
+<p>Demonstrate how to test a factory smart contract</p>
+</blockquote></li>
+<li><blockquote>
+<p>Understand the concept of a factory contract and how it can be used to deploy new instances of a contract.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Understand how to interact with the Escrow Factory contract to create new instances of the Escrow contract for different parties.</p>
+</blockquote></li>
+</ul>
+<p><strong>Let’s get started!</strong></p>
+<p><img src="media/image2.png" style="width:6.5in;height:5.26389in" /></p>
+<p><strong>Coding Practice to Create Escrow Factory</strong></p>
+<p>Our Escrow Factory will store the number of created escrow contracts, the mapping from the escrow id to its program address, and also the <strong>CodeId</strong> of the escrow smart contract. :</p>
+<table>
+<tbody>
+<tr class="odd">
+<td><p><strong>#![no_std]</strong><br />
+use gstd::{msg, prelude::*, ActorId, CodeId};<br />
+pub type EscrowId = u64;</p>
+<p><strong>#[derive(Default)]</strong><br />
+pub struct <strong>EscrowFactory</strong> {<br />
+pub escrow_number: EscrowId,<br />
+pub id_to_address: BTreeMap&lt;EscrowId, ActorId&gt;,<br />
+pub escrow_code_id: CodeId,<br />
+}<br />
+static mut ESCROW_FACTORY: Option&lt;EscrowFactory&gt; = None;<br />
+<br />
+<strong>#[gstd::async_main]</strong><br />
+async fn <strong>main</strong>() {}<br />
+<br />
+<strong>#[no_mangle]</strong><br />
+unsafe extern "C" fn <strong>init</strong>() {<br />
+let escrow_code_id: CodeId = msg::load().expect("Unable to decode CodeId of the Escrow program");<br />
+let escrow_factory = EscrowFactory {<br />
+escrow_code_id,<br />
+..Default::default()<br />
+};<br />
+ESCROW_FACTORY = Some(escrow_factory);<br />
+}</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>CodeId</strong> is a hash of the escrow program uploaded into the chain. That hash will be used to create instances of escrow smart contracts.</p>
+<p>Let's define the functionality of our loan factory program. It will deploy an escrow contract and send messages about deposit and delivery confirmation to the escrow.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>#[derive(Encode, Decode, TypeInfo)]<br />
+pub enum <strong>FactoryAction</strong> {<br />
+CreateEscrow {<br />
+seller: ActorId,<br />
+buyer: ActorId,<br />
+price: u128,<br />
+},<br />
+Deposit(EscrowId),<br />
+ConfirmDelivery(EscrowId),<br />
+}<br />
+<br />
+#[derive(Encode, Decode, TypeInfo)]<br />
+pub enum <strong>FactoryEvent</strong> {<br />
+EscrowCreated {<br />
+escrow_id: EscrowId,<br />
+escrow_address: ActorId,<br />
+},<br />
+Deposited(EscrowId),<br />
+DeliveryConfirmed(EscrowId),<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>As you can see, the Escrow contract will interact with Buyer and Seller through Escrow Factory contract, meaning the Escrow Factory contract will send messages to the Escrow contract.</p>
+<p>Firstly, we have to define an io crate for the Escrow contract. Then we’ll modify the structure of incoming messages and Escrow methods. Try to change it yourself and then compare it with the correct implementation (link).</p>
+<p>After that, we’ll define Loan Factory methods and write the <strong>handle</strong> function:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>impl EscrowFactory {<br />
+async fn <strong>create_escrow</strong>(&amp;mut self, seller: &amp;ActorId, buyer: &amp;ActorId, price: u128) {}<br />
+async fn <strong>deposit</strong>(&amp;self, escrow_id: EscrowId) {}<br />
+async fn <strong>confirm_delivery</strong>(&amp;self, escrow_id: EscrowId) {}<br />
+}<br />
+<strong>#[gstd::async_main]</strong><br />
+async fn <strong>main</strong>() {<br />
+let action: FactoryAction = msg::load().expect("Unable to decode `FactoryAction`");<br />
+let factory = unsafe { ESCROW_FACTORY.get_or_insert(Default::default()) };<br />
+match action {<br />
+FactoryAction::CreateEscrow {<br />
+seller,<br />
+buyer,<br />
+price,<br />
+} =&gt; factory.create_escrow(&amp;seller, &amp;buyer, price).await,<br />
+FactoryAction::Deposit(escrow_id) =&gt; factory.deposit(escrow_id).await,<br />
+FactoryAction::ConfirmDelivery(escrow_id) =&gt; factory.confirm_delivery(escrow_id).await,<br />
+}<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s implement the <strong>create_escrow</strong> function.</p>
+<p>For the program deployment we should import <strong>ProgramGenerator</strong> from the <strong>prog</strong> module in <strong>gstd</strong> library:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>use gstd::{msg, prelude::*, ActorId, prog::ProgramGenerator, CodeHash};</td>
+</tr>
+</tbody>
+</table>
+<p>To create a new contract instance, we will use the <strong>create_program_with_gas_for_reply</strong> function. Here are the required parameters:</p>
+<ul>
+<li><blockquote>
+<p>The code hash of the uploaded program code</p>
+</blockquote></li>
+<li><blockquote>
+<p>Payload for initialization message</p>
+</blockquote></li>
+<li><blockquote>
+<p>Gas for the program creation (calculate in advance how much the initialization of the program loaded on the network requires)</p>
+</blockquote></li>
+<li><blockquote>
+<p>Value attached to the init message</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>async fn <strong>create_escrow</strong>(&amp;mut self, seller: &amp;ActorId, buyer: &amp;ActorId, price: u128) {<br />
+let (address, _) = ProgramGenerator::create_program_with_gas_for_reply(<br />
+self.escrow_code_id,<br />
+InitEscrow {<br />
+seller: *seller,<br />
+buyer: *buyer,<br />
+price,<br />
+}<br />
+.encode(),<br />
+GAS_FOR_CREATION,<br />
+0,<br />
+)<br />
+.expect("Error during Escrow program initialization")<br />
+.await<br />
+.expect("Program was not initialized");<br />
+self.escrow_number = self.escrow_number.saturating_add(1);<br />
+self.id_to_address.insert(self.escrow_number, address);<br />
+msg::reply(<br />
+FactoryEvent::EscrowCreated {<br />
+escrow_id: self.escrow_number,<br />
+escrow_address: address,<br />
+},<br />
+0,<br />
+)<br />
+.expect("Error during a reply `FactoryEvent::ProgramCreated`");<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>In our Escrow factory smart contract, we use asynchronous program creation to ensure the program is initialized without errors. Since the factory program waits for a reply, we add a reply message to the program initialization.</p>
+<p>Other methods are implemented easily since all logic and all checks are included in the Escrow contract:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td><p>async fn <strong>deposit</strong>(&amp;self, escrow_id: EscrowId) {<br />
+let escrow_address = self.get_escrow_address(escrow_id);<br />
+send_message(&amp;escrow_address, EscrowAction::Deposit(msg::source())).await;<br />
+msg::reply(FactoryEvent::Deposited(escrow_id), 0)<br />
+.expect("Error during a reply `FactoryEvent::Deposited`");<br />
+}</p>
+<p>async fn <strong>confirm_delivery</strong>(&amp;self, escrow_id: EscrowId) {<br />
+let escrow_address = self.get_escrow_address(escrow_id);<br />
+send_message(&amp;escrow_address, EscrowAction::ConfirmDelivery(msg::source())).await;<br />
+msg::reply(FactoryEvent::DeliveryConfirmed(escrow_id), 0)<br />
+.expect("Error during a reply `FactoryEvent::DeliveryConfirmed`");<br />
+}<br />
+<br />
+fn <strong>get_escrow_address</strong>(&amp;self, escrow_id: EscrowId) -&gt; ActorId {<br />
+*self<br />
+.id_to_address<br />
+.get(&amp;escrow_id)<br />
+.expect("The escrow with indicated id does not exist")<br />
+}</p></td>
+</tr>
+</tbody>
+</table>
+<p>We move the <strong>msg::send_for_reply_as</strong> to a separate function to send messages to the Escrow program for better readability.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>async fn send_message(escrow_address: &amp;ActorId, escrow_payload: EscrowAction) {<br />
+msg::send_for_reply_as::&lt;_, EscrowEvent&gt;(*escrow_address, escrow_payload, msg::value())<br />
+.expect("Error during a sending message to a Escrow program")<br />
+.await<br />
+.expect("Unable to decode EscrowEvent");<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>With the factory loan contract finished, we’ll now test our factory contract.</p>
+<blockquote>
+<p><strong>Testing the Escrow Factory Functionality</strong></p>
+</blockquote>
+<p>Before testing the Escrow Factory smart contract, we need to set up the environment. Here's how:</p>
+<ul>
+<li><blockquote>
+<p>Upload the code of the Escrow contract:</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>use gtest::{Program, System};<br />
+<br />
+<strong>#[test]</strong><br />
+fn init_escrow_factory() {<br />
+<strong>let</strong> <strong>system</strong> = System::new();<br />
+let escrow_code_id = system.submit_code("./escrow/target/wasm32-unknown-unknown/release/escrow.opt.wasm");<br />
+let escrow_factory = Program::current(&amp;system);<br />
+let res = escrow_factory.send(100, escrow_code_id);<br />
+assert!(!res.main_failed());<br />
+assert!(res.log().is_empty());<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>Continue to test the contract as you learnt in previous lessons.</p>
+<p><strong>Assignment</strong>:</p>
+<ul>
+<li><blockquote>
+<p>Finish tests for the Escrow factory;</p>
+</blockquote></li>
+<li><blockquote>
+<p>Write the contract that will create Tamagotchi from your contract template.</p>
+</blockquote></li>
+</ul>
+<blockquote>
+<p><img src="media/image1.png" style="width:3.01563in;height:2.97962in" /></p>
+</blockquote>
+</body>
+</html>

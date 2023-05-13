@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>3_lesson_Fungible_Non-fungible_token</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+</head>
+<body>
+<p><strong>Lesson 3: Understanding Fungible/Non-fungible tokens</strong></p>
+<p><strong>Lessson Summary</strong></p>
+<ul>
+<li><blockquote>
+<p>This lesson introduces the concept of cryptographic tokens</p>
+</blockquote></li>
+<li><blockquote>
+<p>We explain Fungible and Non-Fungible tokens (NFTs) and their main functions</p>
+</blockquote></li>
+<li><blockquote>
+<p>We also explain the difference between fungible and non-fungible tokens (NFTs)</p>
+</blockquote></li>
+<li><blockquote>
+<p>The importance of understanding these cryptographic concepts is emphasized, especially in relation to creating programs</p>
+</blockquote></li>
+</ul>
+<p><strong>Lesson Objective</strong></p>
+<p>By the end of the lesson, you will:</p>
+<ul>
+<li><blockquote>
+<p>Define cryptographic tokens and distinguish them from other types of tokens</p>
+</blockquote></li>
+<li><blockquote>
+<p>Differentiate between fungible and non-fungible tokens and explain their respective use cases</p>
+</blockquote></li>
+<li><blockquote>
+<p>Apply their knowledge of cryptographic tokens to create programs using both fungible and non-fungible tokens</p>
+</blockquote></li>
+<li><blockquote>
+<p>Understand how to implement fungible and non-fungible tokens in the Gear Protocol</p>
+</blockquote></li>
+</ul>
+<p><strong>Let’s get started!</strong></p>
+<p><strong>Fungible token &amp; their Properties</strong></p>
+<p>Fungible tokens offer the same value and exchangeability as fiat currency. Much like exchanging one paper dollar for another, these digital smart contracts allow users to trade tokenized assets of equal worth between accounts. However, at a fundamental technological level, fungible tokens are simply smart contracts that store a mapping between account addresses and the number of tokens.</p>
+<p><em>аddress</em> <img src="media/image4.png" style="width:0.18056in" alt="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mo&gt;&amp;#x2192;&lt;/mo&gt;&lt;/math&gt;" /> <em>amount</em></p>
+<p>The main function of such smart contracts are:</p>
+<ul>
+<li><blockquote>
+<p><em>Transfer(from, to, amount):</em> This function allows you to transfer the number of tokens (amount) from one address (from) to another (to). It checks if the “from” account owns tokens, subtracts the necessary amount from its balance, and adds the specified token number to the “to” account<em>.</em></p>
+</blockquote></li>
+<li><blockquote>
+<p><em>Approve(spender, amount)</em> is a function that allows you to give the specified <em>spender</em> account the right to dispose of the tokens of the account that called this function (in our case, it'll be <em>msg::source()</em>). In the other words, the <em>spender</em> account can call the <em>transfer()</em> function, so it can transfer tokens from the <em>msg::source()</em> account to the specified address. This functionality is useful when the transfer of tokens occurs in any of the contracts.</p>
+</blockquote></li>
+</ul>
+<blockquote>
+<p>Let's take an <em>escrow</em> smart contract as an example.</p>
+<p>In this example, the goods are paid using tokens and not a <em>msg::value()</em>. The buyer sends a <em>deposit()</em> message, and the <em>escrow</em> smart contract accesses the token contract and sends a token transfer message. In this particular message, the <em>from</em> address is the buyer address.</p>
+<p>If the <em>escrow</em> contract does not have the right to dispose of the buyer's tokens, then the token contract will panic and prevent the token transfer.</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p><em>Mint(to, amount):</em> This function increases the number of tokens in the contract. Usually, this function can be called by certain accounts that are allowed to create new tokens<em>.</em></p>
+</blockquote></li>
+<li><blockquote>
+<p><em>Burn(from, amount)</em> is a function that reduces the token number in the contract. Just like with the <em>mint()</em> function, not all accounts are allowed to burn tokens.</p>
+</blockquote></li>
+</ul>
+<blockquote>
+<p><strong>Non-Fungible Tokens</strong></p>
+<p>Non-fungible tokens, or NFTs, offer a unique way to prove digital asset ownership. While traditional fungible tokens are interchangeable and store a value, NFTs carry cryptographic certificates that demonstrate the owner's authority over an asset, like digital art or gaming assets.</p>
+<p><em>аddress</em> <img src="media/image4.png" style="width:0.18056in" alt="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mo&gt;&amp;#x2192;&lt;/mo&gt;&lt;/math&gt;" /><em>token_id</em></p>
+<p>The main functions of the contract of such tokens are similar to fungible tokens:</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p><em>Transfer(to, token_id)</em> is a function that allows you to transfer a token with the <em>token_id</em> number to the to account. Unlike the fungible token contract, this contract does not require a <em>from</em> the account, since each token has its own owner.</p>
+</blockquote></li>
+<li><blockquote>
+<p><em>Approve(approved_account, token_id)</em> is a function that allows you to give the right to dispose of the token to the specified <em>approved_account</em>. This functionality can be useful on marketplaces for auctions. When the owner wants to sell his token, they can put it on a marketplace/auction, so the contract sends this token to the new owner.</p>
+</blockquote></li>
+<li><blockquote>
+<p><em>Mint(to, token_id, metadata)</em> is a function that creates a new token. <em>Metadata</em> can include any information about the token: it can be a link to a specific resource, a description of the token, etc.</p>
+</blockquote></li>
+<li><blockquote>
+<p><em>Burn(from, token_id):</em> This function removes the token with the mentioned <em>token_id</em> from the contract<em>.</em></p>
+</blockquote></li>
+</ul>
+<p><strong>Asynchronous communication between programs</strong></p>
+<p>One of the key and distinguished features of the Gear Protocol is the Actor model for message-passing communications. Gear Protocol leverages the Actor model for message-passing communication, allowing parallel computation and asynchronous messaging to ensure faster processing times. The development structure provides developers with immense flexibility when building complex dApps.</p>
+<p>If a program sends an asynchronous message to another program, it needs to wait for the reply from that program before it can proceed to the next operation.</p>
+<p>To send a message to a Gear program, we use the send_for_reply(program, payload, value) function. In this function:</p>
+<ul>
+<li><blockquote>
+<p>program - the address of the program to send the message for;</p>
+</blockquote></li>
+<li><blockquote>
+<p>payload - the message to the program;</p>
+</blockquote></li>
+<li><blockquote>
+<p>value - the funds attached to the message.</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>pub fn <strong>send_for_reply_as</strong>&lt;E: Encode, D: Decode&gt;(<br />
+program: ActorId,<br />
+payload: E,<br />
+value: u128<br />
+) -&gt; Result&lt;CodecMessageFuture&lt;D&gt;&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Distributed transactions</strong></p>
+<p>Interactions between programs in the Gear Protocol create distributed transactions that involve operations across actors with their respective states. In our case, operations are performed across actors with their states. The distributed transactions must possess the following features:</p>
+<ul>
+<li><blockquote>
+<p>Atomicity: All data changes are treated as if they were a single operation. That is, either all of the modifications are made or none.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Consistency: This property implies that when a transaction begins and ends, the state of data is consistent.</p>
+</blockquote></li>
+</ul>
+<p>For instance, in Ethereum transactions, global state changes only occur when all executions finish successfully. If an error occurs during execution, all changes to the state are "rolled back," as if the transaction had never been running.</p>
+<p>Let’s look at the following code:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>static mut COUNTER: u32 = 0;<br />
+<br />
+async unsafe fn <strong>non_atomic</strong>() {<br />
+COUNTER = 10;<br />
+<br />
+send_for_reply(msg::source(), "PING", 0)<br />
+.expect("Error during sending message")<br />
+.await<br />
+.expect("Error during message execution");<br />
+<br />
+COUNTER = 20;<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>In the example code provided, the global variable COUNTER is set to 10 before the <em>send_for_reply</em> function is called. If the transaction fails before <em>.await</em>, the state is rolled back, and COUNTER returns to 0. If the transaction fails after <em>.await</em>, COUNTER retains its value of 10.</p>
+<p>Let’s consider an example of a simple marketplace where tokens are transferred to the seller, and then transfers NFT to the buyer.</p>
+<blockquote>
+<p><img src="media/image5.png" style="width:4.42811in;height:3.21354in" /></p>
+</blockquote>
+<p>The picture shows the following situation:</p>
+<ol type="1">
+<li><blockquote>
+<p>The marketplace successfully transfers tokens to the seller;</p>
+</blockquote></li>
+<li><blockquote>
+<p>During the NFT transfer to the buyer, the transaction fails.</p>
+</blockquote></li>
+</ol>
+<p>The failed transaction during the transfer of NFTs from the seller to the buyer after the successful transfer of tokens would result in an inconsistent state, with the seller receiving payment but the buyer not receiving the NFT. Thus, we must consider potential failures leading to state inconsistency when developing applications and different standards.</p>
+<blockquote>
+<p><strong>Implementation of Fungible Tokens on Gear</strong></p>
+</blockquote>
+<p>We propose to split the fungible token into three contracts:</p>
+<ol type="1">
+<li><blockquote>
+<p>The <strong>master</strong> fungible token that serves as a proxy program that redirects the message to the logic contract.</p>
+</blockquote></li>
+<li><blockquote>
+<p>The <strong>Token Logic Contract</strong> - responsible for realizing the main standard token functions. We place the logic in a separate contract to add more functions without losing the address of the fungible token and the contract state.;</p>
+</blockquote></li>
+<li><blockquote>
+<p><strong>Storage Contracts</strong>: These contracts store the balances of the users.</p>
+</blockquote></li>
+</ol>
+<p><img src="media/image1.png" style="width:5.59896in;height:4.51326in" /></p>
+<p>The token standard has a feature of Preventing Duplicate Transaction (Maintaining idempotency): There are two possible risks when sending a transaction:</p>
+<ul>
+<li><blockquote>
+<p>Sending duplicate transactions</p>
+</blockquote></li>
+<li><blockquote>
+<p>Not knowing the transaction status due to a network failure.</p>
+</blockquote></li>
+</ul>
+<p>The sender can be assured that the transaction will only be executed once (idempotency).</p>
+<p><strong>Storage contract architecture</strong></p>
+<p>The storage contracts state has the following fields:</p>
+<ul>
+<li><blockquote>
+<p>The address of the logic contract. The storage contract must execute messages received only from that address;</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>ft_logic_id: ActorId</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p>The executed transactions. In each message, the storage contract receives the hash of the transaction that is being executed and stores its execution results in the field Executed. If Executed is true, then the message executed successfully, otherwise Executed equals false.</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>transaction_status: HashMap&lt;H256, (Executed, Locked)&gt;</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p>Balances of accounts</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>balances: HashMap&lt;ActorId, u128&gt;</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p>Approvals of accounts</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>approvals: HashMap&lt;ActorId, HashMap&lt;ActorId, u128&gt;&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>The messages that the storage accepts:</p>
+<ul>
+<li><blockquote>
+<p>Increase balance: the storage raises the balance of the indicated account;</p>
+</blockquote></li>
+<li><blockquote>
+<p>Decrease balance: The storage reduces the balance of the indicated account;</p>
+</blockquote></li>
+<li><blockquote>
+<p>Approve: The storage allow the account to give another account permission to transfer his tokens;</p>
+</blockquote></li>
+<li><blockquote>
+<p>Transfer: Transfer tokens from one account to another. The message is called from the logic contract when the token transfer occurs in one storage.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Clear: Remove the hash of the executed transaction.</p>
+</blockquote></li>
+</ul>
+<p>That storage contract doesn't make any asynchronous calls, so its execution is atomic.</p>
+<p><strong>The logic contract architecture</strong></p>
+<p>The state of the logic contract consists of the following fields:</p>
+<ul>
+<li><blockquote>
+<p><strong>The master token contract address.</strong> The logic contract must execute messages only from that address:</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>ftoken_id: ActorId</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p><strong>The transactions</strong>. As in the storage contract, the logic contract receives the hash of the transaction that is being executed and stores the result of its execution. But unlike the storage contract, where message executions are atomic, the logic contract has to keep track of the message being executed and its stage.</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>transactions: HashMap&lt;H256, Transaction&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>The Transaction is the following struct:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>pub struct Transaction {<br />
+msg_source: ActorId,<br />
+operation: Operation,<br />
+status: TransactionStatus,<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Where msg_source is an account that sends a message to the main contract. Operation is the action that the logic contract should process and status is the transaction status. it's the following enum.</p>
+</blockquote>
+<table>
+<tbody>
+<tr class="odd">
+<td>pub enum <strong>TransactionStatus</strong> {<br />
+InProgress,<br />
+Success,<br />
+Failure,<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p>InProgress - the transaction execution started;</p>
+</blockquote></li>
+<li><blockquote>
+<p>Success or Failure - the transaction was completed (successfully or not). In this case, the logic contract only sends a response that the transaction with this hash has already been completed.</p>
+</blockquote></li>
+</ul>
+<ul>
+<li><blockquote>
+<p><strong>The code hash of the storage contract</strong>. The logic contract is able to create a new storage contract when it's necessary. The storage creation is implemented as follows:</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p>The logic contract takes the first letter of the account address. If the storage contract for this letter is created, then it stores the balance of this account in this contract. If not, it creates a new storage contract</p>
+</blockquote></li>
+</ul></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>storage_code_hash: H256</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p><strong>The mapping from letters to the storage addresses.</strong></p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>id_to_storage: HashMap&lt;String, ActorId&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>The logic contract receives from the master contract the following message:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>Message {<br />
+transaction_hash: H256,<br />
+account: ActorId,<br />
+payload: Vec&lt;u8&gt;,<br />
+},</td>
+</tr>
+</tbody>
+</table>
+<p>The account is an actor who sends the message to the master contract.</p>
+<p>The payload is the encoded operation the logic contract has to process:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>pub enum Operation {<br />
+Mint {<br />
+recipient: ActorId,<br />
+amount: u128,<br />
+},<br />
+Burn {<br />
+sender: ActorId,<br />
+amount: u128,<br />
+},<br />
+Transfer {<br />
+sender: ActorId,<br />
+recipient: ActorId,<br />
+amount: u128,<br />
+},<br />
+Approve {<br />
+approved_account: ActorId,<br />
+amount: u128,<br />
+},<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>When upgrading the logic contract, there may be changes to the enum Operation, which means the payload structure may also change. As a result, the master contract does not know the specific type of payload structure and instead sends it as a byte array (Vec&lt;u8&gt;).</p>
+<p>The logic contract sends only one message to the storage contract during the message Mint, Burn or Transfer between accounts in the same storage. Upon receiving the message, the logic contract decodes the payload from a byte array into the expected enum Operation. This allows the logic contract to process the message based on the specific operation type (Mint, Burn, orTransfer)</p>
+<p><img src="media/image2.png" style="width:5.24479in;height:1.89495in" /></p>
+<p>When the transfer occurs between 2 different storages, the contract acts as follows:</p>
+<ol type="1">
+<li><blockquote>
+<p>The logic contract sends the DecreaseBalance message to the storage contract.</p>
+</blockquote></li>
+<li><blockquote>
+<p>If the message executes successfully, the logic contract sends the message IncreaseBalance to another storage contract. Otherwise, the logic contract saves the status failure and replies to the main contract.</p>
+</blockquote></li>
+<li><blockquote>
+<p>If the message IncreaseBalance executes successfully, the logic contract saves the status and replies to the main contract. If the gas ran out during the IncreaseBalance execution in the storage contract, the logic contract saves the status DecreaseSuccess. This status is untrackable in the handle_signal function.</p>
+</blockquote></li>
+</ol>
+<blockquote>
+<p>If a transaction has been executed unsuccessfully, it could be due to an issue with the contract memory. The logic contract must trace storage contracts and re-run any failed transactions to prevent failure. If the errors persist, then the balance should be returned.</p>
+</blockquote>
+<p><strong>The master contract architecture</strong></p>
+<p>The state of the master contract includes the following fields:</p>
+<ul>
+<li><blockquote>
+<p>The address of the contract admin. He has the right to upgrade the logic contract.</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>admin: ActorId,</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p>The address of the logic contract</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>ft_logic_id: ActorId,</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><blockquote>
+<p>The transaction history.</p>
+</blockquote></li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>transactions: HashMap&lt;H256, TransactionStatus&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>Where the TransactionStatus:<img src="media/image3.png" style="width:7.10938in;height:2.51507in" /></p>
+<table>
+<tbody>
+<tr class="odd">
+<td>pub enum <strong>TransactionStatus</strong> {<br />
+InProgress,<br />
+Success,<br />
+Failure,<br />
+}</td>
+</tr>
+</tbody>
+</table>
+<p>The contract receives a message from an account with a specific nonce, which is used to compute the transaction hash, along with the account address. It is the user's responsibility to keep track of their nonce and increase it with each subsequent transaction. However, it is possible to design the contract in a way that automatically tracks the user's nonce, making the nonce field optional.</p>
+<p>The main contract just redirects that message to the logic contract indicating the account that sends a message to it.</p>
+<blockquote>
+<p><strong>Assignment</strong></p>
+</blockquote>
+<p>In this assignment, you will add the functionality to your Tamagotchi smart contract to allow for changing ownership and approving other accounts to change ownership. This will involve implementing the following functions:</p>
+<ul>
+<li><blockquote>
+<p>Transfer(new_owner) - that action must change the field owner to the indicated account;</p>
+</blockquote></li>
+<li><blockquote>
+<p>Approve(allowed_account) - that action must fill the field approved_account the indicated account;</p>
+</blockquote></li>
+<li><blockquote>
+<p>RevokeApproval - that action removes the current approved_account.</p>
+</blockquote></li>
+</ul>
+<p>Upload your contract to the blockchain, run the frontend application and select the third lesson.</p>
+<p>To ensure that your contract is compatible with the frontend application, please make sure that the metadata is set to the following:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>pub struct ProgramMetadata;<br />
+<br />
+impl Metadata for ProgramMetadata {<br />
+type Init = InOut&lt;String, ()&gt;;<br />
+type Reply = InOut&lt;(), ()&gt;;<br />
+type Others = InOut&lt;(), ()&gt;;<br />
+type Signal = ();<br />
+type Handle = InOut&lt;TmgAction, TmgEvent&gt;;<br />
+type State = Tamagotchi;<br />
+}<br />
+<br />
+<em>#[derive(Encode, Decode, TypeInfo)]</em><br />
+pub enum TmgAction {<br />
+Name,<br />
+Age,<br />
+Feed,<br />
+Play,<br />
+Sleep,<br />
+Transfer(ActorId),<br />
+Approve(ActorId),<br />
+RevokeApproval,<br />
+}<br />
+<br />
+<em>#[derive(Encode, Decode, TypeInfo)]</em><br />
+pub enum TmgEvent {<br />
+Name(String),<br />
+Age(u64),<br />
+Fed,<br />
+Entertained,<br />
+Slept,<br />
+Transfer(ActorId),<br />
+Approve(ActorId),<br />
+RevokeApproval,<br />
+}<br />
+<br />
+<em>#[derive(Default, Encode, Decode, TypeInfo)]</em><br />
+pub struct Tamagotchi {<br />
+pub name: String,<br />
+pub date_of_birth: u64,<br />
+pub owner: ActorId,<br />
+pub fed: u64,<br />
+pub fed_block: u64,<br />
+pub entertained: u64,<br />
+pub entertained_block: u64,<br />
+pub rested: u64,<br />
+pub rested_block: u64,<br />
+pub allowed_account: Option&lt;ActorId&gt;,<br />
+}</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
