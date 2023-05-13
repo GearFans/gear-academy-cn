@@ -297,13 +297,3 @@ NFT。因此，在开发应用程序和不同标准时，我们必须考虑导�
 
 [代码占位符]
 
-[Google 翻译]
-
-原文
-
-We also explain the difference between fungible and non-fungible tokens
-(NFTs)
-
-提供更好的翻译建议
-
-------------------------------------------------------------------------

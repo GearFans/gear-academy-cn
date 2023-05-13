@@ -155,14 +155,3 @@ UpdateInfo 操作只是更新 Tamagotchi 状态的变化并开始下一轮：
 
 -   发挥创意并考虑其他可能的方法来使游戏更有趣。
 
-[Google 翻译]
-
-原文
-
-To participate in the game, users must allow their contracts to receive
-game-related messages like TmgAction::TmgInfo and
-StoreAction::GetAttributes.
-
-提供更好的翻译建议
-
-------------------------------------------------------------------------

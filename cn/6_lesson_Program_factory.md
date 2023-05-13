@@ -106,13 +106,3 @@ crate。然后我们将修改传入消息的结构和托管方法。尝试自己
 
 [图像占位符]
 
-[Google 翻译]
-
-原文
-
-In the previous (2^(nd)) tutorial, we created an escrow smart contract
-that facilitated an agreement between two parties.
-
-提供更好的翻译建议
-
-------------------------------------------------------------------------

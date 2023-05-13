@@ -28,14 +28,3 @@ Vara Network 等网络上使用 Rust 开发去中心化应用程序。
 
 通过hello@gear-tech.io联系 Gear以了解更多信息并开始与 Gear 社区合作。
 
-[Google 翻译]
-
-原文
-
-The course consists of seven engaging, easy-to-understand lessons that
-gradually reveal the features and details of program development on Gear
-Protocol.
-
-提供更好的翻译建议
-
-------------------------------------------------------------------------

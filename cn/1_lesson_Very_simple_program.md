@@ -440,14 +440,3 @@ Tamagotchi 合约，并通过指示在本地节点上使用合约：
 
 请在您的 Tamagotchi 合约中附上指向 repo 的链接。
 
-[Google 翻译]
-
-原文
-
-Identified different ways of restricting the type of messages a smart
-contract can receive, and how to create different greetings for
-different accounts based on the message received.
-
-提供更好的翻译建议
-
-------------------------------------------------------------------------
