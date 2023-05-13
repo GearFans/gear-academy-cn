@@ -1,0 +1,308 @@
+<html lang="zh-CN" class="translated-ltr"><head>
+  <base href="https://108.ufo.k0s.io/1_lesson_Very_simple_program.md"> 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      document.title = window.location.hostname;
+    });
+  </script> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    h1 a {
+      color: #222;
+      text-decoration: none;
+    }
+
+    a {
+      color: #2a7ae2;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #eee;
+      margin: 20px 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 50%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style> 
+  <meta http-equiv="X-Translated-By" content="Google">
+  <meta http-equiv="X-Translated-To" content="zh-CN">
+  <script type="text/javascript" src="https://www.gstatic.com/_/translate_http/_/js/k=translate_http.tr.en_US.WYPRFnOi8do.O/d=1/rs=AN8SPfpuhFJPZIC1bAeelVoE7UV7Vt-MPA/m=corsproxy" data-sourceurl="https://108.ufo.k0s.io/1_lesson_Very_simple_program.md" data-navigation-history-proxy-enabled="true"></script>
+  <meta name="robots" content="none">
+ <script async="" src="https://www.gstatic.com/feedback/js/help/prod/service/lazy.min.js"></script><link type="text/css" rel="stylesheet" charset="UTF-8" href="https://www.gstatic.com/_/translate_http/_/ss/k=translate_http.tr.69JJaQ5G5xA.L.W.O/d=0/rs=AN8SPfpC36MIoWPngdVwZ4RUzeJYZaC7rg/m=el_main_css"><script type="text/javascript" charset="UTF-8" src="https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.zh_CN.vP9ARk0hD0A.O/d=1/exm=el_conf/ed=1/rs=AN8SPfr7Qhi-OTQKbFnpEq_vjdvjiKNGqA/m=el_main"></script><title>108-飞碟-k0s-io.translate.goog</title></head> 
+ <body style="margin-top: 56px;">
+  <script type="text/javascript" src="https://www.gstatic.com/_/translate_http/_/js/k=translate_http.tr.en_US.WYPRFnOi8do.O/d=1/exm=corsproxy/ed=1/rs=AN8SPfpuhFJPZIC1bAeelVoE7UV7Vt-MPA/m=navigationui" data-environment="prod" data-proxy-url="https://108-ufo-k0s-io.translate.goog" data-proxy-full-url="https://108-ufo-k0s-io.translate.goog/1_lesson_Very_simple_program.md?_x_tr_sl=en&amp;_x_tr_tl=zh-CN&amp;_x_tr_hl=zh-CN&amp;_x_tr_pto=wapp" data-source-url="https://108.ufo.k0s.io/1_lesson_Very_simple_program.md" data-source-language="en" data-target-language="zh-CN" data-display-language="zh-CN" data-detected-source-language="" data-is-source-untranslated="false" data-source-untranslated-url="https://translate.google.com/website?sl=en&amp;tl=zh-CN&amp;hl=zh-CN&amp;client=webapp&amp;u=https://108.ufo.k0s.io/1_lesson_Very_simple_program.md&amp;anno=2" data-use-in-place-translation="true" data-client="webapp"></script> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 1 课：创建第一个智能合约程序 - Hello World</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">课程总结：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们将创建我们的第一个智能合约程序，称为“Hello World”。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解如何初始化程序并定义消息处理的入口点。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">通过限制程序可以接收的消息类型并根据消息为不同的帐户创建不同的问候语来增加程序的复杂性。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">探索测试智能合约以确保它们按预期工作。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解如何读取程序的状态以检索重要信息。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">课程目标：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在课程结束时，我们将拥有：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">定义了创建名为“Hello World”的简单智能合约程序所涉及的步骤。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">解释了初始化智能合约和定义消息处理入口点的过程。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font class="" style="vertical-align: inherit;">确定了限制智能合约可以接收的消息类型的不同方式，以及如何根据收到的消息为不同的帐户创建不同的问候语。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">演示了如何测试智能合约程序以确保其正常运行。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">描述了读取智能合约状态以检索重要信息的过程。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">总结了开发功能性智能合约程序所需的关键概念和构建块。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们开始实施我们的第一个程序吧！</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们实现将发送问候消息以响应任何接收到的消息的程序。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首先，我们将使用以下命令创建一个新项目：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这将为我们的项目创建一个目录结构，其中包含以下文件：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">接下来，我们需要将必要的依赖项添加到我们的 Cargo.toml 文件中。</font><font style="vertical-align: inherit;">我们将使用</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gstd - Gear 上智能合约的标准库</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gtest - 用于测试智能合约的库</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gear-wasm-builder - 一个帮助模块，可帮助使用 Gear 构建程序。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">现在，让我们在 lib.rs 文件中编写 Gear 程序的最小结构。</font><font style="vertical-align: inherit;">句柄函数是程序的入口点。</font><font style="vertical-align: inherit;">每次程序收到传入消息时都会调用它。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了构建我们的程序，我们将使用以下代码创建 build.rs 文件：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们现在可以运行以下命令来构建我们的项目：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gstd::msg 是 gstd 库中的消息传递模块，允许用户处理传入的消息，获取有关发件人或消息内容的必要信息，并向其他参与者发送回复或新消息（链接到 gstd）。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们将使用发送新消息的回复功能作为对当前正在处理的消息的回复：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们构建我们的项目：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果一切顺利，您的工作目录现在应该有一个类似于以下内容的目标目录：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">target/wasm32-unknown-unknown/release 目录应该包含三个 WASM 二进制文件：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">hello_world.wasm 是从源文件构建的输出 WASM 二进制文件；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">hello_world.opt.wasm 是优化后的 WASM，旨在上传到区块链；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">hello_world.meta.wasm 是包含与程序交互所需的元信息的 WASM。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在我们将程序上传到区块链之前，我们需要了解元数据和 *.meta.wasm 文件的用例。</font><font style="vertical-align: inherit;">在 Gear 程序的上下文中，元数据促进了客户端 (JavaScript) 和程序 (Rust) 之间的交互。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">元数据可用作与网络中的 Gear 程序交互的外部工具和应用程序的消息负载描述。</font><font style="vertical-align: inherit;">它存储在一个单独的 *.meta.wasm 文件中。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Gear</font></font><code>metadata!</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">宏使用用户在宏中指定的 IO 数据从 Rust 导出函数。</font><font style="vertical-align: inherit;">在我们的示例中，我们只需要为句柄输出消息声明一个类型：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们已经学习了如何创建一个简单的智能合约程序，该程序以“Hello”消息响应任何传入消息。</font><font style="vertical-align: inherit;">让我们测试一下我们的程序。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用 gtest 库测试智能合约</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">测试智能合约是开发去中心化应用程序的一个重要方面。</font><font style="vertical-align: inherit;">我们将使用 Gear gtest 库进行程序的逻辑测试。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首先，让我们在项目目录的顶层，在“src”目录旁边创建一个名为“tests”的新目录。</font><font style="vertical-align: inherit;">在该目录中，我们将创建一个文件 hello_world_test.rs，我们将在其中为我们的合约编写测试。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在我们的测试文件中，我们需要从 gtest 库中导入必要的模块，即 import Log、Program 和 System。</font><font style="vertical-align: inherit;">我们还将定义一个测试函数：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在测试我们的智能合约之前，我们需要初始化运行程序的环境。</font><font style="vertical-align: inherit;">我们可以使用 gtest 的系统模块来做到这一点。</font><font style="vertical-align: inherit;">系统模拟节点行为：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">接下来，我们需要初始化我们的程序。</font><font style="vertical-align: inherit;">我们可以使用 gtest 的 Program 模块来做到这一点。</font><font style="vertical-align: inherit;">初始化程序有两种方法：从文件或当前程序：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">从文件初始化程序：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">从当前程序初始化程序：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上传的程序有自己的id。</font><font style="vertical-align: inherit;">您可以使用 from_file_with_id 构造函数手动指定程序 ID。</font><font style="vertical-align: inherit;">如果不指定程序id，则第一个初始化程序的id为0x01000...，下一个没有指定id的初始化程序id为0x02000...，依此类推。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在下一步中，我们将向我们的程序发送消息。</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font class="" style="vertical-align: inherit;">要向程序发送消息，请调用两个程序函数之一：send() 或 send_bytes()。</font><font style="vertical-align: inherit;">它们之间的区别类似于 gstd 函数 msg::send 和 msg::send_bytes。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这些函数中的第一个参数是发送者 ID，第二个参数是消息负载。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发件人 ID 可以指定为十六进制、数组 ([u8, 32])、字符串或 u64。</font><font style="vertical-align: inherit;">但是，您不能从程序已占用的 id 发送消息！</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">即使程序没有 init 函数，初始化程序结构的第一条消息也始终是 init 消息。</font><font style="vertical-align: inherit;">在我们的例子中，它可以是任何消息。</font><font style="vertical-align: inherit;">但是让我们将 init 函数添加到我们的程序中并监控该消息是否到达程序：</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在我们的测试函数中，我们可以使用以下函数向程序发送消息</font></font><code>send()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，我们添加了 sys.init_logger() 以将打印日志初始化到 stdout，并且我们发送了一条来自 ID 为 2 的用户的消息（ID 2 转换为 0x020000.. ActorId）。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">然后我们可以使用以下命令运行我们的测试：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果一切正常，我们应该在控制台中看到调试消息：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gtest 库中的发送函数将返回 RunResult 结构。</font><font style="vertical-align: inherit;">它包含处理消息的最终结果和其他在执行期间创建的消息。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比如我们可以查看init消息处理结果。</font><font style="vertical-align: inherit;">我们可以通过确保日志为空并且程序不回复或发送任何消息来做到这一点。</font><font style="vertical-align: inherit;">为此，我们可以使用 assert!(res.log().is_empty()) 命令。</font></font></p> 
+  <ul> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">包含空日志（程序不回复也不发送任何消息）；</font></font></li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <ul> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">那是成功的：</font></font></li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">一旦我们确认初始化消息成功，接下来的消息将通过句柄函数处理。</font><font style="vertical-align: inherit;">我们可以通过使用 program.send(2, String::from("HANDLE MESSAGE")) 命令发送下一条消息来测试这一点。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在这里，我们应该检查程序是否回复了预期的问候消息。</font><font style="vertical-align: inherit;">为此，我们可以使用 gtest 库中的日志结构并构建我们期望接收的日志。</font><font style="vertical-align: inherit;">具体来说，我们可以使用 Log::builder().dest(2).payload(String::from("Hello")) 命令来创建预期的日志。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建预期日志后，我们可以检查接收到的日志是否包含预期日志。</font><font style="vertical-align: inherit;">我们可以使用 assert!(res.contains(&amp;expected_log)) 命令来做到这一点。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可能会猜到，dest 是程序向其发送消息的参与者，有效负载是该消息的内容。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行测试并确保一切正常。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 1 课测验：测试您的理解力</font></font></p> 
+  <ol> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">考虑以下程序：</font></font></li> 
+  </ol> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们将使用以下测试套件测试该程序：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行该测试的结果是什么？</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">一切都会好起来的：测试会通过；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">测试将失败，因为初始化程序结构的第一条消息始终是初始化消息。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">测试将失败，因为 expected_log 不包含带有“Hello”的有效负载。</font></font></p> </li> 
+  </ul> 
+  <ol start="2"> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">编写该测试的错误是什么？</font></font></li> 
+  </ol> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第一条消息应该发送给第一个初始化的程序；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您不能初始化两个相同的程序；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发给program_2的消息是从程序已经占用的地址发出的。</font></font></p> </li> 
+  </ul> 
+  <ol start="3"> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">什么从 gtest 库返回 fn send() ？</font></font></li> 
+  </ol> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">它返回包含程序执行结果的 RunResult 结构；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">它返回 Log 结构，其中包含有关程序执行期间发送的消息的源、目标和有效负载的信息；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">它返回发送回发件人的消息。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">高级 Hello World 程序概念</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们通过引入两条新消息来为我们的程序添加更多功能：SendHelloTo 和 SendHelloReply。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们的程序将收到 2 条消息：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SendHelloTo：收到这条消息后，程序将向指定地址发送“hello”；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SendHelloReply：程序用“hello”消息回复发送当前消息的帐户。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">正如我们在上一课中看到的，我们必须对程序收到的消息进行解码。</font><font style="vertical-align: inherit;">我们将定义一个用于解码传入消息的枚举 InputMessages。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SendHelloTo 变体包含一个 ActorId 字段，程序将在其中发送问候消息。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们还需要在枚举中添加派生宏#[derive(Encode, Decode, TypeInfo)]，用于消息中的编码和解码，并在 Cargo.toml 文件中添加适当的依赖项：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了初始化我们的程序，我们将定义一个静态可变变量 GREETING 作为一个 Option</font></font><string><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    .
+   </font></font></string></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在程序初始化之前，GREETING 等于 None。</font><font style="vertical-align: inherit;">初始化后，GREETING 会变成 Some(String)。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">接下来，我们将解码 handle 函数中的传入消息并定义程序接收到的消息：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">程序收到SendHelloTo消息后，通过send函数向指定账号发送hello消息。</font><font style="vertical-align: inherit;">另一方面，当合约收到 SendHelloReply 消息时，它会回复一条问候消息。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">测试更新后的智能合约</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首先，我们将测试 SendHelloTo 消息。</font><font style="vertical-align: inherit;">我们定义将接收该消息的帐户 ID，并检查结果日志中是否有分配给该帐户的消息。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解程序元数据和状态</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">元数据是一种接口映射，有助于将一组字节转换为可理解的结构。</font><font style="vertical-align: inherit;">它决定了所有传入和传出数据的编码/解码方式。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">元数据允许 dApp 的部分——智能合约和客户端 (JavaScript) 相互理解并交换数据。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们使用 crate 来描述元数据接口</font></font><code>gmeta</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在哪里：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Init - 描述</font></font><code>init()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数的传入/传出类型。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">句柄 - 描述</font></font><code>handle()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数的传入/传出类型。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">其他 - 描述</font></font><code>main()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">异步交互情况下函数的传入/传出类型。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">回复 - 描述使用该功能执行的传入/传出消息类型</font></font><code>handle_reply</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">信号 - 仅描述处理系统信号时从程序传出的类型。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">State - 描述查询状态的类型</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有必要描述所有类型。</font><font style="vertical-align: inherit;">如果您的程序中缺少任何端点，您可以使用 () 代替。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们为示例定义元数据。</font><font style="vertical-align: inherit;">我们将创建一个箱子</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">hello-world-io 在我们的 hello-world 程序的目录中：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这个箱子的 Cargo.toml：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 lib.rs 文件中，我们将为 init 函数定义传入消息，为 handle 函数定义传入和传出消息：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">init 函数的输入是一个字符串。</font><font style="vertical-align: inherit;">handle 函数的输入是枚举 InputMessage，因此输出是 String。</font><font style="vertical-align: inherit;">程序状态也是String（是一组问候语）。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以使用状态函数读取程序状态。</font><font style="vertical-align: inherit;">Reading State 是一项免费功能，不需要 gas 费用。</font><font style="vertical-align: inherit;">让我们在 hello-world 程序的 lib.rs 文件中定义这个函数：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了能够验证程序的元数据，我们将使用 metahash() 函数：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有必要在 hello-world 程序的 Cargo.toml 中将 hello-world-io crate 添加到 build-dependencies 中：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们还需要使用以下代码更改 build.rs 文件：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">构建程序后，将生成一个 meta.txt 文件作为智能合约编译的结果。</font><font style="vertical-align: inherit;">此元数据文件可用于将与此智能合约交互的 UI 应用程序。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将程序上传到区块链</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上传程序最简单的方法是使用 Gear Idea 门户 - idea.gear-tech.io 中的“上传程序”选项。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首先，您需要创建一个帐户并连接到 Gear Idea。</font></font><a href="https://translate.google.com/website?sl=en&amp;tl=zh-CN&amp;hl=zh-CN&amp;client=webapp&amp;u=https://wiki.gear-tech.io/docs/idea/account/create-account"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">按照https://wiki.gear-tech.io/docs/idea/account/create-account</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中提供的说明</font><font style="vertical-align: inherit;">创建您的帐户。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">登录后，您可以通过单击屏幕左下角的齿轮图标来选择要上传程序的网络。</font><font style="vertical-align: inherit;">对于 Gear Academy 车间，选择车间节点 (wss://node-workshop.gear.rs:443) 并单击“切换”按钮。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选择工坊节点，点击切换按钮：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">接下来，在左侧栏中选择“程序”并上传 hello.opt.wasm 文件及其元数据（meta.txt 文件）。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为您的程序命名，输入传入的问候消息，然后单击“上传程序”按钮。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果程序已成功上传，您将在程序中看到它。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您现在可以向您的程序发送消息：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您还可以读取程序状态（这是我们在程序初始化期间设置的问候字符串）。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">任务：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们为 Tamagotchi 游戏编写智能合约：</font></font></p> 
+  <ul> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建一个智能合约 Tamagotchi，它将存储 Tamagotchi 的姓名和出生日期。</font><font style="vertical-align: inherit;">您的合同状态应定义如下：</font></font></li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">初始化时，设置电子宠物的姓名和出生日期，并发送确认初始化成功的回复。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">你的 Tamagochi 程序应该接受以下消息：</font></font></p> 
+    <ul> 
+     <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">名称 - 程序回答电子蛋的名称；</font></font></p> </li> 
+     <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">年龄 - 该程序会回答关于电子蛋的年龄。</font></font></p> </li> 
+    </ul> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将状态函数添加到您的程序中。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"></font><a href="https://translate.google.com/website?sl=en&amp;tl=zh-CN&amp;hl=zh-CN&amp;client=webapp&amp;u=https://idea.gear-tech.io/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将您的合约上传到https://idea.gear-tech.io/</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上的工作坊节点</font><font style="vertical-align: inherit;">。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要将你的 Tamagotchi 合约连接到前端应用程序，你需要确保元数据如下：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">}</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">克隆存储库：</font></font><a href="https://translate.google.com/website?sl=en&amp;tl=zh-CN&amp;hl=zh-CN&amp;client=webapp&amp;u=https://github.com/gear-dapps/smart-contract-academy"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">https://github.com/gear-dapps/smart-contract-academy</font></font></a></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在前端目录中，运行以下命令：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">.env.local 文件包含以下内容：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这意味着应用程序正在测试网节点上运行。</font><font style="vertical-align: inherit;">您还可以运行本地节点，上传 Tamagotchi 合约，并通过指示在本地节点上使用合约：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行 yarn start 命令后，您将看到以下窗口：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选择第 1 课，粘贴您的电子鸡地址，您将看到您的电子鸡！</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请在您的 Tamagotchi 合约中附上指向 repo 的链接。</font></font></p>  
+  <script>function gtElInit() {var lib = new google.translate.TranslateService();lib.translatePage('en', 'zh-CN', function () {});}</script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=gtElInit&amp;hl=zh-CN&amp;client=wt" type="text/javascript"></script><div id="goog-gt-" class="VIpgJd-suEOdc VIpgJd-yAWNEb-L7lbkb skiptranslate" dir="ltr" style="visibility: hidden; left: 255px; top: 2271px; display: none;"><div style="padding: 8px;"><div><div class="VIpgJd-yAWNEb-l4eHX"><img src="https://www.gstatic.com/images/branding/product/1x/translate_24dp.png" width="20" height="20" alt="Google 翻译"></div></div></div><div style="padding: 8px; float: left; width: 100%;"><h1 class="VIpgJd-yAWNEb-r4nke VIpgJd-yAWNEb-mrxPge">原文</h1></div><div style="padding: 8px;"><div class="VIpgJd-yAWNEb-nVMfcd-fmcmS">Identified different ways of restricting the type of messages a smart contract can receive, and how to create different greetings for different accounts based on the message received.</div></div><div class="VIpgJd-yAWNEb-cGMI2b" style="padding: 8px;"><div class="VIpgJd-yAWNEb-Z0Arqf-PLDbbf"><span class="VIpgJd-yAWNEb-Z0Arqf-hSRGPd">提供更好的翻译建议</span></div><div class="VIpgJd-yAWNEb-fw42Ze-Z0Arqf-haAclf"><hr style="color: #ccc; background-color: #ccc; height: 1px; border: none;"><div class="VIpgJd-yAWNEb-Z0Arqf-H9tDt"></div></div></div><div class="VIpgJd-yAWNEb-jOfkMb-Ne3sFf" style="display: none; opacity: 0;"></div></div>
+ 
+</body></html>

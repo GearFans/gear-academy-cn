@@ -1,0 +1,135 @@
+<html lang="zh-CN" class="translated-ltr"><head>
+  <base href="https://108.ufo.k0s.io/6_lesson_Program_factory.md"> 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      document.title = window.location.hostname;
+    });
+  </script> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    h1 a {
+      color: #222;
+      text-decoration: none;
+    }
+
+    a {
+      color: #2a7ae2;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #eee;
+      margin: 20px 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 50%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style> 
+  <meta http-equiv="X-Translated-By" content="Google">
+  <meta http-equiv="X-Translated-To" content="zh-CN">
+  <script type="text/javascript" src="https://www.gstatic.com/_/translate_http/_/js/k=translate_http.tr.en_US.WYPRFnOi8do.O/d=1/rs=AN8SPfpuhFJPZIC1bAeelVoE7UV7Vt-MPA/m=corsproxy" data-sourceurl="https://108.ufo.k0s.io/6_lesson_Program_factory.md" data-navigation-history-proxy-enabled="true"></script>
+  <meta name="robots" content="none">
+ <script async="" src="https://www.gstatic.com/feedback/js/help/prod/service/lazy.min.js"></script><link type="text/css" rel="stylesheet" charset="UTF-8" href="https://www.gstatic.com/_/translate_http/_/ss/k=translate_http.tr.69JJaQ5G5xA.L.W.O/d=0/rs=AN8SPfpC36MIoWPngdVwZ4RUzeJYZaC7rg/m=el_main_css"><script type="text/javascript" charset="UTF-8" src="https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.zh_CN.vP9ARk0hD0A.O/d=1/exm=el_conf/ed=1/rs=AN8SPfr7Qhi-OTQKbFnpEq_vjdvjiKNGqA/m=el_main"></script><title>108-飞碟-k0s-io.translate.goog</title></head> 
+ <body style="margin-top: 56px;">
+  <script type="text/javascript" src="https://www.gstatic.com/_/translate_http/_/js/k=translate_http.tr.en_US.WYPRFnOi8do.O/d=1/exm=corsproxy/ed=1/rs=AN8SPfpuhFJPZIC1bAeelVoE7UV7Vt-MPA/m=navigationui" data-environment="prod" data-proxy-url="https://108-ufo-k0s-io.translate.goog" data-proxy-full-url="https://108-ufo-k0s-io.translate.goog/6_lesson_Program_factory.md?_x_tr_sl=en&amp;_x_tr_tl=zh-CN&amp;_x_tr_hl=zh-CN&amp;_x_tr_pto=wapp" data-source-url="https://108.ufo.k0s.io/6_lesson_Program_factory.md" data-source-language="en" data-target-language="zh-CN" data-display-language="zh-CN" data-detected-source-language="" data-is-source-untranslated="false" data-source-untranslated-url="https://translate.google.com/website?sl=en&amp;tl=zh-CN&amp;hl=zh-CN&amp;client=webapp&amp;u=https://108.ufo.k0s.io/6_lesson_Program_factory.md&amp;anno=2" data-use-in-place-translation="true" data-client="webapp"></script> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第六课：实现多托管智能合约的程序工厂</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">课程总结</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font class="" style="vertical-align: inherit;">在之前的 (2^(nd)) 教程中，我们创建了一个托管智能合约，促进了双方之间的协议。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">然而，托管合约在交易结束后变得毫无用处，必须重新初始化才能与新方进行新交易。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在本教程中，我们将学习如何编写一个 Escrow Factory 智能合约，以创建上一教程中托管合约模板的多个实例。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font class="" style="vertical-align: inherit;">托管工厂智能合约消除了为每笔新交易上传和初始化相同托管合约模板的需要。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，我们将通过将托管工厂智能合约部署到区块链并使用该工厂创建多个托管合约实例来测试它。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">课程目标</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在本课结束时，您应该：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解如何创建工厂智能合约</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">解释如何使用工厂合约初始化一个新的合约实例</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">演示如何测试工厂智能合约</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解工厂合同的概念以及如何使用它来部署合同的新实例。</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解如何与 Escrow Factory 合约交互，为不同方创建 Escrow 合约的新实例。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们开始吧！</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建托管工厂的编码实践</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们的 Escrow Factory 将存储创建的托管合约的数量，从托管 ID 到其程序地址的映射，以及托管智能合约的 CodeId。</font><font style="vertical-align: inherit;">:</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">CodeId 是上传到链中的托管程序的哈希值。</font><font style="vertical-align: inherit;">该哈希将用于创建托管智能合约的实例。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们定义贷款工厂程序的功能。</font><font style="vertical-align: inherit;">它将部署托管合约并将有关存款和交付确认的消息发送到托管。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如您所见，托管合约将通过托管工厂合约与买方和卖方进行交互，这意味着托管工厂合约将向托管合约发送消息。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首先，我们必须为托管合约定义一个 io crate。</font><font style="vertical-align: inherit;">然后我们将修改传入消息的结构和托管方法。</font><font style="vertical-align: inherit;">尝试自己更改它，然后将其与正确的实现（链接）进行比较。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">之后，我们将定义贷款工厂方法并编写句柄函数：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">让我们实现 create_escrow 函数。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">对于程序部署，我们应该从 gstd 库的 prog 模块中导入 ProgramGenerator：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要创建一个新的合约实例，我们将使用 create_program_with_gas_for_reply 函数。</font><font style="vertical-align: inherit;">以下是必需的参数：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上传程序代码的代码哈希</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">初始化消息的有效载荷</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用于程序创建的 Gas（提前计算网络上加载的程序的初始化需要多少）</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">附加到初始化消息的值</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在我们的托管工厂智能合约中，我们使用异步程序创建来确保程序初始化无误。</font><font style="vertical-align: inherit;">由于工厂程序等待回复，我们在程序初始化中添加一条回复消息。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">其他方法很容易实现，因为所有逻辑和所有检查都包含在托管合约中：</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们将 msg::send_for_reply_as 移动到一个单独的函数以将消息发送到 Escrow 程序以提高可读性。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">工厂贷款合同完成后，我们现在将测试我们的工厂合同。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">测试托管工厂功能</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在测试 Escrow Factory 智能合约之前，我们需要搭建环境。</font><font style="vertical-align: inherit;">就是这样：</font></font></p> 
+  <ul> 
+   <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上传托管合约的代码：</font></font></li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[代码占位符]</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">继续按照您在之前课程中学到的方法测试合约。</font></font></p> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">任务：</font></font></p> 
+  <ul> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">完成 Escrow 工厂的测试；</font></font></p> </li> 
+   <li><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">编写将从您的合同模板创建 Tamagotchi 的合同。</font></font></p> </li> 
+  </ul> 
+  <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[图像占位符]</font></font></p>  
+  <script>function gtElInit() {var lib = new google.translate.TranslateService();lib.translatePage('en', 'zh-CN', function () {});}</script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=gtElInit&amp;hl=zh-CN&amp;client=wt" type="text/javascript"></script><div id="goog-gt-" class="VIpgJd-suEOdc VIpgJd-yAWNEb-L7lbkb skiptranslate" dir="ltr" style="visibility: hidden; left: 255px; top: 154px; display: none;"><div style="padding: 8px;"><div><div class="VIpgJd-yAWNEb-l4eHX"><img src="https://www.gstatic.com/images/branding/product/1x/translate_24dp.png" width="20" height="20" alt="Google 翻译"></div></div></div><div style="padding: 8px; float: left; width: 100%;"><h1 class="VIpgJd-yAWNEb-r4nke VIpgJd-yAWNEb-mrxPge">原文</h1></div><div style="padding: 8px;"><div class="VIpgJd-yAWNEb-nVMfcd-fmcmS">In the previous (2^(nd)) tutorial, we created an escrow smart contract that facilitated an agreement between two parties.</div></div><div class="VIpgJd-yAWNEb-cGMI2b" style="padding: 8px;"><div class="VIpgJd-yAWNEb-Z0Arqf-PLDbbf"><span class="VIpgJd-yAWNEb-Z0Arqf-hSRGPd">提供更好的翻译建议</span></div><div class="VIpgJd-yAWNEb-fw42Ze-Z0Arqf-haAclf"><hr style="color: #ccc; background-color: #ccc; height: 1px; border: none;"><div class="VIpgJd-yAWNEb-Z0Arqf-H9tDt"></div></div></div><div class="VIpgJd-yAWNEb-jOfkMb-Ne3sFf" style="display: none; opacity: 0;"></div></div>
+ 
+</body></html>
