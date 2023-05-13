@@ -1,0 +1,355 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang=""><head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>7_lesson_Tamagotchi_battle</title>
+    <style>
+      code {
+        white-space: pre-wrap;
+      }
+      span.smallcaps {
+        font-variant: small-caps;
+      }
+      span.underline {
+        text-decoration: underline;
+      }
+      div.column {
+        display: inline-block;
+        vertical-align: top;
+        width: 50%;
+      }
+      div.hanging-indent {
+        margin-left: 1.5em;
+        text-indent: -1.5em;
+      }
+      ul.task-list {
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      <strong>Lesson 7 : The Tamagotchi Battle Logic &amp; Implementation</strong>
+    </p>
+    <p><strong>Lesson Summary</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            This lesson focuses on the contract that facilitates battles between
+            two Tamagotchis.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The battle contract can be in one of four states: Registration,
+            Moves, Waiting, and GameIsOver.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The Battle struct contains information about the players, the
+            current state of the game, the current turn, the Tamagotchi store
+            ID, the winner, and the number of steps taken so far.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            To participate in the game, users must allow their contracts to
+            receive game-related messages like TmgAction::TmgInfo and
+            StoreAction::GetAttributes.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The register function obtains information about the Tamagotchi owner
+            and its attributes from the shop, generates the Tamagotchi's power
+            and energy randomly, and registers the Tamagotchi.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The get_owner and get_attributes functions retrieve information
+            about the Tamagotchi's owner and attributes from the store,
+            respectively, while the get_turn and generate_power functions
+            generate pseudo-random numbers to determine who starts the game and
+            the Tamagotchi's power, respectively.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Lesson Objectives</strong></p>
+    <p>By the end of the lesson, you will:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Understand the contract that facilitates battles between two
+            Tamagotchi.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Understand the information contained in the Battle struct, such as
+            player information, game state, winner, and number of steps taken so
+            far.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Comprehend the battle contract states and understand their functions
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Know the functions used to retrieve information from the store and
+            generate pseudo-random numbers, such as get_owner, get_attributes,
+            get_turn, and generate_power.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Complete the simple realization of the battle between Tamagotchi
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Let’s get started!</strong></p>
+    <p>The battle contract can be in 3 states:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            <em>Registration</em>: the battle contract is waiting for the
+            Tamagotchi owner to register them;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Move</em>: the Tamagotchi owners are making the move in turns;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Waiting</em>: after the Tamagotchi owners made their moves, the
+            battle contract gives them time to equip their Tamagotchi.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>GameIsOver</em>: the battle is over, it’s necessary to send a
+            message <em>StartNewGame</em>.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>The battle program state:</p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>Where the players are the following structs:</p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      To participate, users must allow their contracts to receive game-related
+      messages as below:
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>To which it will respond with information about tamagotchi owner:</p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>We’ll also add the message</p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>To the store contract that allows us to get attributes of Tamagotchi</p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>The register function:</p>
+    <p>It allows the registration of two Tamagotchi for battle.</p>
+    <p><img src="image_placeholder.png" alt="Image Placeholder"></p>
+    <ol type="1">
+      <li>
+        <blockquote>
+          <p>
+            Before you register a Tamagotchi, the Battle contract must receive
+            the Tamagotchi’s owner and its attributes from the shop;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            After receiving the details, the Battle contract randomly generates
+            the Tamagorchi’s power and energy;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            If one Tamagotchi is registered, it remains in the Registration
+            state;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            If two Tamagotchi are registered, the battle contract randomly
+            determines who starts playing first and goes to the Moves state.
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      The <em>get_owner</em> function retrieves the Tamagotchi's owner from the
+      Tamagotchi contract.
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      Similarly, the <em>get_attributes</em> function retrieves the Tamagotchi's
+      attributes from the shop.
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      To determine which player starts the game, we use the
+      <em>get_turn</em> function, which pseudorandomly selects the starting
+      player :
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      The <em>genetate_power</em> function pseudorandomly generates a power
+      value for the Tamagotchi:
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      There are also two constants, MAX_POWER and MIN_POWER, that define the
+      upper and lower bounds of the Tamagotchi's power:
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>Next, as an example, we will define a very simple game mechanic:</p>
+    <ol type="1">
+      <li>
+        <blockquote>
+          <p>
+            The Tamagotchi owner makes a move by simply sending a message
+            <em>BattleAction::Move</em> to the battle contract. During that
+            move, their Tamagotchi beats the opponent’s Tamagotchi. The
+            opponent’s energy decreases by the force of its strike.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Now, there is only one attribute in the Tamagotchi store that can be
+            used in the game - a sword. If the attacking Tamagotchi has a sword,
+            the force of its strike is multiplied by SWORD_POWER:
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>SWORD_POWER * power</p>
+    </blockquote>
+    <p>Otherwise Tamagochi's strike power is simply their power.</p>
+    <p>
+      In the future, you can expand the logic by adding fighting attributes to
+      the store, as well as adding the movement of the Tamagotchi across the
+      field.
+    </p>
+    <ol start="3" type="1">
+      <li>
+        <blockquote>
+          <p>
+            If both players have made three moves, the game enters a waiting
+            state, and the players can equip their Tamagotchis with items from
+            the shop. After a set delay, the Tamagotchis' states are updated,
+            and the next round begins.
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <p>
+      <img src="image_placeholder.png" alt="Image Placeholder">
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      The <strong>UpdateInfo</strong> action just updates the changes in
+      Tamagotchi states and starts the next round:
+    </p>
+    <img src="code_placeholder.png" alt="Code Placeholder">
+    <p>
+      So, we have finished the simple realization of the battle between
+      Tamagotchi.
+    </p>
+    <p>
+      You can try to take part in the battle with your Tamagochi or create some
+      Tamagotchi (using the previous lesson) and make them fight (Link to web
+      application).
+    </p>
+    <p>Now it’s time for your coursework.</p>
+    <p><strong>Coursework:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Add more fighting attributes to the store contract;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Determine the power of these attributes. You can also add the
+            opportunity to upgrade various attributes (That will also require
+            extending the logic of the store contract);
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Allow the player to choose which weapon he will fight or defend
+            during the turn;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            It is also possible to add the ability to Tamagotchi to move left or
+            right;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Be creative and think about other possible ways to make the game
+            more interesting.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+  
+
+</body></html>
