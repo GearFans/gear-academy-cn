@@ -1,192 +1,157 @@
-Lesson 7 : The Tamagotchi Battle Logic & Implementation
+第 7 课：Tamagotchi 战斗逻辑与实施
 
-Lesson Summary
+课程总结
 
--   This lesson focuses on the contract that facilitates battles between
-      two Tamagotchis.
+-   本课的重点是促进两个电子宠物之间战斗的契约。
 
--   The battle contract can be in one of four states: Registration,
-      Moves, Waiting, and GameIsOver.
+-   战斗契约可以处于四种状态之一：Registration、Moves、Waiting 和
+    GameIsOver。
 
--   The Battle struct contains information about the players, the
-      current state of the game, the current turn, the Tamagotchi store
-      ID, the winner, and the number of steps taken so far.
+-   Battle 结构包含有关玩家的信息、游戏的当前状态、当前回合、Tamagotchi
+    商店 ID、获胜者以及到目前为止所走的步数。
 
--   To participate in the game, users must allow their contracts to
-      receive game-related messages like TmgAction::TmgInfo and
-      StoreAction::GetAttributes.
+-   要参与游戏，用户必须允许他们的合约接收与游戏相关的消息，如
+    TmgAction::TmgInfo 和 StoreAction::GetAttributes。
 
--   The register function obtains information about the Tamagotchi owner
-      and its attributes from the shop, generates the Tamagotchi's power
-      and energy randomly, and registers the Tamagotchi.
+-   注册函数从商店获取电子宠物主人的信息及其属性，随机生成电子宠物的力量和能量，并注册电子宠物。
 
--   The get_owner and get_attributes functions retrieve information
-      about the Tamagotchi's owner and attributes from the store,
-      respectively, while the get_turn and generate_power functions
-      generate pseudo-random numbers to determine who starts the game
-      and the Tamagotchi's power, respectively.
+-   get_owner 和 get_attributes 函数分别从商店中检索有关 Tamagotchi
+    所有者和属性的信息，而 get_turn 和 generate_power
+    函数分别生成伪随机数以确定谁开始游戏和 Tamagotchi 的功率。
 
-Lesson Objectives
+课程目标
 
-By the end of the lesson, you will:
+在课程结束时，您将：
 
--   Understand the contract that facilitates battles between two
-      Tamagotchi.
+-   理解促成两个电子宠物之间战斗的契约。
 
--   Understand the information contained in the Battle struct, such as
-      player information, game state, winner, and number of steps taken
-      so far.
+-   了解 Battle
+    结构体中包含的信息，例如玩家信息、游戏状态、获胜者和到目前为止所走的步数。
 
--   Comprehend the battle contract states and understand their functions
+-   领悟战斗契约状态并理解它们的作用
 
--   Know the functions used to retrieve information from the store and
-      generate pseudo-random numbers, such as get_owner, get_attributes,
-      get_turn, and generate_power.
+-   了解用于从商店检索信息和生成伪随机数的函数，例如
+    get_owner、get_attributes、get_turn 和 generate_power。
 
--   Complete the simple realization of the battle between Tamagotchi
+-   完成宠物蛋对战的简单实现
 
-Let’s get started!
+让我们开始吧！
 
-The battle contract can be in 3 states:
+战斗契约可以有3种状态：
 
--   Registration: the battle contract is waiting for the Tamagotchi
-      owner to register them;
+-   注册：战斗契约等待电子宠物主人注册；
 
--   Move: the Tamagotchi owners are making the move in turns;
+-   移动：Tamagotchi 所有者轮流移动；
 
--   Waiting: after the Tamagotchi owners made their moves, the battle
-      contract gives them time to equip their Tamagotchi.
+-   等待：在电子宠物主人采取行动后，战斗契约让他们有时间装备电子宠物。
 
--   GameIsOver: the battle is over, it’s necessary to send a message
-      StartNewGame.
+-   GameIsOver：战斗结束，需要发送消息StartNewGame。
 
-[Code Placeholder]
+[代码占位符]
 
-The battle program state:
+战斗程序状态：
 
-[Code Placeholder]
+[代码占位符]
 
-Where the players are the following structs:
+玩家是以下结构的地方：
 
-[Code Placeholder]
+[代码占位符]
 
-To participate, users must allow their contracts to receive game-related
-messages as below:
+要参与，用户必须允许他们的合约接收与游戏相关的消息，如下所示：
 
-[Code Placeholder]
+[代码占位符]
 
-To which it will respond with information about tamagotchi owner:
+它将响应有关电子鸡所有者的信息：
 
-[Code Placeholder]
+[代码占位符]
 
-We’ll also add the message
+我们还将添加消息
 
-[Code Placeholder]
+[代码占位符]
 
-To the store contract that allows us to get attributes of Tamagotchi
+到允许我们获得 Tamagotchi 属性的商店合约
 
-[Code Placeholder]
+[代码占位符]
 
-The register function:
+注册函数：
 
-It allows the registration of two Tamagotchi for battle.
+它允许注册两个 Tamagotchi 进行战斗。
 
-[Image Placeholder]
+[图像占位符]
 
-1.  Before you register a Tamagotchi, the Battle contract must receive
-      the Tamagotchi’s owner and its attributes from the shop;
+1.  在您注册宠物蛋之前，战斗合约必须从商店接收宠物蛋的所有者及其属性；
 
-2.  After receiving the details, the Battle contract randomly generates
-      the Tamagorchi’s power and energy;
+2.  收到详情后，战斗契约随机生成电子宠物的力量和能量；
 
-3.  If one Tamagotchi is registered, it remains in the Registration
-      state;
+3.  如果一只电子鸡被注册，它会保持在注册状态；
 
-4.  If two Tamagotchi are registered, the battle contract randomly
-      determines who starts playing first and goes to the Moves state.
+4.  如果注册了两个 Tamagotchi，战斗契约将随机确定谁先开始游戏并进入
+    Moves 状态。
 
-[Code Placeholder]
+[代码占位符]
 
-The get_owner function retrieves the Tamagotchi's owner from the
-Tamagotchi contract.
+get_owner 函数从 Tamagotchi 合约中检索 Tamagotchi 的所有者。
 
-[Code Placeholder]
+[代码占位符]
 
-Similarly, the get_attributes function retrieves the Tamagotchi's
-attributes from the shop.
+同样，get_attributes 函数从商店中检索 Tamagotchi 的属性。
 
-[Code Placeholder]
+[代码占位符]
 
-To determine which player starts the game, we use the get_turn function,
-which pseudorandomly selects the starting player :
+为了确定哪个玩家开始游戏，我们使用 get_turn 函数，它伪随机选择起始玩家：
 
-[Code Placeholder]
+[代码占位符]
 
-The genetate_power function pseudorandomly generates a power value for
-the Tamagotchi:
+genetate_power 函数伪随机生成电子宠物的功率值：
 
-[Code Placeholder]
+[代码占位符]
 
-There are also two constants, MAX_POWER and MIN_POWER, that define the
-upper and lower bounds of the Tamagotchi's power:
+还有两个常量 MAX_POWER 和 MIN_POWER，它们定义了 Tamagotchi
+功率的上限和下限：
 
-[Code Placeholder]
+[代码占位符]
 
-Next, as an example, we will define a very simple game mechanic:
+接下来，作为例子，我们将定义一个非常简单的游戏机制：
 
-1.  The Tamagotchi owner makes a move by simply sending a message
-      BattleAction::Move to the battle contract. During that move, their
-      Tamagotchi beats the opponent’s Tamagotchi. The opponent’s energy
-      decreases by the force of its strike.
+1.  Tamagotchi 所有者只需向战斗合约发送一条消息 BattleAction::Move
+    即可采取行动。在那一步中，他们的 Tamagotchi 击败了对手的
+    Tamagotchi。对手的能量会随着攻击的力量而减少。
 
-2.  Now, there is only one attribute in the Tamagotchi store that can be
-      used in the game - a sword. If the attacking Tamagotchi has a
-      sword, the force of its strike is multiplied by SWORD_POWER:
+2.  现在，电子鸡商店里只有一个属性可以在游戏中使用——一把剑。如果攻击的电子宠物有剑，其攻击力乘以
+    SWORD_POWER：
 
-  SWORD_POWER * power
+SWORD_POWER * 功率
 
-Otherwise Tamagochi's strike power is simply their power.
+否则玉子的攻击力简直就是他们的力量。
 
-In the future, you can expand the logic by adding fighting attributes to
-the store, as well as adding the movement of the Tamagotchi across the
-field.
+以后可以通过在商店中添加战斗属性来扩展逻辑，还可以添加电子宠物在场地上的移动。
 
-3.  If both players have made three moves, the game enters a waiting
-      state, and the players can equip their Tamagotchis with items from
-      the shop. After a set delay, the Tamagotchis' states are updated,
-      and the next round begins.
+3.  如果两个玩家都进行了三步，游戏进入等待状态，玩家可以从商店购买物品来装备他们的电子宠物。经过一段设定的延迟后，Tamagotchis
+    的状态会更新，下一轮开始。
 
-[Image Placeholder]
+[图像占位符]
 
-[Code Placeholder]
+[代码占位符]
 
-The UpdateInfo action just updates the changes in Tamagotchi states and
-starts the next round:
+UpdateInfo 操作只是更新 Tamagotchi 状态的变化并开始下一轮：
 
-[Code Placeholder]
+[代码占位符]
 
-So, we have finished the simple realization of the battle between
-Tamagotchi.
+至此，电子鸡对战的简单实现就完成了。
 
-You can try to take part in the battle with your Tamagochi or create
-some Tamagotchi (using the previous lesson) and make them fight (Link to
-web application).
+您可以尝试与您的宠物蛋一起战斗，或者创建一些电子宠物蛋（使用上一课）并让它们战斗（链接到网络应用程序）。
 
-Now it’s time for your coursework.
+现在是你的课程作业时间。
 
-Coursework:
+课程作业：
 
--   Add more fighting attributes to the store contract;
+-   为商店契约增加更多的战斗属性；
 
--   Determine the power of these attributes. You can also add the
-      opportunity to upgrade various attributes (That will also require
-      extending the logic of the store contract);
+-   确定这些属性的力量。您还可以添加升级各种属性的机会（这也需要扩展商店合约的逻辑）；
 
--   Allow the player to choose which weapon he will fight or defend
-      during the turn;
+-   允许玩家选择他将在回合中战斗或防御的武器；
 
--   It is also possible to add the ability to Tamagotchi to move left or
-      right;
+-   也可以为 Tamagotchi 添加向左或向右移动的能力；
 
--   Be creative and think about other possible ways to make the game
-      more interesting.
+-   发挥创意并考虑其他可能的方法来使游戏更有趣。
+

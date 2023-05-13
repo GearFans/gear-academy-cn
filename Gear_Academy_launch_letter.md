@@ -1,41 +1,30 @@
-Gear Academy: Learn How to Become an Expert in Building Decentralized
-Applications
+Gear Academy：学习如何成为构建去中心化应用程序的专家
 
-Gear Foundation is delighted to introduce its new educational
-initiative, Gear Academy. Gear's first offering - the 'Gear Smart
-Contract Developer' course – will be free, providing an in-depth
-introduction to developing decentralized applications with Rust on
-networks like Vara Network.
+Gear Foundation 很高兴推出其新的教育计划 Gear Academy。Gear
+的第一个课程——“Gear 智能合约开发人员”课程——将是免费的，深入介绍如何在
+Vara Network 等网络上使用 Rust 开发去中心化应用程序。
 
-Through comprehensive guidance, learners will configure a development
-environment, build DApps from scratch and delve into powerful features
-such as delayed messages, system signals or gas reservations enabled by
-the Gear Protocol.
+通过全面的指导，学习者将配置开发环境，从头开始构建 DApp，并深入研究 Gear
+协议支持的强大功能，例如延迟消息、系统信号或燃料预留。
 
-The course consists of seven engaging, easy-to-understand lessons that
-gradually reveal the features and details of program development on Gear
-Protocol.
+该课程包括七个引人入胜、易于理解的课程，逐渐揭示 Gear Protocol
+程序开发的特点和细节。
 
-[Code Placeholder]
+[代码占位符]
 
-At the end of each lesson, learners will complete an assignment and
-upload it to the platform for review by the Gear Academy instructor. The
-course culminates in a final project that combines all the knowledge
-gained throughout the course. Upon completion, learners will receive a
-certificate and a commemorative gift NFT.
+在每节课结束时，学习者将完成一项作业并将其上传到平台以供 Gear Academy
+讲师审核。该课程以结合整个课程中获得的所有知识的最终项目而告终。完成后，学习者将获得证书和纪念礼物NFT。
 
-Sign up and enroll in the Gear Academy!
+注册并注册 Gear Academy！
 
-Join Gear and Start Building
+加入 Gear 并开始构建
 
-[Image Placeholder]
+[图像占位符]
 
-If you're a builder or developer looking to leverage Gear Protocol's
-unique capabilities for decentralized and autonomous smart contract
-development, join the Gear community. Asynchronous messaging and gas
-reservation support enable multiple use cases, facilitating new
-decentralized functionality and value for users in the blockchain
-ecosystem.
+如果您是构建者或开发者，希望利用 Gear Protocol
+的独特功能进行去中心化和自主智能合约开发，请加入 Gear
+社区。异步消息传递和 gas
+预留支持支持多种用例，为区块链生态系统中的用户提供新的去中心化功能和价值。
 
-Contact Gear at hello@gear-tech.io to learn more and start collaborating
-with the Gear Community.
+通过hello@gear-tech.io联系 Gear以了解更多信息并开始与 Gear 社区合作。
+

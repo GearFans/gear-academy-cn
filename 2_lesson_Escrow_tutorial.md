@@ -1,371 +1,313 @@
-Lesson 2: Building an Escrow Smart Contract
+第 2 课：构建托管智能合约
 
-Lesson Summary:
+课程总结：
 
--   Escrow smart contracts eliminate the need for traditional
-      third-party intermediaries.
+-   托管智能合约消除了对传统第三方中介机构的需求。
 
--   Smart contracts are encoded in blockchain, making them secure,
-      transparent, and tamper-proof.
+-   智能合约被编码在区块链中，使其安全、透明和防篡改。
 
--   Participants learn to build an escrow smart contract using
-      blockchain programming languages.
+-   参与者学习使用区块链编程语言构建托管智能合约。
 
--   Testing and deploying an escrow smart contract on a blockchain
-      platform is an essential aspect of our lesson.
+-   在区块链平台上测试和部署托管智能合约是我们课程的一个重要方面。
 
-Lesson Objective:
+课程目标：
 
-By the end of the lesson, you will:
+在课程结束时，您将：
 
--   Understand the concept of an escrow smart contract and how it works.
+-   了解托管智能合约的概念及其运作方式。
 
--   Gain hands-on experience in building an escrow smart contract.
+-   获得构建托管智能合约的实践经验。
 
--   Read program state using your own function.
+-   使用您自己的函数读取程序状态。
 
--   Learn how to test an escrow smart contract
+-   了解如何测试托管智能合约
 
-Let’s get started!
+让我们开始吧！
 
-An Escrow is an arrangement for a third party to temporarily hold the
-assets of a transaction. The assets are kept in the third party account
-and are only released once all agreement terms are met. Using an escrow
-account in a transaction adds safety for both parties.
+托管是第三方临时持有交易资产的安排。资产保存在第三方账户中，只有在满足所有协议条款后才会释放。在交易中使用托管账户为双方增加了安全性。
 
-[Image Placeholder]
+[图像占位符]
 
-Encoding an escrow smart contract into a blockchain enables the contract
-to be securely executed without traditional third parties.
+将托管智能合约编码到区块链中，可以在没有传统第三方的情况下安全地执行合约。
 
-How an Escrow in Smart Contract Works
+智能合约中的托管如何运作
 
-1.  The Buyer and Seller agree to the escrow terms. The Seller lists an
-      item for sale, and the Buyer pays the price agreed upon.
+1.  买方和卖方同意托管条款。卖方列出待售物品，买方支付商定的价格。
 
-2.  The Seller delivers the product, and the funds are held in the
-      escrow smart contract until all conditions are met and the Buyer
-      confirms receipt of the product.
+2.  卖方交付产品，资金保存在托管智能合约中，直到满足所有条件且买方确认收到产品。
 
-3.  Once the Buyer approves the product, the funds will be automatically
-      transferred to the Seller's digital wallet by the smart contract.
+3.  一旦买家认可产品，资金将通过智能合约自动转入卖家的数字钱包。
 
-Escrow Project Coding Practice
+托管项目编码实践
 
-Let’s create a new project with the following command:
+让我们使用以下命令创建一个新项目：
 
-[Code Placeholder]
+[代码占位符]
 
-We need to add the necessary dependencies to the Cargo.toml file and
-create a build.rs file (similar to the hello-world lesson).
+我们需要将必要的依赖项添加到 Cargo.toml 文件并创建一个 build.rs
+文件（类似于 hello-world 课程）。
 
-Our program must store several states to correctly execute the logic.
-These states include the addresses of the buyer and seller, the product
-price, and the transaction state.
+我们的程序必须存储多个状态才能正确执行逻辑。这些状态包括买卖双方的地址、产品价格和交易状态。
 
-1.  AwaitingPayment: Seller listed an item for sale but Buyer hasn’t
-      sent funds yet;
+1.  AwaitingPayment：卖家列出了待售商品，但买家尚未汇款；
 
-2.  AwaitingDelivery: Buyer transferred the funds to the smart contract,
-      Seller sent the product;
+2.  AwaitingDelivery：买家将资金转入智能合约，卖家发货；
 
-3.  Closed: The buyer confirmed the delivery and the Seller received the
-      funds.
+3.  成交：买家确认发货，卖家收到款项。
 
-Let’s define these states in enum:
+让我们在枚举中定义这些状态：
 
-[Code Placeholder]
+[代码占位符]
 
-Next, let’s define the structure that will store all necessary states:
+接下来，让我们定义将存储所有必要状态的结构：
 
-[Code Placeholder]
+[代码占位符]
 
-We also need a global variable that will undergo changes during the
-contract execution. We'll use the `static mut` construct for this:
+我们还需要一个全局变量，它将在合约执行期间发生变化。我们将static mut为此使用构造：
 
-[Code Placeholder]
+[代码占位符]
 
-Until the program is initialized, the ESCROW value equals None. During
-initialization, we will fill the Escrow structure with information, and
-ESCROW will become Some(Escrow).
+在程序初始化之前，ESCROW 值等于
+None。在初始化的时候，我们会用信息填充Escrow结构，ESCROW会变成Some(Escrow)。
 
-Here’s the full code with minimal Gear smart contract structure l:
+这是具有最小 Gear 智能合约结构 l 的完整代码：
 
-[Code Placeholder]
+[代码占位符]
 
-Build the project with the cargo build --release command and ensure
-everything works.
+使用 cargo build --release 命令构建项目并确保一切正常。
 
-We’ll then describe and write the init function.
+然后我们将描述和编写 init 函数。
 
-Let's define the InitEscrow message payload that will be sent during
-initialization. This structure needs to implement the Encode and Decode
-traits to be encoded and decoded, and also the TypeInfo trait for
-reading state.
+让我们定义将在初始化期间发送的 InitEscrow
+消息负载。该结构需要实现编码和解码的 Encode 和 Decode
+特征，以及用于读取状态的 TypeInfo 特征。
 
-[Code Placeholder]
+[代码占位符]
 
-In the init function, we'll define the Buyer's and Seller's addresses,
-as well as the product price. We'll load the message using msg::load()
-and decode it using the InitEscrow structure. Then, we'll create a new
-Escrow structure with the information and set the state to
-EscrowState::AwaitingPayment. Finally, we'll set ESCROW to Some(escrow).
+在 init 函数中，我们将定义买方和卖方的地址，以及产品价格。我们将使用
+msg::load() 加载消息并使用 InitEscrow
+结构对其进行解码。然后，我们将使用该信息创建一个新的 Escrow
+结构并将状态设置为 EscrowState::AwaitingPayment。最后，我们将 ESCROW
+设置为 Some(escrow)。
 
-Let’s load the message in init function and define the contract state:
+让我们在 init 函数中加载消息并定义合约状态：
 
-[Code Placeholder]
+[代码占位符]
 
-Now, we'll write the escrow contract logic. Our contract will handle the
-following messages:
+现在，我们将编写托管合约逻辑。我们的合约将处理以下消息：
 
--   Message from Buyer with attached funds. The escrow contract checks
-      that:
+-   带有附加资金的买方消息。托管合同检查：
 
--   The escrow state is AwaitingPayment;
+-   托管状态为AwaitingPayment；
 
--   Sender’s address is equal to Buyer’s address;
+-   发件人地址等于买方地址；
 
--   The attached funds equal the product price.
+-   附加资金等于产品价格。
 
-Then, the contract sets the escrow state to AwaitingDelivery and sends
-the reply about the successful fund deposit.
+然后，合约设置托管状态为AwaitingDelivery，并发送入金成功的回复。
 
--   Message from Buyer confirming the receipt of the goods. The escrow
-      contract checks that:
+-   买方确认收到货物的消息。托管合同检查：
 
--   The escrow state is AwaitingDelivery;
+-   托管状态为AwaitingDelivery；
 
--   The Sender’s address is equal to the Buyer’s address.
+-   发件人的地址等于买方的地址。
 
-Then the contract sets the escrow state to Closed, sends funds to the
-Seller, and sends the reply about successful escrow closure.
+然后合约将托管状态设置为已关闭，将资金发送给卖方，并发送关于托管关闭成功的回复。
 
-Great! Now, we need to declare the enums for incoming and outcoming
-messages, methods for Escrow structure, and implement the handle
-function.
+伟大的！现在，我们需要声明传入和传出消息的枚举，托管结构的方法，并实现句柄函数。
 
-[Code Placeholder]
+[代码占位符]
 
-Note that we have to implement the Default trait for the Escrow
-structure. Let’s add the #[derive(Default)] above the Escrow structure
-and implement that trait for the EscrowState enum:
+请注意，我们必须为托管结构实现默认特征。让我们在 Escrow 结构上方添加
+#[derive(Default)] 并为 EscrowState 枚举实现该特征：
 
-[Code Placeholder]
+[代码占位符]
 
-Let’s implement the deposit method:
+让我们实现存款方法：
 
--   We’ll check that the contract state equals the AwaitingDelivery (For
-      this, we have to add #[derive(Debug,PartialEq, Eq)] above the
-      EscrowState enum):
+-   我们将检查合约状态是否等于 AwaitingDelivery（为此，我们必须在
+    EscrowState 枚举上方添加 #[derive(Debug,PartialEq, Eq)]）：
 
-[Code Placeholder]
+[代码占位符]
 
--   Then check the sender account (To obtain ActorId of the account that
-      sends the currently processing message we use the source()
-      function from msg module in gstd library):
+-   然后检查发件人帐户（要获取发送当前正在处理的消息的帐户的
+    ActorId，我们使用 gstd 库中 msg 模块的 source() 函数）：
 
-[Code Placeholder]
+[代码占位符]
 
--   And also check the attached funds (To get the value attached to the
-      message being processed we use the value() function from msg
-      module in gstd library):
+-   并检查附加资金（要获取附加到正在处理的消息的值，我们使用 gstd 库中
+    msg 模块的 value() 函数）：
 
-[Code Placeholder]
+[代码占位符]
 
--   Finally, we change the escrow state and send a reply message:
+-   最后，我们更改托管状态并发送回复消息：
 
-[Code Placeholder]
+[代码占位符]
 
-Reading program state using your own function
+使用您自己的函数读取程序状态
 
-In the previous lesson, we learnt how to read the full program state
-using state function in the contract. Additionally, it's possible to
-create your own library with functions to read the contract state.
+在上一课中，我们学习了如何使用合约中的状态函数读取完整的程序状态。此外，您可以创建自己的库，其中包含读取合约状态的函数。
 
-Let’s extend the functionality of our escrow program by adding program
-metadata. We’ll start by creating a crate escrow-io in the directory of
-the escrow program:
+让我们通过添加程序元数据来扩展托管程序的功能。我们首先在托管程序的目录中创建一个
+crate escrow-io：
 
-[Code Placeholder]
+[代码占位符]
 
-The Cargo.toml file of that crate will contain the following:
+该箱子的 Cargo.toml 文件将包含以下内容：
 
-[Code Placeholder]
+[代码占位符]
 
-Now we can move InitEscrow, EscrowAction, EscrowEvent, EscrowState and
-Escrow to that crate and define the ProgramMetadata as follows:
+现在我们可以将 InitEscrow、EscrowAction、EscrowEvent、EscrowState 和
+Escrow 移动到那个板条箱，并按如下方式定义 ProgramMetadata：
 
-[Code Placeholder]
+[代码占位符]
 
-To add a state function to the escrow-io crate, we include:
+要将状态函数添加到 escrow-io crate，我们包括：
 
-[Code Placeholder]
+[代码占位符]
 
-Add dependencies to Cargo.toml of the escrow program:
+在托管程序的 Cargo.toml 中添加依赖：
 
-[Code Placeholder]
+[代码占位符]
 
-We’ll change the build.rs file:
+我们将更改 build.rs 文件：
 
-[Code Placeholder]
+[代码占位符]
 
-And create an independent crate for reading state:
+并为阅读状态创建一个独立的箱子：
 
-[Code Placeholder]
+[代码占位符]
 
-The Cargo.toml of this crate will contain the following:
+这个箱子的 Cargo.toml 将包含以下内容：
 
-[Code Placeholder]
+[代码占位符]
 
-In the lib.rs file, we should define metawasm trait as follows:
+在 lib.rs 文件中，我们应该定义 metawasm trait 如下：
 
-[Code Placeholder]
+[代码占位符]
 
-It’s also necessary to define the type of program state, which is the
-Escrow type in this case. We can execute this by adding `type State =
-Escrow;`:
+还需要定义程序状态的类型，在本例中为 Escrow
+类型。我们可以通过添加来执行type State = Escrow;：
 
-[Code Placeholder]
+[代码占位符]
 
-Now that we've defined the trait and the state type, we can write any
-functions we want that concern the Escrow state. For example:
+现在我们已经定义了特征和状态类型，我们可以编写任何我们想要的与托管状态相关的函数。例如：
 
-[Code Placeholder]
+[代码占位符]
 
-Finally, we’ll create the build.rs file of the state as follows:
+最后，我们将创建状态的 build.rs 文件，如下所示：
 
-[Code Placeholder]
+[代码占位符]
 
-Once we've built the crate, we'll have a file called
-escrow_state.meta.wasm that we can use in our UI applications to
-interact with the smart contract.
+一旦我们构建了箱子，我们就会有一个名为 escrow_state.meta.wasm
+的文件，我们可以在我们的 UI 应用程序中使用它来与智能合约进行交互。
 
-Testing our Smart Contract Program
+测试我们的智能合约程序
 
-Let’s test our method.
+让我们测试一下我们的方法。
 
-We’ll first create the tests directory and escrow_test.rs file:
+我们将首先创建测试目录和 escrow_test.rs 文件：
 
-[Code Placeholder]
+[代码占位符]
 
-We’ll import necessary structures from gtest library and escrow crate
-and define constants for Buyer, Seller and product price. Then, we’ll
-send an init message using the following code :
+我们将从 gtest
+库和托管箱中导入必要的结构，并为买方、卖方和产品价格定义常量。然后，我们将使用以下代码发送一条初始化消息：
 
-[Code Placeholder]
+[代码占位符]
 
-Next, we’ll send a message from the Buyer’s account using the
-send_with_value function instead of send function since we need to send
-a message with funds. However, in the test node, the account balance is
-zero, so we’ll have to change it:
+接下来，我们将使用 send_with_value 函数而不是 send
+函数从买家的账户发送一条消息，因为我们需要发送一条带有资金的消息。然而，在测试节点中，账户余额为零，所以我们必须改变它：
 
-[Code Placeholder]
+[代码占位符]
 
-To keep things organized, let's move the contract initialization into a
-separate function called init_escrow(sys: &System):
+为了让事情井井有条，让我们将合约初始化移动到一个名为 init_escrow(sys:
+&System) 的单独函数中：
 
-[Code Placeholder]
+[代码占位符]
 
-We can use the get_program function from the gtest library to get the
-program in the test function. As you remember from the first lesson, our
-program is initialized with the first id. So, the full code of the
-deposit test function is as follows:
+我们可以使用 gtest 库中的 get_program
+函数来获取测试函数中的程序。正如您从第一课记得的那样，我们的程序是用第一个
+id 初始化的。所以，存款测试功能的完整代码如下：
 
-[Code Placeholder]
+[代码占位符]
 
-At the end of the test, we’ll also check that the funds are credited to
-the program using the balance_of function.
+在测试结束时，我们还将使用 balance_of 函数检查资金是否记入程序。
 
-It's crucial to test the correct contract execution and the failed
-cases. We have to check that the contract panics if:
+测试正确的合约执行和失败的案例至关重要。如果出现以下情况，我们必须检查合约是否发生恐慌：
 
--   The message was sent from the wrong account;
+-   该消息是从错误的帐户发送的；
 
--   Buyer attached not enough funds;
+-   买方附加的资金不足；
 
--   The escrow state is not AwaitingPayment.
+-   托管状态不是 AwaitingPayment。
 
-So, let’s test all panics in the deposit function:
+因此，让我们测试存款功能中的所有恐慌：
 
-[Code Placeholder]
+[代码占位符]
 
-Great, we have written half of our program. Now it's time for you to
-code.
+太好了，我们已经编写了一半的程序。现在是您编写代码的时候了。
 
-Assignment:
+任务：
 
-1.  Implement the confirm_delivery function. The function should:
+1.  实现 confirm_delivery 函数。该功能应该：
 
--   Check that msg::source() is a buyer;
+-   检查 msg::source() 是否是买家；
 
--   Check that the escrow state is AwaitingDelivery;
+-   检查托管状态是否为AwaitingDelivery；
 
--   Sends the funds to the seller (use msg::send() function);
+-   将资金发送给卖家（使用 msg::send() 函数）；
 
--   Set the escrow state to Closed;
+-   将托管状态设置为已关闭；
 
--   Send a reply message about successful delivery confirmation.
+-   发送有关成功交付确认的回复消息。
 
-2.  Write tests for the written function:
+2.  为编写的函数编写测试：
 
--   confirm_delivery test that tests the successful contract execution;
+-   confirm_delivery 测试，测试合约是否成功执行；
 
-  Note that the contract sends a message with value to a seller and the
-  user messages are stored in their individual mailbox. To get the value
-  from these messages, it's necessary to claim the value from the
-  mailbox.
+请注意，合约向卖方发送一条有价值的消息，而用户消息存储在他们的个人邮箱中。要从这些消息中获取值，必须从邮箱中获取值。
 
-  In gtest, you can use the function claim_value_from_mailbox. After
-  claiming the value, check the seller's balance and make sure that
-  funds were transferred to his account.
+在 gtest 中，您可以使用函数
+claim_value_from_mailbox。领取价值后，检查卖家的余额并确保资金已转入他的账户。
 
--   confirm_delivery_failures test that tests all panics in the escrow
-      contract.
+-   confirm_delivery_failures 测试，测试托管合约中的所有恐慌。
 
-3.  Next, we return to the Tamagotchi contract you started writing in
-      the previous lesson:
+3.  接下来，我们回到您在上一课开始编写的 Tamagotchi 合约：
 
-  Let’s expand the Tamagochi state by adding the following field to its
-  structure:
+让我们通过在其结构中添加以下字段来扩展 Tamagochi 状态：
 
--   The Tamagotchi owner (it can be an account that initializes the
-      Tamagotchi contract);
+-   Tamagotchi所有者（可以是初始化Tamagotchi合约的账户）；
 
--   Mood: Fed (from 1 to 10000), Happy (from 1 to 10000) and Rested(from
-      1 to 10000). These values must be set to non-zero when
-      initializing the Tamagotchi contract. Also, you should define the
-      following constants:
+-   心情：吃饱（从 1 到 10000）、快乐（从 1 到 10000）和休息（从 1 到
+    10000）。在初始化 Tamagotchi
+    合约时，这些值必须设置为非零。此外，您应该定义以下常量：
 
-  HUNGER_PER_BLOCK = 1: how much Tamagotchi becomes hungry for the
-  block;
+HUNGER_PER_BLOCK = 1：电子鸡对这个方块的饥饿程度；
 
-  ENERGY_PER_BLOCK = 2 - how much Tamagotchi loses energy per block;
+ENERGY_PER_BLOCK = 2 - Tamagotchi 每个方块损失多少能量；
 
-  BOREDOM_PER_BLOCK = 2 - how bored Tamagotchigetsper block;
+BOREDOM_PER_BLOCK = 2 - 每个区块有多无聊；
 
-  FILL_PER_SLEEP = 1000 - how much energy Tamagotchi gets per sleep;
+FILL_PER_SLEEP = 1000 - Tamagotchi 每次睡眠获得多少能量；
 
--   FILL_PER_FEED = 1000 - how much Tamagotchi becomes full during
-      feeding;
+-   FILL_PER_FEED = 1000 - Tamagotchi 在喂食期间变满的量；
 
--   FILL_PER_ENTERTAINMENT = 1000 - how much Tamagotchi becomes happy
-      during feeding;
+-   FILL_PER_ENTERTAINMENT = 1000 - Tamagotchi
+    在喂食期间变得快乐的程度；
 
--   The Tamagotchi also has to accept messages: Sleep, Feed and Play;
+-   Tamagotchi 还必须接受消息：Sleep、Feed 和 Play；
 
--   Think of logic for calculating the levels of Fed, Happy and Rested.
-      You need to take into account the numbers of blocks in which the
-      Tamagotchi last ate, had fun or slept. For this you can use the
-      function block_timestamp() from the module exec of gstd library.
+-   想想计算 Fed、Happy 和 Rested
+    水平的逻辑。您需要考虑电子宠物最后一次进食、玩耍或睡觉的块数。为此，您可以使用
+    gstd 库模块 exec 中的函数 block_timestamp()。
 
-4.  Now upload your contract to the blockchain and run the frontend
-      application. Choose the second lesson.
+4.  现在将您的合同上传到区块链并运行前端应用程序。选择第二课。
 
-  Now you can feed your Tamagotchi, play with it and send it to sleep.
+现在您可以喂养您的电子宠物，和它一起玩耍，然后让它入睡。
 
-  The metadata must meet the following requirements to ensure the
-  contract aligns with the frontend:
+元数据必须满足以下要求，以确保合约与前端保持一致：
 
-[Code Placeholder]
+[代码占位符]
 
-Please attach a link to the repo with your Tamagotchi contract.
+请在您的 Tamagotchi 合约中附上指向 repo 的链接。
+

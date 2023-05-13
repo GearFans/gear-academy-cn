@@ -1,133 +1,108 @@
-  Lesson 6: Implementing the Program Factory for Multiple Escrow Smart
-  Contracts
+第六课：实现多托管智能合约的程序工厂
 
-Lesson Summary
+课程总结
 
--   In the previous (2^(nd)) tutorial, we created an escrow smart
-      contract that facilitated an agreement between two parties.
+-   在之前的 (2^(nd))
+    教程中，我们创建了一个托管智能合约，促进了双方之间的协议。
 
--   However, the escrow contract became useless after the deal was over
-      and had to be initialized again for new deals with new parties.
+-   然而，托管合约在交易结束后变得毫无用处，必须重新初始化才能与新方进行新交易。
 
--   In this tutorial, we’ll learn how to write an Escrow Factory smart
-      contract that creates multiple instances of the escrow contract
-      template from the previous tutorial.
+-   在本教程中，我们将学习如何编写一个 Escrow Factory
+    智能合约，以创建上一教程中托管合约模板的多个实例。
 
--   The Escrow Factory smart contract eliminates the need to upload and
-      initialize the same escrow contract template for every new deal.
+-   托管工厂智能合约消除了为每笔新交易上传和初始化相同托管合约模板的需要。
 
--   Finally, we’ll test the Escrow Factory smart contract by deploying
-      it to the blockchain and creating multiple escrow contract
-      instances using the factory.
+-   最后，我们将通过将托管工厂智能合约部署到区块链并使用该工厂创建多个托管合约实例来测试它。
 
-Lesson Objectives
+课程目标
 
-By the end of this lesson, you should:
+在本课结束时，您应该：
 
--   Understand how to create a factory smart contract
+-   了解如何创建工厂智能合约
 
--   Explain how to initialize a new contract instance using a factory
-      contract
+-   解释如何使用工厂合约初始化一个新的合约实例
 
--   Demonstrate how to test a factory smart contract
+-   演示如何测试工厂智能合约
 
--   Understand the concept of a factory contract and how it can be used
-      to deploy new instances of a contract.
+-   了解工厂合同的概念以及如何使用它来部署合同的新实例。
 
--   Understand how to interact with the Escrow Factory contract to
-      create new instances of the Escrow contract for different parties.
+-   了解如何与 Escrow Factory 合约交互，为不同方创建 Escrow
+    合约的新实例。
 
-Let’s get started!
+让我们开始吧！
 
-[Image Placeholder]
+[图像占位符]
 
-Coding Practice to Create Escrow Factory
+创建托管工厂的编码实践
 
-Our Escrow Factory will store the number of created escrow contracts,
-the mapping from the escrow id to its program address, and also the
-CodeId of the escrow smart contract. :
+我们的 Escrow Factory 将存储创建的托管合约的数量，从托管 ID
+到其程序地址的映射，以及托管智能合约的 CodeId。:
 
-[Code Placeholder]
+[代码占位符]
 
-The CodeId is a hash of the escrow program uploaded into the chain. That
-hash will be used to create instances of escrow smart contracts.
+CodeId
+是上传到链中的托管程序的哈希值。该哈希将用于创建托管智能合约的实例。
 
-Let's define the functionality of our loan factory program. It will
-deploy an escrow contract and send messages about deposit and delivery
-confirmation to the escrow.
+让我们定义贷款工厂程序的功能。它将部署托管合约并将有关存款和交付确认的消息发送到托管。
 
-[Code Placeholder]
+[代码占位符]
 
-As you can see, the Escrow contract will interact with Buyer and Seller
-through Escrow Factory contract, meaning the Escrow Factory contract
-will send messages to the Escrow contract.
+如您所见，托管合约将通过托管工厂合约与买方和卖方进行交互，这意味着托管工厂合约将向托管合约发送消息。
 
-Firstly, we have to define an io crate for the Escrow contract. Then
-we’ll modify the structure of incoming messages and Escrow methods. Try
-to change it yourself and then compare it with the correct
-implementation (link).
+首先，我们必须为托管合约定义一个 io
+crate。然后我们将修改传入消息的结构和托管方法。尝试自己更改它，然后将其与正确的实现（链接）进行比较。
 
-After that, we’ll define Loan Factory methods and write the handle
-function:
+之后，我们将定义贷款工厂方法并编写句柄函数：
 
-[Code Placeholder]
+[代码占位符]
 
-Let’s implement the create_escrow function.
+让我们实现 create_escrow 函数。
 
-For the program deployment we should import ProgramGenerator from the
-prog module in gstd library:
+对于程序部署，我们应该从 gstd 库的 prog 模块中导入 ProgramGenerator：
 
-[Code Placeholder]
+[代码占位符]
 
-To create a new contract instance, we will use the
-create_program_with_gas_for_reply function. Here are the required
-parameters:
+要创建一个新的合约实例，我们将使用 create_program_with_gas_for_reply
+函数。以下是必需的参数：
 
--   The code hash of the uploaded program code
+-   上传程序代码的代码哈希
 
--   Payload for initialization message
+-   初始化消息的有效载荷
 
--   Gas for the program creation (calculate in advance how much the
-      initialization of the program loaded on the network requires)
+-   用于程序创建的 Gas（提前计算网络上加载的程序的初始化需要多少）
 
--   Value attached to the init message
+-   附加到初始化消息的值
 
-[Code Placeholder]
+[代码占位符]
 
-In our Escrow factory smart contract, we use asynchronous program
-creation to ensure the program is initialized without errors. Since the
-factory program waits for a reply, we add a reply message to the program
-initialization.
+在我们的托管工厂智能合约中，我们使用异步程序创建来确保程序初始化无误。由于工厂程序等待回复，我们在程序初始化中添加一条回复消息。
 
-Other methods are implemented easily since all logic and all checks are
-included in the Escrow contract:
+其他方法很容易实现，因为所有逻辑和所有检查都包含在托管合约中：
 
-[Code Placeholder]
+[代码占位符]
 
-We move the msg::send_for_reply_as to a separate function to send
-messages to the Escrow program for better readability.
+我们将 msg::send_for_reply_as 移动到一个单独的函数以将消息发送到 Escrow
+程序以提高可读性。
 
-[Code Placeholder]
+[代码占位符]
 
-With the factory loan contract finished, we’ll now test our factory
-contract.
+工厂贷款合同完成后，我们现在将测试我们的工厂合同。
 
-  Testing the Escrow Factory Functionality
+测试托管工厂功能
 
-Before testing the Escrow Factory smart contract, we need to set up the
-environment. Here's how:
+在测试 Escrow Factory 智能合约之前，我们需要搭建环境。就是这样：
 
--   Upload the code of the Escrow contract:
+-   上传托管合约的代码：
 
-[Code Placeholder]
+[代码占位符]
 
-Continue to test the contract as you learnt in previous lessons.
+继续按照您在之前课程中学到的方法测试合约。
 
-Assignment:
+任务：
 
--   Finish tests for the Escrow factory;
+-   完成 Escrow 工厂的测试；
 
--   Write the contract that will create Tamagotchi from your contract
-      template.
+-   编写将从您的合同模板创建 Tamagotchi 的合同。
 
-  [Image Placeholder]
+[图像占位符]
+

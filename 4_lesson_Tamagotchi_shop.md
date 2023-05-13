@@ -1,224 +1,195 @@
-Lesson 4: The Tamagotchi Shop Description
+第 4 课：Tamagotchi 商店说明
 
-Lesson Summary:
+课程总结：
 
--   The lesson covers how to create contracts for selling Tamagotchi
-      using fungible tokens.
+-   本课程涵盖如何使用可替代代币创建销售电子鸡的合约。
 
--   The Tamagotchi can have various attributes such as accessories,
-      clothing, and weapons, which will be necessary for our upcoming
-      Tamagotchi battle game.
+-   Tamagotchi
+    可以具有各种属性，例如配饰、服装和武器，这将是我们即将推出的
+    Tamagotchi 对战游戏所必需的。
 
--   To buy attributes, the Tamagotchi must have enough tokens in its
-      balance, and it must approve the store's contract for transferring
-      its tokens.
+-   要购买属性，Tamagotchi
+    的余额中必须有足够的代币，并且它必须批准商店转让其代币的合同。
 
--   We’ll explore transaction handling and how to deal with transactions
-      with errors during their execution.
+-   我们将探讨事务处理以及如何处理在执行过程中出现错误的事务。
 
-Lesson Objective:
+课程目标：
 
-By the end of this lesson, users will:
+在本课结束时，用户将：
 
--   Create a contract for selling Tamagotchi using fungible tokens
+-   创建使用可替代代币销售电子宠物的合约
 
--   Connect the concept of fungible tokens (from Lesson 3) and their use
-      in purchasing Tamagotchi attributes
+-   连接可替代代币的概念（来自第 3 课）及其在购买 Tamagotchi
+    属性中的用途
 
--   Understand how to check Tamagotchi token balance and approve
-      contracts for transferring tokens.
+-   了解如何检查 Tamagotchi 代币余额并批准转移代币的合同。
 
--   Understand how to handle incomplete transactions
+-   了解如何处理未完成的交易
 
-Let’s get started!
+让我们开始吧！
 
-The buying process involves three steps:
+购买过程包括三个步骤：
 
-1.  The Tamagotchi sends a message to the fungible token contract to
-      approve the store contract to transfer its tokens;
+1.  Tamagotchi 向可替代代币合约发送一条消息，以批准商店合约转移其代币；
 
-2.  The Tamagotchi sends a message to the store contract, indicating the
-      attribute it wants to buy;
+2.  Tamagotchi 向商店合约发送消息，表明它想要购买的属性；
 
-3.  The store contract sends a message to the fungible token contract to
-      transfer the tokens to itself. If the tokens are successfully
-      transferred, the store adds the attribute to the the Tamagotchi
-      attributes.
+3.  商店合约向可替代代币合约发送一条消息，以将代币转移给自己。如果代币成功转移，商店会将属性添加到
+    Tamagotchi 属性中。
 
-[Image Placeholder]
+[图像占位符]
 
-Coding
+编码
 
-Let's start writing the smart contract. First, we’ll define the
-structure of the store contract state:
+让我们开始编写智能合约。首先，我们将定义商店合约状态的结构：
 
-[Code Placeholder]
+[代码占位符]
 
-We’ll use type alias to improve the code readability:
+我们将使用类型别名来提高代码的可读性：
 
-[Code Placeholder]
+[代码占位符]
 
-The Metadata for the attribute contains the following fields:
+属性的元数据包含以下字段：
 
-[Code Placeholder]
+[代码占位符]
 
-Let’s define the actions that the store contract must execute:
+让我们定义商店合约必须执行的操作：
 
--   The contract must create new attributes and sell them to the
-      Tamagotchi contracts;
+-   合约必须创建新的属性并将它们出售给 Tamagotchi 合约；
 
--   The contract must receive messages from the Tamagotchi contracts.
+-   合约必须接收来自 Tamagotchi 合约的消息。
 
-Before implementing these functions, we’ll define the contract store's
-store-io crate and write the lib.rs file:
+在实现这些功能之前，我们将定义合约商店的 store-io crate 并编写 lib.rs
+文件：
 
-[Code Placeholder]
+[代码占位符]
 
-The store contract will accept two types of messages: CreateAttribute
-and BuyAttribute. On successful message execution, it'll reply with
-AttributeCreated or AttributeSold.
+商店合约将接受两种类型的消息：CreateAttribute 和
+BuyAttribute。消息执行成功后，它会回复 AttributeCreated 或
+AttributeSold。
 
-We’ll then write the basic structure of the program as follows:
+然后我们将编写程序的基本结构如下：
 
-[Code Placeholder]
+[代码占位符]
 
-The buy_attribute function is asynchronous since the store contract must
-send a message to the token contract and wait for a reply from it.
+buy_attribute
+函数是异步的，因为商店合约必须向代币合约发送消息并等待它的回复。
 
-Now, let's implement the create_attribute function. This function is
-straightforward and performs the following steps:
+现在，让我们实现 create_attribute 函数。这个函数很简单，执行以下步骤：
 
--   Verifies that the account that sent the message is the contract
-      admin.
+-   验证发送消息的帐户是合约管理员。
 
--   Ensures that an attribute with the indicated ID doesn't already
-      exist.
+-   确保具有指定 ID 的属性不存在。
 
--   Creates a new attribute
+-   创建一个新属性
 
--   Sends a reply indicating the successful creation of the attribute.
+-   发送一个回复，指示属性创建成功。
 
-[Code Placeholder]
+[代码占位符]
 
-Next, let's dive into the implementation of the buy_attribute function.
-As we discussed earlier, this function is responsible for initiating a
-token transfer from the Tamagotchi contract to the store contract, and
-it must track the transaction's ID in the fungible token contract. To
-achieve this, we will add a new field called transaction_id to the store
-contract's state.
+接下来，让我们深入了解 buy_attribute
+函数的实现。正如我们之前讨论的，此函数负责启动从 Tamagotchi
+合约到商店合约的代币转移，并且它必须跟踪可替代代币合约中的交易
+ID。为此，我们将在商店合约的状态中添加一个名为 transaction_id 的新字段。
 
-So, the store contract is responsible for tracking the transactions in
-the fungible token and has to consider the ID of the current transaction
-in it. Let’s add the field transaction_id to the contract state:
+因此，商店合约负责跟踪可替代代币中的交易，并且必须考虑其中当前交易的
+ID。让我们将字段 transaction_id 添加到合约状态：
 
-[Code Placeholder]
+[代码占位符]
 
-This field will store the ID of the current transaction and will allow
-the store contract to track the status of the token transfer with ease.
-With this field in place, the buy_attribute function can initiate the
-token transfer, track the transaction's ID, and wait for a reply from
-the fungible token contract to confirm the transfer's success.
+该字段将存储当前交易的
+ID，并允许商店合约轻松跟踪代币转移的状态。有了这个字段，buy_attribute
+函数可以启动代币转移，跟踪交易的
+ID，并等待可替代代币合约的回复以确认转移成功。
 
-And we also declare the type for transaction id in the store-io crate:
+我们还在 store-io 箱子中声明交易 ID 的类型：
 
-[Code Placeholder]
+[代码占位符]
 
-Next, let’s assume the following situations:
+接下来，让我们假设以下情况：
 
-[Image Placeholder]
+[图像占位符]
 
-1.  The Tamagotchi sends a message to the store contract to buy an
-      attribute;
+1.  Tamagotchi 向商店合约发送消息以购买属性；
 
-2.  The store contract sends a message to the fungible token contract
-      and receives a reply about the successful token transfer;
+2.  商店合约向同质代币合约发送消息，并收到代币转移成功的回复；
 
-3.  The store contract begins changing its state. It adds the indicated
-      attribute to the Tamagotchi ownership but runs out of gas.
+3.  商店合同开始改变其状态。它将指示的属性添加到 Tamagotchi
+    所有权，但耗尽了气体。
 
-In such a scenario, the tokens were transferred to the store contracts
-but the Tamagotchi didn’t receive its attribute. To prevent this, it's
-important for the store contract to detect when a transaction is
-incomplete and continue its execution accordingly.
+在这种情况下，代币被转移到商店合约，但 Tamagotchi
+没有收到它的属性。为防止这种情况，商店合约必须检测交易何时未完成并相应地继续执行。
 
-Let’s add another field to the AttributeStore struct:
+让我们向 AttributeStore 结构添加另一个字段：
 
-[Code Placeholder]
+[代码占位符]
 
-When the store contract receives a purchase message from a Tamagotchi,
-it checks if the Tamagotchi is already involved in any incomplete
-transactions.
+当商店合约收到来自 Tamagotchi 的购买消息时，它会检查 Tamagotchi
+是否已经参与任何未完成的交易。
 
-If the Tamagotchi has an incomplete transaction, the store contract
-retrieves the transaction number and attribute ID associated with the
-transaction, and resumes the transaction.
+如果 Tamagotchi 有未完成的交易，商店合约会检索与交易关联的交易编号和属性
+ID，并恢复交易。
 
-If the previous message wasn’t completed, the Tamagotchi has to send
-another identical message to complete the transaction. However, it's
-possible that the Tamagotchi sends multiple purchase messages and fails
-to notice that some messages did not go through.
+如果之前的消息没有完成，Tamagotchi
+必须发送另一条相同的消息来完成交易。但是，Tamagotchi
+可能会发送多条购买消息而没有注意到某些消息未通过。
 
-To handle this, the store contract checks the attribute ID specified in
-the current message and compares it with the attribute ID stored in
-transactions. If the saved id is not equal to the indicated one, then
-the store contract asks the Tamagotchi to complete the previous
-transaction. Otherwise, it continues the pending transaction.
+为了处理这个问题，存储合约检查当前消息中指定的属性
+ID，并将其与存储在事务中的属性 ID 进行比较。如果保存的 id 不等于指定的
+id，则商店合约会要求 Tamagotchi
+完成之前的交易。否则，它将继续挂起的事务。
 
-If the Tamagotchi has no pending transactions, then the store contract
-increments the transaction_id and saves the transaction.
+如果 Tamagotchi 没有未决交易，则存储合约会增加 transaction_id
+并保存交易。
 
-[Code Placeholder]
+[代码占位符]
 
-Note that you have to add CompletePrevTx event to StoreEvent to ensure
-proper event tracking.
+请注意，您必须将 CompletePrevTx 事件添加到 StoreEvent
+以确保正确的事件跟踪。
 
-Let’s write the function for selling attributes. Selling attributes is
-similar to executing the NFT transfer. We’ll assign the attribute ID to
-the Tamagotchi contract.
+让我们编写出售属性的函数。出售属性类似于执行 NFT 转移。我们会将属性 ID
+分配给 Tamagotchi 合约。
 
-First, we’ll write the function for the token transfer:
+首先，我们将编写令牌传输函数：
 
-[Code Placeholder]
+[代码占位符]
 
-We’ve sent a message to the token contract and handled its reply. The
-contract considers that the message to the token contract was
-successfully processed only if it received the FTokenEvent::Ok.
+我们已经向令牌合约发送了一条消息并处理了它的回复。只有在收到
+FTokenEvent::Ok 时，合约才认为发送给代币合约的消息已成功处理。
 
-Now, we’re ready to write the function for selling attributes:
+现在，我们准备编写出售属性的函数：
 
-[Code Placeholder]
+[代码占位符]
 
-First, the contract receives the attribute price, then it calls the
-function transfer_tokens. If the result of the token transfer is
-successful, it adds the attribute to the Tamagotchi contract.
+首先，合约接收到属性价格，然后调用函数
+transfer_tokens。如果令牌传输的结果是成功的，它会将属性添加到 Tamagotchi
+合约中。
 
-Great! We’re done writing the contract logic.
+伟大的！我们完成了合约逻辑的编写。
 
-Now, you should give your Tamagotchi the ability to buy attributes.
+现在，您应该让您的电子宠物购买属性。
 
-What we have learnt:
+我们学到了什么：
 
--   Communicating with the fungible token contract;
+-   与可替代代币合约进行通信；
 
--   How to handle incomplete/imperfect transactions.
+-   如何处理不完整/不完善的交易。
 
-Homework:
+家庭作业：
 
--   Give the tokens to your Tamagotchi contract (here must be the link
-      to the fungible token contract deployed on the testnet);
+-   将代币提供给您的 Tamagotchi
+    合约（此处必须是部署在测试网上的可替代代币合约的链接）；
 
--   Add fields to the Tamagotchi contract that store the address of the
-      fungible token contract;
+-   向 Tamagotchi 合约添加字段以存储可替代代币合约的地址；
 
--   Add the ability to approve to transfer its token (and accordingly
-      the field transaction_id for communication with the fungible token
-      contract);
+-   添加批准转移其代币的能力（以及相应的用于与可替代代币合约通信的字段
+    transaction_id）；
 
--   Add the function buy_attribute to your Tamagotchi contract;
+-   将函数 buy_attribute 添加到你的 Tamagotchi 合约中；
 
--   Buy attributes for your Tamagotchi and see how it's transforming.
+-   为您的电子宠物购买属性，看看它是如何变化的。
 
-For the contract to be in accordance with the frontend, the metadata
-must be the following:
+对于与前端一致的合同，元数据必须如下：
 
-[Code Placeholder]
+[代码占位符]
+
