@@ -1,261 +1,503 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Academy</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-  </style>
-</head>
-<body>
-<ol type="1">
-<li><blockquote>
-<p><strong>Первый урок: Hello world</strong></p>
-</blockquote></li>
-</ol>
-<p><strong>Срок написания</strong>: 1 день - смарт-контракт и тестирование на gtest готовы, нужно сделать раздел с idea и gclient (хотя возможно gclient можно пока не показывать).</p>
-<p><strong>Цель первого урока</strong>:</p>
-<ul>
-<li><blockquote>
-<p>показать минимальную структуру программы на Gear: инициализация программы, точка входа программы, библиотека gstd;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Показать, что программа - это отдельный actor, который может отвечать на сообщения, а также посылать сообщения;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Показать обработку нескольких сообщений;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Введение в gtest (можно добавить работу с idea и gclient).</p>
-</blockquote></li>
-</ul>
-<p><strong>Самостоятельная работа</strong>:</p>
-<p>Начинаем писать игру тамагочи:</p>
-<ul>
-<li><blockquote>
-<p>Создать структуру MyTamagotchi, которая будет хранить имя и дату рождения тамагочи;</p>
-</blockquote></li>
-<li><blockquote>
-<p>При инициализации установить его имя и дату рождения и послать ответ об успешной инициализации;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Программа тамагочи должна принимать следующие сообщения:</p>
-</blockquote></li>
-</ul>
-<ul>
-<li><blockquote>
-<p>Name - программа отвечает, как зовут тамагочи;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Age - программа отвечает про возраст тамагочи.</p>
-</blockquote></li>
-</ul>
-<blockquote>
-<p><img src="media/image2.png" style="width:4.80986in;height:2.61305in" /></p>
-</blockquote>
-<ol start="2" type="1">
-<li><blockquote>
-<p><strong>Второй урок: Escrow</strong></p>
-</blockquote></li>
-</ol>
-<p><strong>Цель второго урока:</strong></p>
-<ul>
-<li><blockquote>
-<p>Управление логикой программы в зависимости от состояния и времени;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Функции из gstd библиотеки;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Сообщения с прикрепленными value, проверка баланса программы;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Тестирование программы с помощью gtest;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Чтение стейта программы.</p>
-</blockquote></li>
-</ul>
-<p><strong>Самостоятельная работа:</strong><br />
-Игра тамагочи:</p>
-<ul>
-<li><blockquote>
-<p>Расширение стейта: добавить в структуру следующий поля:</p>
-</blockquote></li>
-</ul>
-<ul>
-<li><blockquote>
-<p>Хозяин тамагочи (Например, аккаунт, инициализирующий контракт);</p>
-</blockquote></li>
-<li><blockquote>
-<p>Stages - на каком этапе взросления находится тамагочи (Например: Baby, Child, Teenager, Adult ..);</p>
-</blockquote></li>
-<li><blockquote>
-<p>Состояния - сколько у тамагочи энергии (energy), насколько он сыт (fed) (так же можно добавить ,насколько он отдохнувший, развлеченный, потренировавшийся итд);</p>
-</blockquote></li>
-</ul>
-<blockquote>
-<p>Эти значение нужно установить ненулевыми при инициализации тамагочи.</p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>Также при инициализации определить следующие константы:</p>
-</blockquote></li>
-</ul>
-<blockquote>
-<p><strong>hungerPerBlock</strong> - насколько тамагочи становится голодным за блок;</p>
-<p><strong>energyPerBlock</strong> - сколько тамагочи теряет энергии за блок;</p>
-<p><strong>energyPerSleep</strong> - сколько тамагочи получает энергии за сон;</p>
-<p><strong>FillWithFeed</strong> - насколько тамагочи становится сытым за одно кормлениe;</p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>Тамагочи так же теперь должен принимать сообщения: Sleep и Feed (Здесь должна быть реализована логика подсчета, насколько тамагочи проголодался/устал до сообщений и насколько он сыт/отдохнул после);</p>
-</blockquote></li>
-<li><blockquote>
-<p>Добавить чтение состояния тамагочи в текущий момент (имя, возраст, stage, насколько он сыт, сколько у него энергии).</p>
-</blockquote></li>
-</ul>
-<p><img src="media/image1.png" style="width:5.07813in;height:3.58534in" /></p>
-<p><strong>Что нужно добавить в уроке</strong>: чтение состояние программы и тестирование состояния программы (добавится, когда будет готова новая метадата).</p>
-<ol start="3" type="1">
-<li><blockquote>
-<p><strong>Третий урок: Factory Escrow (move to addition resources)</strong></p>
-</blockquote></li>
-</ol>
-<blockquote>
-<p><strong>Срок написания</strong>: меньше дня - смарт-контракт и тестирование на gtest готовы, нужно прочитать, возможно нужно будет подправить текст по замечаниям</p>
-<p><strong>Цель урока:</strong></p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>создание программы из другой программы;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Тестирование этой логики в gtest и в idea.</p>
-</blockquote></li>
-</ul>
-<p><strong>Самостоятельная работа:</strong></p>
-<ul>
-<li><blockquote>
-<p>Написать программу, которая будет создавать тамагочи;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Программа должна сохранять адреса созданных тамагочи, а также создателей тамагочи</p>
-</blockquote></li>
-</ul>
-<p><img src="media/image3.png" style="width:3.48958in;height:3.44792in" /></p>
-<ol start="4" type="1">
-<li><blockquote>
-<p><strong>Четвертый урок: Fungible token/Non-fungible token</strong></p>
-</blockquote></li>
-</ol>
-<blockquote>
-<p><strong>Срок написания</strong>: до 2х дней - смарт-контракт sharded fungible token готов, нужно будет очень понятно и доступно здесь объяснить по состояния программ и асинхронные сообщения. Так же нужно будет объяснить использование библиотеки gear-lib для написания NFT (и возможно в gear-lib добавится sharded fungible token).</p>
-<p><strong>Цель урока</strong>:</p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>Объяснение fungible-token на Gear (новый sharded fungible token);</p>
-</blockquote></li>
-<li><blockquote>
-<p>Non-fungible token на Gear.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Работа с асинхронными сообщениями.</p>
-</blockquote></li>
-</ul>
-<blockquote>
-<p><strong>Самостоятельная работа</strong> - добавить в контракт Tamagotchi Factory функционал NFT:</p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>Создание тамагочи (уже есть);</p>
-</blockquote></li>
-<li><blockquote>
-<p>Передача тамагочи от одного пользователя к другому;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Разрешение какому-либо аккаунту распоряжаться тамагочи.</p>
-</blockquote></li>
-</ul>
-<p>А также добавить в контракт тамагочи метаданные (поле для ссылки на картинку). Изначально картинка тамагочи может быть примерно у всех одинаковая, но со временем ее можно будет менять, покупая разные атрибуты (следующий урок).</p>
-<ol start="5" type="1">
-<li><blockquote>
-<p><strong>5 урок: Tamagotchi shop</strong></p>
-</blockquote></li>
-</ol>
-<blockquote>
-<p><strong>Срок написания</strong>: до 2х дней - смарт-контракта нет, нужно написать урок полностью.</p>
-<p><strong>Цель урока:</strong></p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>Написать контракт, в котором тамагочи смогут покупать себе какие-нибудь атрибуты: элементы одежды, оружие, зелье для сражений (сражения появятся в следующих уроках).</p>
-</blockquote></li>
-<li><blockquote>
-<p>Показать работу с асинхронными сообщениями на примере взаимодействия с fungible token.</p>
-</blockquote></li>
-</ul>
-<p><strong>Самостоятельная работа:</strong></p>
-<ul>
-<li><blockquote>
-<p>Добавить в контракт тамагочи функционал покупки, и соответственно обновление внешнего вида и характеристик тамагочи в зависимости от покупок.</p>
-</blockquote></li>
-</ul>
-<ol start="6" type="1">
-<li><blockquote>
-<p><strong>6 урок: Аукцион</strong></p>
-</blockquote></li>
-</ol>
-<blockquote>
-<p><strong>Срок написания</strong>: до 2х дней - смарт-контракта нет (за основу смарт-контракта возьмется наш пример с gear-DApps), нужно написать текст урока.</p>
-<p>Цель урока:</p>
-</blockquote>
-<ul>
-<li><blockquote>
-<p>Написать контракт, в котором пользователи смогут выставлять тамагочи на аукцион, а также на продажу;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Показать работу с отложенными сообщениями на примере аукциона;</p>
-</blockquote></li>
-</ul>
-<p><strong>Самостоятельная работа:</strong></p>
-<ul>
-<li><blockquote>
-<p>Добавить в тамагочи возможность отправлять пользователю сообщения себя покормить, обновить и так далее через отложенные сообщения.</p>
-</blockquote></li>
-</ul>
-<ol start="7" type="1">
-<li><blockquote>
-<p><strong>7 урок: Tamagotchi Battle</strong></p>
-</blockquote></li>
-</ol>
-<blockquote>
-<p><strong>Срок написания</strong>: до 3х дней - это минимально начальная игра, нужно тут согласовать сложность механики. Если не слишком усложнять, до написание урока полностью - до двух дней, однако в этом уроке очень бы хотелось добавить графику, хотя бы 2D.</p>
-</blockquote>
-<p><strong>Цель урока:</strong></p>
-<ul>
-<li><blockquote>
-<p>Добавить в функционал тамагочи возможность играть (сражаться) с другим тамагочи (аналог worms/wormix)</p>
-</blockquote></li>
-</ul>
-<p><strong>Самостоятельная работа:</strong> усложнения игры</p>
-<ul>
-<li><blockquote>
-<p>У тамагочи есть арсенал оружия и инструментов, который он можем купить в контракте магазина (5 урок). Самые простые оружия могут быть с самого начала (или при достижении определенного возраста). В дальнейшем оружия можно улучшать;</p>
-</blockquote></li>
-</ul>
-<blockquote>
-<p><img src="media/image4.png" style="width:2.32989in;height:4.02604in" /></p>
-</blockquote>
-<p>.</p>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>Academy</title>
+    <style>
+      code {
+        white-space: pre-wrap;
+      }
+      span.smallcaps {
+        font-variant: small-caps;
+      }
+      span.underline {
+        text-decoration: underline;
+      }
+      div.column {
+        display: inline-block;
+        vertical-align: top;
+        width: 50%;
+      }
+      div.hanging-indent {
+        margin-left: 1.5em;
+        text-indent: -1.5em;
+      }
+      ul.task-list {
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <ol type="1">
+      <li>
+        <blockquote>
+          <p><strong>Первый урок: Hello world</strong></p>
+        </blockquote>
+      </li>
+    </ol>
+    <p>
+      <strong>Срок написания</strong>: 1 день - смарт-контракт и тестирование на
+      gtest готовы, нужно сделать раздел с idea и gclient (хотя возможно gclient
+      можно пока не показывать).
+    </p>
+    <p><strong>Цель первого урока</strong>:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            показать минимальную структуру программы на Gear: инициализация
+            программы, точка входа программы, библиотека gstd;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Показать, что программа - это отдельный actor, который может
+            отвечать на сообщения, а также посылать сообщения;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Показать обработку нескольких сообщений;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Введение в gtest (можно добавить работу с idea и gclient).</p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Самостоятельная работа</strong>:</p>
+    <p>Начинаем писать игру тамагочи:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Создать структуру MyTamagotchi, которая будет хранить имя и дату
+            рождения тамагочи;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            При инициализации установить его имя и дату рождения и послать ответ
+            об успешной инициализации;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Программа тамагочи должна принимать следующие сообщения:</p>
+        </blockquote>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Name - программа отвечает, как зовут тамагочи;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Age - программа отвечает про возраст тамагочи.</p>
+        </blockquote>
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        <img
+          src="media/image2.png"
+          style="width: 4.80986in; height: 2.61305in"
+        />
+      </p>
+    </blockquote>
+    <ol start="2" type="1">
+      <li>
+        <blockquote>
+          <p><strong>Второй урок: Escrow</strong></p>
+        </blockquote>
+      </li>
+    </ol>
+    <p><strong>Цель второго урока:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Управление логикой программы в зависимости от состояния и времени;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Функции из gstd библиотеки;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Сообщения с прикрепленными value, проверка баланса программы;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Тестирование программы с помощью gtest;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Чтение стейта программы.</p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>
+      <strong>Самостоятельная работа:</strong><br />
+      Игра тамагочи:
+    </p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Расширение стейта: добавить в структуру следующий поля:</p>
+        </blockquote>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Хозяин тамагочи (Например, аккаунт, инициализирующий контракт);</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Stages - на каком этапе взросления находится тамагочи (Например:
+            Baby, Child, Teenager, Adult ..);
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Состояния - сколько у тамагочи энергии (energy), насколько он сыт
+            (fed) (так же можно добавить ,насколько он отдохнувший,
+            развлеченный, потренировавшийся итд);
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        Эти значение нужно установить ненулевыми при инициализации тамагочи.
+      </p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Также при инициализации определить следующие константы:</p>
+        </blockquote>
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        <strong>hungerPerBlock</strong> - насколько тамагочи становится голодным
+        за блок;
+      </p>
+      <p>
+        <strong>energyPerBlock</strong> - сколько тамагочи теряет энергии за
+        блок;
+      </p>
+      <p>
+        <strong>energyPerSleep</strong> - сколько тамагочи получает энергии за
+        сон;
+      </p>
+      <p>
+        <strong>FillWithFeed</strong> - насколько тамагочи становится сытым за
+        одно кормлениe;
+      </p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Тамагочи так же теперь должен принимать сообщения: Sleep и Feed
+            (Здесь должна быть реализована логика подсчета, насколько тамагочи
+            проголодался/устал до сообщений и насколько он сыт/отдохнул после);
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Добавить чтение состояния тамагочи в текущий момент (имя, возраст,
+            stage, насколько он сыт, сколько у него энергии).
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>
+      <img src="media/image1.png" style="width: 5.07813in; height: 3.58534in" />
+    </p>
+    <p>
+      <strong>Что нужно добавить в уроке</strong>: чтение состояние программы и
+      тестирование состояния программы (добавится, когда будет готова новая
+      метадата).
+    </p>
+    <ol start="3" type="1">
+      <li>
+        <blockquote>
+          <p>
+            <strong
+              >Третий урок: Factory Escrow (move to addition resources)</strong
+            >
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+        <strong>Срок написания</strong>: меньше дня - смарт-контракт и
+        тестирование на gtest готовы, нужно прочитать, возможно нужно будет
+        подправить текст по замечаниям
+      </p>
+      <p><strong>Цель урока:</strong></p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>создание программы из другой программы;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Тестирование этой логики в gtest и в idea.</p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Самостоятельная работа:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Написать программу, которая будет создавать тамагочи;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Программа должна сохранять адреса созданных тамагочи, а также
+            создателей тамагочи
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>
+      <img src="media/image3.png" style="width: 3.48958in; height: 3.44792in" />
+    </p>
+    <ol start="4" type="1">
+      <li>
+        <blockquote>
+          <p>
+            <strong>Четвертый урок: Fungible token/Non-fungible token</strong>
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+        <strong>Срок написания</strong>: до 2х дней - смарт-контракт sharded
+        fungible token готов, нужно будет очень понятно и доступно здесь
+        объяснить по состояния программ и асинхронные сообщения. Так же нужно
+        будет объяснить использование библиотеки gear-lib для написания NFT (и
+        возможно в gear-lib добавится sharded fungible token).
+      </p>
+      <p><strong>Цель урока</strong>:</p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Объяснение fungible-token на Gear (новый sharded fungible token);
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Non-fungible token на Gear.</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Работа с асинхронными сообщениями.</p>
+        </blockquote>
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        <strong>Самостоятельная работа</strong> - добавить в контракт Tamagotchi
+        Factory функционал NFT:
+      </p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Создание тамагочи (уже есть);</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Передача тамагочи от одного пользователя к другому;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Разрешение какому-либо аккаунту распоряжаться тамагочи.</p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>
+      А также добавить в контракт тамагочи метаданные (поле для ссылки на
+      картинку). Изначально картинка тамагочи может быть примерно у всех
+      одинаковая, но со временем ее можно будет менять, покупая разные атрибуты
+      (следующий урок).
+    </p>
+    <ol start="5" type="1">
+      <li>
+        <blockquote>
+          <p><strong>5 урок: Tamagotchi shop</strong></p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+        <strong>Срок написания</strong>: до 2х дней - смарт-контракта нет, нужно
+        написать урок полностью.
+      </p>
+      <p><strong>Цель урока:</strong></p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Написать контракт, в котором тамагочи смогут покупать себе
+            какие-нибудь атрибуты: элементы одежды, оружие, зелье для сражений
+            (сражения появятся в следующих уроках).
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Показать работу с асинхронными сообщениями на примере взаимодействия
+            с fungible token.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Самостоятельная работа:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Добавить в контракт тамагочи функционал покупки, и соответственно
+            обновление внешнего вида и характеристик тамагочи в зависимости от
+            покупок.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <ol start="6" type="1">
+      <li>
+        <blockquote>
+          <p><strong>6 урок: Аукцион</strong></p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+        <strong>Срок написания</strong>: до 2х дней - смарт-контракта нет (за
+        основу смарт-контракта возьмется наш пример с gear-DApps), нужно
+        написать текст урока.
+      </p>
+      <p>Цель урока:</p>
+    </blockquote>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Написать контракт, в котором пользователи смогут выставлять тамагочи
+            на аукцион, а также на продажу;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>Показать работу с отложенными сообщениями на примере аукциона;</p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Самостоятельная работа:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Добавить в тамагочи возможность отправлять пользователю сообщения
+            себя покормить, обновить и так далее через отложенные сообщения.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <ol start="7" type="1">
+      <li>
+        <blockquote>
+          <p><strong>7 урок: Tamagotchi Battle</strong></p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>
+        <strong>Срок написания</strong>: до 3х дней - это минимально начальная
+        игра, нужно тут согласовать сложность механики. Если не слишком
+        усложнять, до написание урока полностью - до двух дней, однако в этом
+        уроке очень бы хотелось добавить графику, хотя бы 2D.
+      </p>
+    </blockquote>
+    <p><strong>Цель урока:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Добавить в функционал тамагочи возможность играть (сражаться) с
+            другим тамагочи (аналог worms/wormix)
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Самостоятельная работа:</strong> усложнения игры</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            У тамагочи есть арсенал оружия и инструментов, который он можем
+            купить в контракте магазина (5 урок). Самые простые оружия могут
+            быть с самого начала (или при достижении определенного возраста). В
+            дальнейшем оружия можно улучшать;
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        <img
+          src="media/image4.png"
+          style="width: 2.32989in; height: 4.02604in"
+        />
+      </p>
+    </blockquote>
+    <p>.</p>
+  </body>
 </html>

@@ -1,416 +1,675 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>7_lesson_Tamagotchi_battle</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-  </style>
-</head>
-<body>
-<p><strong>Lesson 7 : The Tamagotchi Battle Logic &amp; Implementation</strong></p>
-<p><strong>Lesson Summary</strong></p>
-<ul>
-<li><blockquote>
-<p>This lesson focuses on the contract that facilitates battles between two Tamagotchis.</p>
-</blockquote></li>
-<li><blockquote>
-<p>The battle contract can be in one of four states: Registration, Moves, Waiting, and GameIsOver.</p>
-</blockquote></li>
-<li><blockquote>
-<p>The Battle struct contains information about the players, the current state of the game, the current turn, the Tamagotchi store ID, the winner, and the number of steps taken so far.</p>
-</blockquote></li>
-<li><blockquote>
-<p>To participate in the game, users must allow their contracts to receive game-related messages like TmgAction::TmgInfo and StoreAction::GetAttributes.</p>
-</blockquote></li>
-<li><blockquote>
-<p>The register function obtains information about the Tamagotchi owner and its attributes from the shop, generates the Tamagotchi's power and energy randomly, and registers the Tamagotchi.</p>
-</blockquote></li>
-<li><blockquote>
-<p>The get_owner and get_attributes functions retrieve information about the Tamagotchi's owner and attributes from the store, respectively, while the get_turn and generate_power functions generate pseudo-random numbers to determine who starts the game and the Tamagotchi's power, respectively.</p>
-</blockquote></li>
-</ul>
-<p><strong>Lesson Objectives</strong></p>
-<p>By the end of the lesson, you will:</p>
-<ul>
-<li><blockquote>
-<p>Understand the contract that facilitates battles between two Tamagotchi.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Understand the information contained in the Battle struct, such as player information, game state, winner, and number of steps taken so far.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Comprehend the battle contract states and understand their functions</p>
-</blockquote></li>
-<li><blockquote>
-<p>Know the functions used to retrieve information from the store and generate pseudo-random numbers, such as get_owner, get_attributes, get_turn, and generate_power.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Complete the simple realization of the battle between Tamagotchi</p>
-</blockquote></li>
-</ul>
-<p><strong>Let’s get started!</strong></p>
-<p>The battle contract can be in 3 states:</p>
-<ul>
-<li><blockquote>
-<p><em>Registration</em>: the battle contract is waiting for the Tamagotchi owner to register them;</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Move</em>: the Tamagotchi owners are making the move in turns;</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Waiting</em>: after the Tamagotchi owners made their moves, the battle contract gives them time to equip their Tamagotchi.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>GameIsOver</em>: the battle is over, it’s necessary to send a message <em>StartNewGame</em>.</p>
-</blockquote></li>
-</ul>
-<table>
-<tbody>
-<tr class="odd">
-<td><p>enum <strong>BattleState</strong> {<br />
-Registration,<br />
-Moves,<br />
-Waiting,</p>
-<p>GameIsOver,<br />
-}<br />
-<br />
-impl Default for BattleState {<br />
-fn default() -&gt; Self {<br />
-BattleState::Registration<br />
-}<br />
-}</p></td>
-</tr>
-</tbody>
-</table>
-<p>The battle program state:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><p><em>#[derive(Default)]</em><br />
-pub struct Battle {<br />
-players: Vec&lt;Player&gt;,<br />
-state: BattleState,</p>
-<p>current_turn: u8,</p>
-<p>tmg_store_id: ActorId,</p>
-<p>winner: ActorId,</p>
-<p>steps: u8,</p>
-<p>}</p></td>
-</tr>
-</tbody>
-</table>
-<p>Where the players are the following structs:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>#[derive(Default)]</strong><br />
-pub struct Player {<br />
-owner: ActorId,<br />
-tmg_id: TamagotchiId,<br />
-energy: u16,<br />
-power: u16,<br />
-attributes: BTreeSet&lt;AttributeId&gt;,<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>To participate, users must allow their contracts to receive game-related messages as below:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>TmgAction::TmgInfo</td>
-</tr>
-</tbody>
-</table>
-<p>To which it will respond with information about tamagotchi owner:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>TmgEvent::Owner(ActorId)</td>
-</tr>
-</tbody>
-</table>
-<p>We’ll also add the message</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>StoreAction::GetAttributes</td>
-</tr>
-</tbody>
-</table>
-<p>To the store contract that allows us to get attributes of Tamagotchi</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>StoreEvent::Attributes {<br />
-attributes: BTreeSet&lt;AttributeId&gt;<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>The register function:</p>
-<p>It allows the registration of two Tamagotchi for battle.</p>
-<p><img src="media/image2.png" style="width:6.5in;height:4in" /></p>
-<ol type="1">
-<li><blockquote>
-<p>Before you register a Tamagotchi, the Battle contract must receive the Tamagotchi’s owner and its attributes from the shop;</p>
-</blockquote></li>
-<li><blockquote>
-<p>After receiving the details, the Battle contract randomly generates the Tamagorchi’s power and energy;</p>
-</blockquote></li>
-<li><blockquote>
-<p>If one Tamagotchi is registered, it remains in the Registration state;</p>
-</blockquote></li>
-<li><blockquote>
-<p>If two Tamagotchi are registered, the battle contract randomly determines who starts playing first and goes to the Moves state.</p>
-</blockquote></li>
-</ol>
-<table>
-<tbody>
-<tr class="odd">
-<td><p>async fn <strong>register</strong>(&amp;mut self, tmg_id: &amp;TamagotchiId) {<br />
-assert_eq!(<br />
-self.state,<br />
-BattleState::Registration,<br />
-"The game has already started"<br />
-);<br />
-<br />
-let owner = get_owner(tmg_id).await;<br />
-let attributes = get_attributes(&amp;self.tmg_store_id, tmg_id).await;</p>
-<p>let power = generate_power();</p>
-<p>let power = MAX_power - power;<br />
-let player = Player {<br />
-owner,<br />
-tmg_id: *tmg_id,<br />
-energy,<br />
-power,<br />
-attributes,<br />
-};<br />
-self.players.push(player);<br />
-if self.players.len() == 2 {<br />
-self.current_turn = get_turn();<br />
-self.state = BattleState::Moves;<br />
-}<br />
-msg::reply(BattleEvent::Registered { tmg_id: *tmg_id }, 0)<br />
-.expect("Error during a reply `BattleEvent::Registered");<br />
-}</p></td>
-</tr>
-</tbody>
-</table>
-<p>The <em>get_owner</em> function retrieves the Tamagotchi's owner from the Tamagotchi contract.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>pub async fn <strong>get_owner</strong>(tmg_id: &amp;ActorId) -&gt; ActorId {<br />
-let reply: TmgEvent = msg::send_for_reply_as(*tmg_id, TmgAction::Owner, 0)<br />
-.expect("Error in sending a message `TmgAction::Owner")<br />
-.await<br />
-.expect("Unable to decode TmgEvent");<br />
-if let TmgEvent::Owner(owner) = reply {<br />
-owner<br />
-} else {<br />
-panic!("Wrong received message");<br />
-}<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>Similarly, the <em>get_attributes</em> function retrieves the Tamagotchi's attributes from the shop.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>async fn <strong>get_attributes</strong>(tmg_store_id: &amp;ActorId, tmg_id: &amp;TamagotchiId) -&gt; BTreeSet&lt;AttributeId&gt; {<br />
-let reply: StoreEvent = msg::send_for_reply_as(<br />
-*tmg_store_id,<br />
-StoreAction::GetAttributes {<br />
-Tamagotchi_id: *tmg_id,<br />
-},<br />
-0,<br />
-)<br />
-.expect("Error in sending a message `StoreAction::GetAttributes")<br />
-.await<br />
-.expect("Unable to decode `StoreEvent`");<br />
-if let StoreEvent::Attributes { attributes } = reply {<br />
-attributes<br />
-} else {<br />
-panic!("Wrong received message");<br />
-}<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>To determine which player starts the game, we use the <em>get_turn</em> function, which pseudorandomly selects the starting player :</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>pub fn <strong>get_turn</strong>() -&gt; u8 {<br />
-let random_input: [u8; 32] = array::from_fn(|i| i as u8 + 1);<br />
-let (random, _) = exec::random(random_input).expect("Error in getting random number");<br />
-random[0] % 2<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>The <em>genetate_power</em> function pseudorandomly generates a power value for the Tamagotchi:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>pub fn <strong>genetate_power</strong>() -&gt; u16 {<br />
-let random_input: [u8; 32] = array::from_fn(|i| i as u8 + 1);<br />
-let (random, _) = exec::random(random_input).expect("Error in getting random number");<br />
-let bytes: [u8; 2] = [random[0], random[1]];<br />
-let random_power: u16 = u16::from_be_bytes(bytes) % MAX_POWER;<br />
-if random_power &lt; MIN_POWER {<br />
-return MAX_POWER / 2;<br />
-}<br />
-random_power<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>There are also two constants, MAX_POWER and MIN_POWER, that define the upper and lower bounds of the Tamagotchi's power:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>const MAX_POWER: u16 = 10_000;<br />
-const MIN_POWER: u16 = 3_000;</td>
-</tr>
-</tbody>
-</table>
-<p>Next, as an example, we will define a very simple game mechanic:</p>
-<ol type="1">
-<li><blockquote>
-<p>The Tamagotchi owner makes a move by simply sending a message <em>BattleAction::Move</em> to the battle contract. During that move, their Tamagotchi beats the opponent’s Tamagotchi. The opponent’s energy decreases by the force of its strike.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Now, there is only one attribute in the Tamagotchi store that can be used in the game - a sword. If the attacking Tamagotchi has a sword, the force of its strike is multiplied by SWORD_POWER:</p>
-</blockquote></li>
-</ol>
-<blockquote>
-<p>SWORD_POWER * power</p>
-</blockquote>
-<p>Otherwise Tamagochi's strike power is simply their power.</p>
-<p>In the future, you can expand the logic by adding fighting attributes to the store, as well as adding the movement of the Tamagotchi across the field.</p>
-<ol start="3" type="1">
-<li><blockquote>
-<p>If both players have made three moves, the game enters a waiting state, and the players can equip their Tamagotchis with items from the shop. After a set delay, the Tamagotchis' states are updated, and the next round begins.</p>
-</blockquote></li>
-</ol>
-<p><img src="media/image1.png" style="width:7.00711in;height:4.71633in" /></p>
-<table>
-<tbody>
-<tr class="odd">
-<td><p>fn <strong>make_move</strong>(&amp;mut self) {<br />
-assert_eq!(<br />
-self.state,<br />
-BattleState::Moves,<br />
-"The game is not in `Moves` state"<br />
-);<br />
-let turn = self.current_turn as usize;</p>
-<p>let next_turn = (( turn + 1 ) % 2)as usize;<br />
-let player = self.players[turn].clone();<br />
-assert_eq!(<br />
-player.owner,<br />
-msg::source(),<br />
-"You are not in the game or it is not your turn"<br />
-);<br />
-let mut opponent = self.players[next_turn].clone();<br />
-let sword_power = if player.attributes.contains(&amp;SWORD_ID) {<br />
-SWORD_POWER<br />
-} else {<br />
-1<br />
-};<br />
-<br />
-opponent.energy = opponent.energy.saturating_sub(sword_power * player.power);</p>
-<p>self.players[next_turn] = opponent.clone();<br />
-<em>// check if opponent lost</em><br />
-if opponent.energy == 0 {<br />
-self.players = Vec::new();<br />
-self.state = BattleState::GameIsOver;<br />
-self.winner = player.tmg_id;<br />
-msg::reply(BattleEvent::GameIsOver, 0)<br />
-.expect("Error in sending a reply `BattleEvent::GameIsOver`");<br />
-return;<br />
-}<br />
-if self.steps &lt;= MAX_STEPS_FOR_ROUND {</p>
-<p>self.steps += 1;</p>
-<p>self.current_turn = next_turn as u8;<br />
-msg::reply(BattleEvent::MoveMade, 0)<br />
-.expect("Error in sending a reply `BattleEvent::MoveMade`");<br />
-} else {<br />
-self.state = BattleState::Waiting;</p>
-<p>self.steps = 0;<br />
-msg::send_with_gas_delayed(<br />
-exec::program_id(),<br />
-BattleAction::UpdateInfo,<br />
-GAS_AMOUNT,<br />
-0,<br />
-TIME_FOR_UPDATE,<br />
-)<br />
-.expect("Error in sending a delayed message `BattleAction::UpdateInfo`");<br />
-msg::reply(BattleEvent::GoToWaitingState, 0)<br />
-.expect("Error in sending a reply `BattleEvent::MoveMade`");<br />
-}<br />
-}</p></td>
-</tr>
-</tbody>
-</table>
-<p>The <strong>UpdateInfo</strong> action just updates the changes in Tamagotchi states and starts the next round:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><p>async fn <strong>update_info</strong>(&amp;mut self) {<br />
-assert_eq!(<br />
-msg::source(),<br />
-exec::program_id(),<br />
-"Only contract itself can call that action"<br />
-);<br />
-assert_eq!(<br />
-self.state,<br />
-BattleState::Waiting,<br />
-"The contract must be in `Waiting` state"<br />
-);<br />
-<br />
-for i in 0..2 {<br />
-let player = &amp;mut self.players[i];<br />
-let attributes = get_attributes(&amp;self.tmg_store_id, &amp;player.tmg_id).await;<br />
-player.attributes = attributes;<br />
-}<br />
-self.state = BattleState::Moves;</p>
-<p>self.current_turn = get_turn();<br />
-msg::reply(BattleEvent::InfoUpdated, 0)<br />
-.expect("Error during a reply `BattleEvent::InfoUpdated");<br />
-}</p></td>
-</tr>
-</tbody>
-</table>
-<p>So, we have finished the simple realization of the battle between Tamagotchi.</p>
-<p>You can try to take part in the battle with your Tamagochi or create some Tamagotchi (using the previous lesson) and make them fight (Link to web application).</p>
-<p>Now it’s time for your coursework.</p>
-<p><strong>Coursework:</strong></p>
-<ul>
-<li><blockquote>
-<p>Add more fighting attributes to the store contract;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Determine the power of these attributes. You can also add the opportunity to upgrade various attributes (That will also require extending the logic of the store contract);</p>
-</blockquote></li>
-<li><blockquote>
-<p>Allow the player to choose which weapon he will fight or defend during the turn;</p>
-</blockquote></li>
-<li><blockquote>
-<p>It is also possible to add the ability to Tamagotchi to move left or right;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Be creative and think about other possible ways to make the game more interesting.</p>
-</blockquote></li>
-</ul>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>7_lesson_Tamagotchi_battle</title>
+    <style>
+      code {
+        white-space: pre-wrap;
+      }
+      span.smallcaps {
+        font-variant: small-caps;
+      }
+      span.underline {
+        text-decoration: underline;
+      }
+      div.column {
+        display: inline-block;
+        vertical-align: top;
+        width: 50%;
+      }
+      div.hanging-indent {
+        margin-left: 1.5em;
+        text-indent: -1.5em;
+      }
+      ul.task-list {
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      <strong
+        >Lesson 7 : The Tamagotchi Battle Logic &amp; Implementation</strong
+      >
+    </p>
+    <p><strong>Lesson Summary</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            This lesson focuses on the contract that facilitates battles between
+            two Tamagotchis.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The battle contract can be in one of four states: Registration,
+            Moves, Waiting, and GameIsOver.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The Battle struct contains information about the players, the
+            current state of the game, the current turn, the Tamagotchi store
+            ID, the winner, and the number of steps taken so far.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            To participate in the game, users must allow their contracts to
+            receive game-related messages like TmgAction::TmgInfo and
+            StoreAction::GetAttributes.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The register function obtains information about the Tamagotchi owner
+            and its attributes from the shop, generates the Tamagotchi's power
+            and energy randomly, and registers the Tamagotchi.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The get_owner and get_attributes functions retrieve information
+            about the Tamagotchi's owner and attributes from the store,
+            respectively, while the get_turn and generate_power functions
+            generate pseudo-random numbers to determine who starts the game and
+            the Tamagotchi's power, respectively.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Lesson Objectives</strong></p>
+    <p>By the end of the lesson, you will:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Understand the contract that facilitates battles between two
+            Tamagotchi.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Understand the information contained in the Battle struct, such as
+            player information, game state, winner, and number of steps taken so
+            far.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Comprehend the battle contract states and understand their functions
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Know the functions used to retrieve information from the store and
+            generate pseudo-random numbers, such as get_owner, get_attributes,
+            get_turn, and generate_power.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Complete the simple realization of the battle between Tamagotchi
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Let’s get started!</strong></p>
+    <p>The battle contract can be in 3 states:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            <em>Registration</em>: the battle contract is waiting for the
+            Tamagotchi owner to register them;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Move</em>: the Tamagotchi owners are making the move in turns;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Waiting</em>: after the Tamagotchi owners made their moves, the
+            battle contract gives them time to equip their Tamagotchi.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>GameIsOver</em>: the battle is over, it’s necessary to send a
+            message <em>StartNewGame</em>.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <p>
+              enum <strong>BattleState</strong> {<br />
+              Registration,<br />
+              Moves,<br />
+              Waiting,
+            </p>
+            <p>
+              GameIsOver,<br />
+              }<br />
+              <br />
+              impl Default for BattleState {<br />
+              fn default() -&gt; Self {<br />
+              BattleState::Registration<br />
+              }<br />
+              }
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The battle program state:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <p>
+              <em>#[derive(Default)]</em><br />
+              pub struct Battle {<br />
+              players: Vec&lt;Player&gt;,<br />
+              state: BattleState,
+            </p>
+            <p>current_turn: u8,</p>
+            <p>tmg_store_id: ActorId,</p>
+            <p>winner: ActorId,</p>
+            <p>steps: u8,</p>
+            <p>}</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Where the players are the following structs:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <strong>#[derive(Default)]</strong><br />
+            pub struct Player {<br />
+            owner: ActorId,<br />
+            tmg_id: TamagotchiId,<br />
+            energy: u16,<br />
+            power: u16,<br />
+            attributes: BTreeSet&lt;AttributeId&gt;,<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To participate, users must allow their contracts to receive game-related
+      messages as below:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>TmgAction::TmgInfo</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>To which it will respond with information about tamagotchi owner:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>TmgEvent::Owner(ActorId)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>We’ll also add the message</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>StoreAction::GetAttributes</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>To the store contract that allows us to get attributes of Tamagotchi</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            StoreEvent::Attributes {<br />
+            attributes: BTreeSet&lt;AttributeId&gt;<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The register function:</p>
+    <p>It allows the registration of two Tamagotchi for battle.</p>
+    <p><img src="media/image2.png" style="width: 6.5in; height: 4in" /></p>
+    <ol type="1">
+      <li>
+        <blockquote>
+          <p>
+            Before you register a Tamagotchi, the Battle contract must receive
+            the Tamagotchi’s owner and its attributes from the shop;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            After receiving the details, the Battle contract randomly generates
+            the Tamagorchi’s power and energy;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            If one Tamagotchi is registered, it remains in the Registration
+            state;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            If two Tamagotchi are registered, the battle contract randomly
+            determines who starts playing first and goes to the Moves state.
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <p>
+              async fn <strong>register</strong>(&amp;mut self, tmg_id:
+              &amp;TamagotchiId) {<br />
+              assert_eq!(<br />
+              self.state,<br />
+              BattleState::Registration,<br />
+              "The game has already started"<br />
+              );<br />
+              <br />
+              let owner = get_owner(tmg_id).await;<br />
+              let attributes = get_attributes(&amp;self.tmg_store_id,
+              tmg_id).await;
+            </p>
+            <p>let power = generate_power();</p>
+            <p>
+              let power = MAX_power - power;<br />
+              let player = Player {<br />
+              owner,<br />
+              tmg_id: *tmg_id,<br />
+              energy,<br />
+              power,<br />
+              attributes,<br />
+              };<br />
+              self.players.push(player);<br />
+              if self.players.len() == 2 {<br />
+              self.current_turn = get_turn();<br />
+              self.state = BattleState::Moves;<br />
+              }<br />
+              msg::reply(BattleEvent::Registered { tmg_id: *tmg_id }, 0)<br />
+              .expect("Error during a reply `BattleEvent::Registered");<br />
+              }
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The <em>get_owner</em> function retrieves the Tamagotchi's owner from the
+      Tamagotchi contract.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            pub async fn <strong>get_owner</strong>(tmg_id: &amp;ActorId) -&gt;
+            ActorId {<br />
+            let reply: TmgEvent = msg::send_for_reply_as(*tmg_id,
+            TmgAction::Owner, 0)<br />
+            .expect("Error in sending a message `TmgAction::Owner")<br />
+            .await<br />
+            .expect("Unable to decode TmgEvent");<br />
+            if let TmgEvent::Owner(owner) = reply {<br />
+            owner<br />
+            } else {<br />
+            panic!("Wrong received message");<br />
+            }<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Similarly, the <em>get_attributes</em> function retrieves the Tamagotchi's
+      attributes from the shop.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            async fn <strong>get_attributes</strong>(tmg_store_id: &amp;ActorId,
+            tmg_id: &amp;TamagotchiId) -&gt; BTreeSet&lt;AttributeId&gt; {<br />
+            let reply: StoreEvent = msg::send_for_reply_as(<br />
+            *tmg_store_id,<br />
+            StoreAction::GetAttributes {<br />
+            Tamagotchi_id: *tmg_id,<br />
+            },<br />
+            0,<br />
+            )<br />
+            .expect("Error in sending a message `StoreAction::GetAttributes")<br />
+            .await<br />
+            .expect("Unable to decode `StoreEvent`");<br />
+            if let StoreEvent::Attributes { attributes } = reply {<br />
+            attributes<br />
+            } else {<br />
+            panic!("Wrong received message");<br />
+            }<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To determine which player starts the game, we use the
+      <em>get_turn</em> function, which pseudorandomly selects the starting
+      player :
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            pub fn <strong>get_turn</strong>() -&gt; u8 {<br />
+            let random_input: [u8; 32] = array::from_fn(|i| i as u8 + 1);<br />
+            let (random, _) = exec::random(random_input).expect("Error in
+            getting random number");<br />
+            random[0] % 2<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The <em>genetate_power</em> function pseudorandomly generates a power
+      value for the Tamagotchi:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            pub fn <strong>genetate_power</strong>() -&gt; u16 {<br />
+            let random_input: [u8; 32] = array::from_fn(|i| i as u8 + 1);<br />
+            let (random, _) = exec::random(random_input).expect("Error in
+            getting random number");<br />
+            let bytes: [u8; 2] = [random[0], random[1]];<br />
+            let random_power: u16 = u16::from_be_bytes(bytes) % MAX_POWER;<br />
+            if random_power &lt; MIN_POWER {<br />
+            return MAX_POWER / 2;<br />
+            }<br />
+            random_power<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      There are also two constants, MAX_POWER and MIN_POWER, that define the
+      upper and lower bounds of the Tamagotchi's power:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            const MAX_POWER: u16 = 10_000;<br />
+            const MIN_POWER: u16 = 3_000;
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Next, as an example, we will define a very simple game mechanic:</p>
+    <ol type="1">
+      <li>
+        <blockquote>
+          <p>
+            The Tamagotchi owner makes a move by simply sending a message
+            <em>BattleAction::Move</em> to the battle contract. During that
+            move, their Tamagotchi beats the opponent’s Tamagotchi. The
+            opponent’s energy decreases by the force of its strike.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Now, there is only one attribute in the Tamagotchi store that can be
+            used in the game - a sword. If the attacking Tamagotchi has a sword,
+            the force of its strike is multiplied by SWORD_POWER:
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <blockquote>
+      <p>SWORD_POWER * power</p>
+    </blockquote>
+    <p>Otherwise Tamagochi's strike power is simply their power.</p>
+    <p>
+      In the future, you can expand the logic by adding fighting attributes to
+      the store, as well as adding the movement of the Tamagotchi across the
+      field.
+    </p>
+    <ol start="3" type="1">
+      <li>
+        <blockquote>
+          <p>
+            If both players have made three moves, the game enters a waiting
+            state, and the players can equip their Tamagotchis with items from
+            the shop. After a set delay, the Tamagotchis' states are updated,
+            and the next round begins.
+          </p>
+        </blockquote>
+      </li>
+    </ol>
+    <p>
+      <img src="media/image1.png" style="width: 7.00711in; height: 4.71633in" />
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <p>
+              fn <strong>make_move</strong>(&amp;mut self) {<br />
+              assert_eq!(<br />
+              self.state,<br />
+              BattleState::Moves,<br />
+              "The game is not in `Moves` state"<br />
+              );<br />
+              let turn = self.current_turn as usize;
+            </p>
+            <p>
+              let next_turn = (( turn + 1 ) % 2)as usize;<br />
+              let player = self.players[turn].clone();<br />
+              assert_eq!(<br />
+              player.owner,<br />
+              msg::source(),<br />
+              "You are not in the game or it is not your turn"<br />
+              );<br />
+              let mut opponent = self.players[next_turn].clone();<br />
+              let sword_power = if player.attributes.contains(&amp;SWORD_ID)
+              {<br />
+              SWORD_POWER<br />
+              } else {<br />
+              1<br />
+              };<br />
+              <br />
+              opponent.energy = opponent.energy.saturating_sub(sword_power *
+              player.power);
+            </p>
+            <p>
+              self.players[next_turn] = opponent.clone();<br />
+              <em>// check if opponent lost</em><br />
+              if opponent.energy == 0 {<br />
+              self.players = Vec::new();<br />
+              self.state = BattleState::GameIsOver;<br />
+              self.winner = player.tmg_id;<br />
+              msg::reply(BattleEvent::GameIsOver, 0)<br />
+              .expect("Error in sending a reply `BattleEvent::GameIsOver`");<br />
+              return;<br />
+              }<br />
+              if self.steps &lt;= MAX_STEPS_FOR_ROUND {
+            </p>
+            <p>self.steps += 1;</p>
+            <p>
+              self.current_turn = next_turn as u8;<br />
+              msg::reply(BattleEvent::MoveMade, 0)<br />
+              .expect("Error in sending a reply `BattleEvent::MoveMade`");<br />
+              } else {<br />
+              self.state = BattleState::Waiting;
+            </p>
+            <p>
+              self.steps = 0;<br />
+              msg::send_with_gas_delayed(<br />
+              exec::program_id(),<br />
+              BattleAction::UpdateInfo,<br />
+              GAS_AMOUNT,<br />
+              0,<br />
+              TIME_FOR_UPDATE,<br />
+              )<br />
+              .expect("Error in sending a delayed message
+              `BattleAction::UpdateInfo`");<br />
+              msg::reply(BattleEvent::GoToWaitingState, 0)<br />
+              .expect("Error in sending a reply `BattleEvent::MoveMade`");<br />
+              }<br />
+              }
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The <strong>UpdateInfo</strong> action just updates the changes in
+      Tamagotchi states and starts the next round:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <p>
+              async fn <strong>update_info</strong>(&amp;mut self) {<br />
+              assert_eq!(<br />
+              msg::source(),<br />
+              exec::program_id(),<br />
+              "Only contract itself can call that action"<br />
+              );<br />
+              assert_eq!(<br />
+              self.state,<br />
+              BattleState::Waiting,<br />
+              "The contract must be in `Waiting` state"<br />
+              );<br />
+              <br />
+              for i in 0..2 {<br />
+              let player = &amp;mut self.players[i];<br />
+              let attributes = get_attributes(&amp;self.tmg_store_id,
+              &amp;player.tmg_id).await;<br />
+              player.attributes = attributes;<br />
+              }<br />
+              self.state = BattleState::Moves;
+            </p>
+            <p>
+              self.current_turn = get_turn();<br />
+              msg::reply(BattleEvent::InfoUpdated, 0)<br />
+              .expect("Error during a reply `BattleEvent::InfoUpdated");<br />
+              }
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      So, we have finished the simple realization of the battle between
+      Tamagotchi.
+    </p>
+    <p>
+      You can try to take part in the battle with your Tamagochi or create some
+      Tamagotchi (using the previous lesson) and make them fight (Link to web
+      application).
+    </p>
+    <p>Now it’s time for your coursework.</p>
+    <p><strong>Coursework:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Add more fighting attributes to the store contract;</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Determine the power of these attributes. You can also add the
+            opportunity to upgrade various attributes (That will also require
+            extending the logic of the store contract);
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Allow the player to choose which weapon he will fight or defend
+            during the turn;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            It is also possible to add the ability to Tamagotchi to move left or
+            right;
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Be creative and think about other possible ways to make the game
+            more interesting.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+  </body>
 </html>

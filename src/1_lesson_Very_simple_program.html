@@ -1,822 +1,1394 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>1_lesson_Very_simple_program</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-  </style>
-</head>
-<body>
-<p><strong>Lesson 1: Creating the First Smart Contract Program - Hello World</strong></p>
-<p><strong>Lesson Summary:</strong></p>
-<ul>
-<li><blockquote>
-<p>We will create our first smart contract program called "Hello World."</p>
-</blockquote></li>
-<li><blockquote>
-<p>Learn how to initialize a program and define the entry point for message processing.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Add complexity to the program by restricting the type of messages it can receive and creating different greetings for different accounts, depending on the message.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Explore testing smart contracts to ensure they work as intended.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Learn how to read the program's state to retrieve important information.</p>
-</blockquote></li>
-</ul>
-<p><strong>Lesson Objectives:</strong></p>
-<p>By the end of the lesson, we will have:</p>
-<ul>
-<li><blockquote>
-<p>Defined the steps involved in creating a simple smart contract program named "Hello World."</p>
-</blockquote></li>
-<li><blockquote>
-<p>Explained the process of initializing a smart contract and defining the entry point for message processing.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Identified different ways of restricting the type of messages a smart contract can receive, and how to create different greetings for different accounts based on the message received.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Demonstrated how to test a smart contract program to ensure it functions correctly.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Described the process of reading a smart contract's state to retrieve important information.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Summarized the key concepts and building blocks required to develop functional smart contract programs.</p>
-</blockquote></li>
-</ul>
-<p><strong>Let’s get started Implementing our First Program!</strong></p>
-<p>Let’s implement the program that’ll send a hello message in response to any received messages.</p>
-<p>To get started, we'll create a new project using the following command:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>cargo new hello-world --lib</td>
-</tr>
-</tbody>
-</table>
-<p>This will create a directory structure for our project with the following files:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>└── hello-world<br />
-├── Cargo.toml<br />
-└── src<br />
-└── lib.rs</td>
-</tr>
-</tbody>
-</table>
-<p>Next, we need to add the necessary dependencies to our Cargo.toml file. We'll use</p>
-<ul>
-<li><blockquote>
-<p>gstd - a standard library for smart contracts on Gear</p>
-</blockquote></li>
-<li><blockquote>
-<p>gtest - a library for testing smart contracts</p>
-</blockquote></li>
-<li><blockquote>
-<p>gear-wasm-builder - a helping module that aids in building programs using Gear.</p>
-</blockquote></li>
-</ul>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>[package]<br />
-name = "hello-world"<br />
-version = "0.1.0"<br />
-edition = "2021"<br />
-<br />
-[dependencies]<br />
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }<br />
-<br />
-[build-dependencies]<br />
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }<br />
-<br />
-[dev-dependencies]<br />
-gtest = { git = "https://github.com/gear-tech/gear.git" }</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>Now, let's write the minimum structure of our Gear program in the lib.rs file. The handle function is the program's entry point. It will be called every time the program receives an incoming message.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>#![no_std]<br />
-use gstd::{msg, prelude::*};<br />
-<br />
-#[no_mangle]<br />
-unsafe extern "C" fn handle() {}</td>
-</tr>
-</tbody>
-</table>
-<p>To build our program, we’ll create <em>build.rs</em> file with the following code:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>fn main() {<br />
-gear_wasm_builder::build();<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>We can now run the following command to build our project:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>cargo build <em>--</em>release</td>
-</tr>
-</tbody>
-</table>
-<p>gstd::msg is the messaging module from the gstd library, allowing users to process incoming messages, obtain the necessary information about the sender or the message content, and send replies or new messages to other actors (link to gstd).</p>
-<p>We'll use the reply function that sends a new message as a reply to the message currently being processed:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>#![no_std]<br />
-use gstd::{msg, prelude::*};<br />
-<br />
-#[no_mangle]<br />
-unsafe extern "C" fn handle() {<br />
-msg::reply(String::from("Hello"), 0).expect("Error in sending a reply message");<br />
-}</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>Let's build our project:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>cargo build <em>--</em>release</td>
-</tr>
-</tbody>
-</table>
-<p>If everything goes well, your working directory should now have a target directory that resembles this:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>target<br />
-├── release<br />
-│ └── ...<br />
-└── wasm32-unknown-unknown<br />
-└── release<br />
-├── ...<br />
-├── hello_world.wasm &lt;---- this is our built .wasm file<br />
-├── hello_world.opt.wasm &lt;---- this is optimized .wasm file<br />
-└── hello_world.meta.wasm &lt;---- this is meta .wasm file</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>The target/wasm32-unknown-unknown/release directory should contain three WASM binaries:</p>
-<ul>
-<li><p>hello_world.wasm is the output WASM binary built from source files;</p></li>
-<li><p>hello_world.opt.wasm is the optimized WASM aimed to be uploaded to the blockchain;</p></li>
-<li><p>hello_world.meta.wasm is the WASM containing meta information needed to interact with the program.</p></li>
-</ul>
-<p>Before we upload our program to the blockchain, we need to understand the metadata and *.meta.wasm file's use case. In the context of Gear programs, metadata facilitates the interaction between the client-side (JavaScript) and the program (Rust).</p>
-<p>Metadata can be used as a message payload description for external tools and applications that interact with Gear programs in the network. It is stored in a separate *.meta.wasm file.</p>
-<p>The Gear `metadata!` macro exports functions from Rust with IO data specified by the user in the macro. In our example, we only need to declare a type for the handle output message:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>gstd::metadata! {<br />
-title: "Hello world contract",<br />
-handle:<br />
-output: String,<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>We've learned how to create a simple smart contract program that responds with a "Hello" message to any incoming message. Let's test our program.</p>
-<p><strong>Testing smart contract with gtest library</strong></p>
-<p>Testing smart contracts is an important aspect of developing decentralized applications. We’ll use the Gear <a href="https://github.com/gear-tech/gear/tree/master/gtest"><span class="underline">gtest</span></a> library for our program’s logic testing.</p>
-<p>To get started, let's create a new directory called "tests" at the top level of our project directory, next to the "src" director. In that directory, we’ll create a file hello_world_test.rs where we’ll write tests for our contract.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>mkdir tests<br />
-touch hello_world_test.rs</td>
-</tr>
-</tbody>
-</table>
-<p>In our test file, we’ll need to import the necessary modules from the gtest library, which are import <em>Log</em>, <em>Program</em> and <em>System</em>. We’ll also define a test function:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>use gtest::{Log, Program, System};<br />
-<br />
-#[test]<br />
-fn hello_test() {}</td>
-</tr>
-</tbody>
-</table>
-<p>Before testing our smart contract, we need to initialize the environment for running programs. We can do this using the System module from gtest. The system emulates the node behaviour:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>let sys = System::new();</td>
-</tr>
-</tbody>
-</table>
-<p>Next, we need to initialize our program. We can do this using the Program module from gtest. There are two ways to initialize a program: from a file or the current program:</p>
-<p>To initialize a program from a file:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>let program = Program::from_file(&amp;sys,<br />
-"./target/wasm32-unknown-unknown/release/hello_world.wasm");</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>To initialize a program from the current program:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>let program = Program::current(&amp;sys);</td>
-</tr>
-</tbody>
-</table>
-<p>The uploaded program has its own id. You can specify the program id manually using the from_file_with_id constructor. If you don't specify the program id, the id of the first initialized program will be 0x01000…, and the next program initialized without an id specification will have an id of 0x02000... and so on.</p>
-<p>In the next step, we’ll send messages to our program.</p>
-<ul>
-<li><blockquote>
-<p>To send a message to the program, call one of two program functions: send() or send_bytes(). The difference between them is similar to gstd functions msg::send and msg::send_bytes.</p>
-</blockquote></li>
-<li><blockquote>
-<p>The first argument in these functions is a sender id, the second one is a message payload.</p>
-</blockquote></li>
-<li><blockquote>
-<p>The sender id can be specified as hex, array ([u8, 32]), string or u64. However, you can’t send a message from the id already taken by the program!</p>
-</blockquote></li>
-<li><blockquote>
-<p>The first message to the initialized program structure is always the init message even if the program does not have the init function. In our case, it can be any message. But let’s add the init function to our program and monitor if that message reaches the program:</p>
-</blockquote></li>
-</ul>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>#![no_std]<br />
-use gstd::{msg, prelude::*, debug};<br />
-<br />
-#[no_mangle]<br />
-unsafe extern "C" fn handle() {<br />
-msg::reply("Hello", 0).expect("Error in sending a reply message");<br />
-}<br />
-<br />
-#[no_mangle]<br />
-unsafe extern "C" fn init() {<br />
-let init_message: String = msg::load().expect("Can't load init message");<br />
-debug!("Program was initialized with message {:?}", init_message);<br />
-}</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>In our test function, we can send a message to the program using the `send()` function:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>#[test]<br />
-fn hello_test() {<br />
-let sys = System::new();<br />
-sys.init_logger();<br />
-let program = Program::current(&amp;sys);<br />
-program.send(2, String::from("INIT MESSAGE"));<br />
-}</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>Note that we added sys.init_logger() to initialize printing logs into stdout, and we sent a message from the user with id 2 (id 2 transforms to 0x020000.. ActorId).</p>
-<p>We can then run our test using the following command:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>cargo test <em>--</em>release</td>
-</tr>
-</tbody>
-</table>
-<p>If everything is working correctly, we should see the debug message in our console:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>[DEBUG hello_test] Program was initialized with message "INIT MESSAGE"<br />
-test hello_test ... ok</td>
-</tr>
-</tbody>
-</table>
-<p>Sending functions in the gtest library will return RunResult structure. It contains the final result of the processing message and others, which were created during the execution.</p>
-<p>For example, we can check the init message processing result. We can do this by ensuring that the log is empty and that the program does not reply or send any messages. To do this, we can use the assert!(res.log().is_empty()) command.</p>
-<ul>
-<li><p>Contains empty log (the program doesn’t reply and does not send any messages);</p></li>
-</ul>
-<table>
-<tbody>
-<tr class="odd">
-<td>assert!(res.log().is_empty())<em>;</em></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><p>Was successful:</p></li>
-</ul>
-<table>
-<tbody>
-<tr class="odd">
-<td>assert!(!res.main_failed());</td>
-</tr>
-</tbody>
-</table>
-<p>Once we have confirmed that the initialization message was successful, the next messages will be processed through the handle function. We can test this by sending the next message using the program.send(2, String::from("HANDLE MESSAGE")) command.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>let res = program.send(2, String::from("HANDLE MESSAGE"));</td>
-</tr>
-</tbody>
-</table>
-<p>Here, we should check that the program replied with the expected hello message. To do this, we can use the Log structure from the gtest lib and build the log we are expecting to receive. Specifically, we can use the Log::builder().dest(2).payload(String::from("Hello")) command to create the expected log.</p>
-<p>After creating the expected log, we can then check if the received log contains the expected log. We can do this by using the assert!(res.contains(&amp;expected_log)) command.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>let expected_log = Log::builder().dest(2).payload(String::from("Hello"));<br />
-assert!(res.contains(&amp;expected_log));</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>As you might guess, dest is the actor to which the program sends a message and payload is the content of that message.</p>
-<p>Run the test and make sure that everything is fine.</p>
-<p><strong>Lesson 1 Quiz: Testing Your Understanding</strong></p>
-<ol type="1">
-<li><p>Consider the following program:</p></li>
-</ol>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>#![no_std]<br />
-use gstd::{msg, prelude::*, debug};<br />
-<br />
-#[no_mangle]<br />
-unsafe extern "C" fn handle() {<br />
-msg::reply("Hello", 0).expect("Error in sending a reply message");<br />
-}</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>We’ll test the program using the following test suite:</p>
-</blockquote>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>#[test]<br />
-fn hello_test() {<br />
-let sys = System::new();<br />
-let program = Program::current(&amp;sys);<br />
-let res = program.send(2, String::from("Hello"));<br />
-let expected_log = Log::builder().dest(2);<br />
-assert!(res.contains(&amp;expected_log));<br />
-}</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>What will be the result of running that test?</p>
-<ul>
-<li><p>Everything will be fine: the test will pass;</p></li>
-<li><p>The test will fail because the first message to the initialized program structure is always the init message.</p></li>
-<li><p>The test will fail because the expected_log does not contain the payload with “Hello”.</p></li>
-</ul>
-<ol start="2" type="1">
-<li><p>What is the mistake in writing that test?</p></li>
-</ol>
-<table>
-<tbody>
-<tr class="odd">
-<td>#[test]<br />
-fn hello_test() {<br />
-let sys = System::new();<br />
-let program_1 = Program::current(&amp;sys);<br />
-let program_2 = Program::current(&amp;sys);<br />
-let res = program_2.send(2, String::from("Hello"));<br />
-assert!(res.log().is_empty());<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>- The first message should be sent to the first initialized program;</p>
-<ul>
-<li><p>You can not initialize two identical programs;</p></li>
-<li><p>The message to the program_2 is sent from the address that is already occupied by the program.</p></li>
-</ul>
-<ol start="3" type="1">
-<li><p>What returns fn send() from the gtest library?</p></li>
-</ol>
-<ul>
-<li><p>It returns the RunResult structure that contains the result of program execution;</p></li>
-<li><p>It returns the Log structure that contains the information about the source, destination, and payload of messages that were sent during the program execution;</p></li>
-<li><p>It returns the message that was sent back to the sender.</p></li>
-</ul>
-<p><strong>Advanced Hello World Program Concepts</strong></p>
-<p>Let’s add more functionality to our program by introducing two new messages: SendHelloTo and SendHelloReply.</p>
-<p>Our program will receive 2 messages:</p>
-<ul>
-<li><p>SendHelloTo: having received this message, the program will send “hello” to the specified address;</p></li>
-<li><p>SendHelloReply: the program replies with a “hello” message to the account that sent the current message.</p></li>
-</ul>
-<p>As we saw from the previous lesson, we’ll have to decode the message the program received. We’ll define an enum InputMessages that will be used to decode the incoming message.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>#[derive(Encode, Decode, TypeInfo)]<br />
-enum InputMessages {<br />
-SendHelloTo(ActorId),<br />
-SendHelloReply,<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>The SendHelloTo variant includes an ActorId field where the program will send the hello message.</p>
-<p>We also need to add derive macros #[derive(Encode, Decode, TypeInfo)] to the enum for encoding and decoding in messages, and add appropriate dependencies to the Cargo.toml file:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }<br />
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p>To initialize our program, we’ll define a static mutable variable GREETING as an Option&lt;String&gt;.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>static mut GREETING: Option&lt;String&gt; = None;</td>
-</tr>
-</tbody>
-</table>
-<p>Until the program is initialized, the GREETING equals <strong>None</strong>. After the initialization, the GREETING will become <strong>Some(String)</strong>.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>#[no_mangle]</strong><br />
-unsafe extern "C" fn <strong>init</strong>() {<br />
-let greeting = String::from_utf8(msg::load_bytes().expect("Can't load init message"))<br />
-.expect("Invalid message");<br />
-debug!("Program was initialized with message {:?}", greeting);<br />
-GREETING = Some(greeting);<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>Next, we’ll decode the incoming message in the handle function and define the message the program received:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>#[no_mangle]</strong><br />
-unsafe extern "C" fn <strong>handle</strong>() {<br />
-let input_message: InputMessages = msg::load().expect("Error in loading InputMessages");<br />
-let greeting = GREETING.get_or_insert(Default::default());<br />
-match input_message {<br />
-InputMessages::SendHelloTo(account) =&gt; {<br />
-debug!("Message: SendHelloTo {:?}", account);<br />
-msg::send(account, greeting, 0)<br />
-.expect("Error in sending Hello message to account");<br />
-}<br />
-InputMessages::SendHelloReply =&gt; {<br />
-debug!("Message: SendHelloReply");<br />
-msg::reply(greeting, 0).expect("Error in sending reply");<br />
-}<br />
-}<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>When the program receives SendHelloTo message, it sends a hello message to the specified account through the send function. On the other hand, when the contract receives a SendHelloReply message, it replies with a greeting message.</p>
-<p><strong>Testing the Updated Smart Contract</strong></p>
-<p>First, we’ll test the SendHelloTo message. We define the account id that will receive that message and check that in the result log there is a message assigned to that account.</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p>use gtest::{Log, Program, System};<br />
-use hello_world::InputMessages;<br />
-<br />
-#[test]<br />
-fn hello_test() {<br />
-let sys = System::new();<br />
-sys.init_logger();<br />
-let program = Program::current(&amp;sys);<br />
-let res = program.send(2, String::from("INIT MESSAGE"));<br />
-assert!(!res.main_failed());<br />
-assert!(res.log().is_empty());<br />
-<br />
-<em>//</em> test `SendHelloTo`<br />
-let hello_recipient: u64 = 4;<br />
-let res = program.send(2, InputMessages::SendHelloTo(hello_recipient.into()));<br />
-let expected_log = Log::builder()<br />
-.dest(hello_recipient)<br />
-.payload(String::from("Hello"));<br />
-assert!(res.contains(&amp;expected_log))</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Understanding the program metadata and state</strong></p>
-<p>Metadata is a kind of interface map that helps transform a set of bytes into an understandable structure. It determines how all incoming and outgoing data will be encoded/decoded.</p>
-<p>Metadata allows dApp’s parts - the smart contract and the client side (JavaScript), to understand each other and exchange data.</p>
-<p>To describe the metadata interface we use `gmeta` crate:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>use gmeta::{InOut, Metadata};<br />
-pub struct ProgramMetadata;<br />
-impl Metadata for ProgramMetadata {<br />
-type Init = InOut&lt;MessageInitIn, MessageInitOut&gt;;<br />
-type Handle = InOut&lt;MessageIn, MessageOut&gt;;<br />
-type Others = InOut&lt;MessageAsyncIn, Option&lt;u8&gt;&gt;;<br />
-type Reply = InOut&lt;String, Vec&lt;u16&gt;&gt;;<br />
-type Signal = ();<br />
-type State = Vec&lt;u128&gt;;<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>where:</p>
-<ul>
-<li><blockquote>
-<p><em>Init</em> - describes incoming/outgoing types for `init()` function.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Handle</em> - describes incoming/outgoing types for `handle()` function.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Others</em> - describes incoming/outgoing types for `main()` function in case of asynchronous interaction.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Reply</em> - describes incoming/outgoing types of messages performed using the `handle_reply` function.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Signal</em> - describes only the outgoing type from the program while processing the system signal.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>State</em> - describes the types for the queried State</p>
-</blockquote></li>
-</ul>
-<p>It is necessary to describe all the types. If any of the endpoints is missing in your program, you can use () instead.</p>
-<p>Let's define metadata for our example. We’ll create a crate</p>
-<p>hello-world-io in the directory of our hello-world program:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>cargo new hello-world-io --lib</td>
-</tr>
-</tbody>
-</table>
-<p>The Cargo.toml of this crate:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>[package]<br />
-name = "hello-world-io"<br />
-version = "0.1.0"<br />
-edition = "2021"<br />
-<br />
-[dependencies]<br />
-gmeta = { git = "https://github.com/gear-tech/gear.git" }<br />
-gstd = { git = "https://github.com/gear-tech/gear.git" }<br />
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }<br />
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }</td>
-</tr>
-</tbody>
-</table>
-<p>And in the lib.rs file, we’ll define an incoming message for the init function, and the incoming and outcoming messages for the handle function:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><em>#![no_std]</em><br />
-<br />
-use codec::{Decode, Encode};<br />
-use gmeta::{InOut, Metadata};<br />
-use gstd::{prelude::*, ActorId};<br />
-use scale_info::TypeInfo;<br />
-pub struct ProgramMetadata;<br />
-<br />
-impl Metadata for ProgramMetadata {<br />
-type Init = InOut&lt;String, ()&gt;;<br />
-type Handle = InOut&lt;InputMessages, String&gt;;<br />
-type Reply = InOut&lt;(), ()&gt;;<br />
-type Others = InOut&lt;(), ()&gt;;<br />
-type Signal = ();<br />
-type State = String;<br />
-}<br />
-<br />
-<em>#[derive(Encode, Decode, TypeInfo)]</em><br />
-pub enum InputMessages {<br />
-SendHelloTo(ActorId),<br />
-SendHelloReply,<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>The input for init function is a <em>String</em>. The input for the handle function is an enum <em>InputMessage</em>, and accordingly, the output is <em>String</em>. The program state is also String (It is a set greeting).</p>
-<p>It is possible to read the program state using the state function. Reading State is a free function and does not require gas costs. Let’s define this function in lib.rs file of the hello-world program:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>#[no_mangle]</strong><br />
-extern "C" fn <strong>state</strong>() {<br />
-let greeting = unsafe {<br />
-GREETING.get_or_insert(Default::default())<br />
-};<br />
-msg::reply(greeting, 0).expect("Failed to share state");<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>To make it possible to verify metadata for a program, we’ll use the metahash() function:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>#[no_mangle]</strong><br />
-<em>// It returns the Hash of metadata.</em><br />
-<em>// .metahash is generating automatically while you are using build.rs</em><br />
-extern "C" fn <strong>metahash</strong>() {<br />
-let metahash: [u8; 32] = include!("../.metahash");<br />
-msg::reply(metahash, 0).expect("Failed to share metahash");<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>It’s necessary to add the hello-world-io crate to build-dependencies in <em>Cargo.toml</em> in the hello-world program:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>[package]<br />
-name = "hello-world"<br />
-version = "0.1.0"<br />
-edition = "2021"<br />
-...<br />
-[build-dependencies]<br />
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }<br />
-hello-world-io = { path = "hello-world-io" }</td>
-</tr>
-</tbody>
-</table>
-<p>We also need to change the build.rs file using the following code:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>use hello_world_io::ProgramMetadata;<br />
-fn main() {<br />
-gear_wasm_builder::build_with_metadata::&lt;ProgramMetadata&gt;();<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<p>After building the program, a meta.txt file will be generated as a result of the smart-contract compilation. This metadata file can be used in UI applications that will interact with this smart contract.</p>
-<p><strong>Uploading the program to the blockchain</strong></p>
-<p>The easiest way to upload the program is to use the “Upload program” option in the Gear Idea portal - <a href="https://idea.gear-tech.io/"><span class="underline">idea.gear-tech.io</span></a>.</p>
-<p>First, you need to create an account and connect to Gear Idea. Follow the instructions provided at <a href="https://wiki.gear-tech.io/docs/idea/account/create-account"><span class="underline">https://wiki.gear-tech.io/docs/idea/account/create-account</span></a> to create your account.</p>
-<p>Once you've logged in, you can select the network on which you want to upload the program by clicking on the gear icon in the lower left corner of the screen. For the Gear Academy workshop, select the workshop node (wss://node-workshop.gear.rs:443) and click the "Switch" button.</p>
-<p>Select the workshop node and click on the <em><strong>Switch</strong></em> button:</p>
-<p><img src="media/image1.png" style="width:6.5in;height:4.30556in" /></p>
-<p>Next, select "Programs" in the left column and upload the hello.opt.wasm file along with its metadata (meta.txt file).</p>
-<p><img src="media/image3.png" style="width:6.5in;height:3.83333in" /></p>
-<p>Give your program a name, enter an incoming greeting message and click on the <em><strong>Upload Program</strong></em> button.</p>
-<p>If the program has successfully uploaded, you will see it in the program.</p>
-<p><img src="media/image5.png" style="width:6.5in;height:2.16667in" /></p>
-<p>You can now send messages to your program:</p>
-<p><img src="media/image2.png" style="width:6.5in;height:4.09722in" /></p>
-<p>You can also read the program state (It’s our greeting string that was set during the program initialization).</p>
-<p><img src="media/image6.png" style="width:6.5in;height:3.30556in" /></p>
-<p><strong>Assignment:</strong></p>
-<p>Let's write a smart contract for a Tamagotchi game:</p>
-<ul>
-<li><p>Create a smart contract Tamagotchi, that will store Tamagotchi’s name and date of birth. he state of your contract should be defined as follows:</p></li>
-</ul>
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>#[derive(Default, Encode, Decode, TypeInfo)]</strong><br />
-pub struct <strong>Tamagotchi</strong> {<br />
-name: String,<br />
-date_of_birth: u64,<br />
-}</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><p>During initialization, set the name and date of birth of the Tamagotchi and send a reply confirming successful initialization.</p></li>
-<li><p>Your Tamagochi program should accept the following messages:</p>
-<ul>
-<li><blockquote>
-<p>Name - the program answers the name of the Tamagochi;</p>
-</blockquote></li>
-<li><blockquote>
-<p>Age - the program answers about the age of the Tamagochi.</p>
-</blockquote></li>
-</ul></li>
-</ul>
-<ul>
-<li><blockquote>
-<p>Add the state function to your program.</p>
-</blockquote></li>
-<li><blockquote>
-<p>Upload your contract to the workshop node at the <a href="https://idea.gear-tech.io/"><span class="underline">https://idea.gear-tech.io/</span></a>.</p>
-</blockquote></li>
-</ul>
-<p>To connect your Tamagotchi contract to the frontend application, you need to ensure that the metadata is as follows:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>pub struct ProgramMetadata;<br />
-<br />
-impl Metadata for ProgramMetadata {<br />
-type Init = InOut&lt;String,()&gt;;<br />
-type Reply = InOut&lt;(),()&gt;;<br />
-type Others = InOut&lt;(),()&gt;;<br />
-type Signal = ();<br />
-type Handle = InOut&lt;TmgAction, TmgEvent&gt;;<br />
-type State = Tamagotchi;<br />
-}<br />
-<br />
-<em>#[derive(Encode, Decode, TypeInfo)]</em><br />
-pub enum TmgAction {<br />
-Name,<br />
-Age,<br />
-}<br />
-<br />
-<em>#[derive(Encode, Decode, TypeInfo)]</em><br />
-pub enum TmgEvent {<br />
-Name(String),<br />
-Age(u64),<br />
-}<br />
-<br />
-<em>#[derive(Default, Encode, Decode, TypeInfo)]</em><br />
-pub struct Tamagotchi {<br />
-name: String,<br />
-date_of_birth: u64,</td>
-</tr>
-</tbody>
-</table>
-<p>}</p>
-<p>Clone the repository: <a href="https://github.com/gear-dapps/smart-contract-academy"><span class="underline">https://github.com/gear-dapps/smart-contract-academy</span></a></p>
-<p>In the frontend directory, run the following commands:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>yarn<br />
-yarn start</td>
-</tr>
-</tbody>
-</table>
-<p>The .env.local file contains the following:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>REACT_APP_NODE_ADDRESS=wss://test-wss.gear.rs</td>
-</tr>
-</tbody>
-</table>
-<p>It means that the application is running on the testnet node. You can also run a local node, upload a Tamagotchi contract, and work with contracts on a local node by indicating:</p>
-<table>
-<tbody>
-<tr class="odd">
-<td>REACT_APP_NODE_ADDRESS=ws://localhost:9944</td>
-</tr>
-</tbody>
-</table>
-<p>After running the <em><strong>yarn start</strong></em>, command you will see the following window:</p>
-<p><img src="media/image4.png" style="width:6.5in;height:4.88889in" /></p>
-<p>Select <em><strong>Lesson 1</strong></em>, paste your Tamagotchi address and you’ll see your Tamagotchi!</p>
-<p>Please attach a link to the repo with your Tamagotchi contract.</p>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>1_lesson_Very_simple_program</title>
+    <style>
+      code {
+        white-space: pre-wrap;
+      }
+      span.smallcaps {
+        font-variant: small-caps;
+      }
+      span.underline {
+        text-decoration: underline;
+      }
+      div.column {
+        display: inline-block;
+        vertical-align: top;
+        width: 50%;
+      }
+      div.hanging-indent {
+        margin-left: 1.5em;
+        text-indent: -1.5em;
+      }
+      ul.task-list {
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      <strong
+        >Lesson 1: Creating the First Smart Contract Program - Hello
+        World</strong
+      >
+    </p>
+    <p><strong>Lesson Summary:</strong></p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            We will create our first smart contract program called "Hello
+            World."
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Learn how to initialize a program and define the entry point for
+            message processing.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Add complexity to the program by restricting the type of messages it
+            can receive and creating different greetings for different accounts,
+            depending on the message.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Explore testing smart contracts to ensure they work as intended.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Learn how to read the program's state to retrieve important
+            information.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Lesson Objectives:</strong></p>
+    <p>By the end of the lesson, we will have:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            Defined the steps involved in creating a simple smart contract
+            program named "Hello World."
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Explained the process of initializing a smart contract and defining
+            the entry point for message processing.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Identified different ways of restricting the type of messages a
+            smart contract can receive, and how to create different greetings
+            for different accounts based on the message received.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Demonstrated how to test a smart contract program to ensure it
+            functions correctly.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Described the process of reading a smart contract's state to
+            retrieve important information.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Summarized the key concepts and building blocks required to develop
+            functional smart contract programs.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p><strong>Let’s get started Implementing our First Program!</strong></p>
+    <p>
+      Let’s implement the program that’ll send a hello message in response to
+      any received messages.
+    </p>
+    <p>
+      To get started, we'll create a new project using the following command:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>cargo new hello-world --lib</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      This will create a directory structure for our project with the following
+      files:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            └── hello-world<br />
+            ├── Cargo.toml<br />
+            └── src<br />
+            └── lib.rs
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Next, we need to add the necessary dependencies to our Cargo.toml file.
+      We'll use
+    </p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>gstd - a standard library for smart contracts on Gear</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>gtest - a library for testing smart contracts</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            gear-wasm-builder - a helping module that aids in building programs
+            using Gear.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                [package]<br />
+                name = "hello-world"<br />
+                version = "0.1.0"<br />
+                edition = "2021"<br />
+                <br />
+                [dependencies]<br />
+                gstd = { git = "https://github.com/gear-tech/gear.git", features
+                = ["debug"] }<br />
+                <br />
+                [build-dependencies]<br />
+                gear-wasm-builder = { git =
+                "https://github.com/gear-tech/gear.git" }<br />
+                <br />
+                [dev-dependencies]<br />
+                gtest = { git = "https://github.com/gear-tech/gear.git" }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Now, let's write the minimum structure of our Gear program in the lib.rs
+      file. The handle function is the program's entry point. It will be called
+      every time the program receives an incoming message.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            #![no_std]<br />
+            use gstd::{msg, prelude::*};<br />
+            <br />
+            #[no_mangle]<br />
+            unsafe extern "C" fn handle() {}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To build our program, we’ll create <em>build.rs</em> file with the
+      following code:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            fn main() {<br />
+            gear_wasm_builder::build();<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>We can now run the following command to build our project:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>cargo build <em>--</em>release</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      gstd::msg is the messaging module from the gstd library, allowing users to
+      process incoming messages, obtain the necessary information about the
+      sender or the message content, and send replies or new messages to other
+      actors (link to gstd).
+    </p>
+    <p>
+      We'll use the reply function that sends a new message as a reply to the
+      message currently being processed:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                #![no_std]<br />
+                use gstd::{msg, prelude::*};<br />
+                <br />
+                #[no_mangle]<br />
+                unsafe extern "C" fn handle() {<br />
+                msg::reply(String::from("Hello"), 0).expect("Error in sending a
+                reply message");<br />
+                }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Let's build our project:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>cargo build <em>--</em>release</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      If everything goes well, your working directory should now have a target
+      directory that resembles this:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                target<br />
+                ├── release<br />
+                │ └── ...<br />
+                └── wasm32-unknown-unknown<br />
+                └── release<br />
+                ├── ...<br />
+                ├── hello_world.wasm &lt;---- this is our built .wasm file<br />
+                ├── hello_world.opt.wasm &lt;---- this is optimized .wasm
+                file<br />
+                └── hello_world.meta.wasm &lt;---- this is meta .wasm file
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The target/wasm32-unknown-unknown/release directory should contain three
+      WASM binaries:
+    </p>
+    <ul>
+      <li>
+        <p>
+          hello_world.wasm is the output WASM binary built from source files;
+        </p>
+      </li>
+      <li>
+        <p>
+          hello_world.opt.wasm is the optimized WASM aimed to be uploaded to the
+          blockchain;
+        </p>
+      </li>
+      <li>
+        <p>
+          hello_world.meta.wasm is the WASM containing meta information needed
+          to interact with the program.
+        </p>
+      </li>
+    </ul>
+    <p>
+      Before we upload our program to the blockchain, we need to understand the
+      metadata and *.meta.wasm file's use case. In the context of Gear programs,
+      metadata facilitates the interaction between the client-side (JavaScript)
+      and the program (Rust).
+    </p>
+    <p>
+      Metadata can be used as a message payload description for external tools
+      and applications that interact with Gear programs in the network. It is
+      stored in a separate *.meta.wasm file.
+    </p>
+    <p>
+      The Gear `metadata!` macro exports functions from Rust with IO data
+      specified by the user in the macro. In our example, we only need to
+      declare a type for the handle output message:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            gstd::metadata! {<br />
+            title: "Hello world contract",<br />
+            handle:<br />
+            output: String,<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      We've learned how to create a simple smart contract program that responds
+      with a "Hello" message to any incoming message. Let's test our program.
+    </p>
+    <p><strong>Testing smart contract with gtest library</strong></p>
+    <p>
+      Testing smart contracts is an important aspect of developing decentralized
+      applications. We’ll use the Gear
+      <a href="https://github.com/gear-tech/gear/tree/master/gtest"
+        ><span class="underline">gtest</span></a
+      >
+      library for our program’s logic testing.
+    </p>
+    <p>
+      To get started, let's create a new directory called "tests" at the top
+      level of our project directory, next to the "src" director. In that
+      directory, we’ll create a file hello_world_test.rs where we’ll write tests
+      for our contract.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            mkdir tests<br />
+            touch hello_world_test.rs
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      In our test file, we’ll need to import the necessary modules from the
+      gtest library, which are import <em>Log</em>, <em>Program</em> and
+      <em>System</em>. We’ll also define a test function:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            use gtest::{Log, Program, System};<br />
+            <br />
+            #[test]<br />
+            fn hello_test() {}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Before testing our smart contract, we need to initialize the environment
+      for running programs. We can do this using the System module from gtest.
+      The system emulates the node behaviour:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>let sys = System::new();</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Next, we need to initialize our program. We can do this using the Program
+      module from gtest. There are two ways to initialize a program: from a file
+      or the current program:
+    </p>
+    <p>To initialize a program from a file:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                let program = Program::from_file(&amp;sys,<br />
+                "./target/wasm32-unknown-unknown/release/hello_world.wasm");
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>To initialize a program from the current program:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>let program = Program::current(&amp;sys);</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The uploaded program has its own id. You can specify the program id
+      manually using the from_file_with_id constructor. If you don't specify the
+      program id, the id of the first initialized program will be 0x01000…, and
+      the next program initialized without an id specification will have an id
+      of 0x02000... and so on.
+    </p>
+    <p>In the next step, we’ll send messages to our program.</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            To send a message to the program, call one of two program functions:
+            send() or send_bytes(). The difference between them is similar to
+            gstd functions msg::send and msg::send_bytes.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The first argument in these functions is a sender id, the second one
+            is a message payload.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The sender id can be specified as hex, array ([u8, 32]), string or
+            u64. However, you can’t send a message from the id already taken by
+            the program!
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            The first message to the initialized program structure is always the
+            init message even if the program does not have the init function. In
+            our case, it can be any message. But let’s add the init function to
+            our program and monitor if that message reaches the program:
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                #![no_std]<br />
+                use gstd::{msg, prelude::*, debug};<br />
+                <br />
+                #[no_mangle]<br />
+                unsafe extern "C" fn handle() {<br />
+                msg::reply("Hello", 0).expect("Error in sending a reply
+                message");<br />
+                }<br />
+                <br />
+                #[no_mangle]<br />
+                unsafe extern "C" fn init() {<br />
+                let init_message: String = msg::load().expect("Can't load init
+                message");<br />
+                debug!("Program was initialized with message {:?}",
+                init_message);<br />
+                }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      In our test function, we can send a message to the program using the
+      `send()` function:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                #[test]<br />
+                fn hello_test() {<br />
+                let sys = System::new();<br />
+                sys.init_logger();<br />
+                let program = Program::current(&amp;sys);<br />
+                program.send(2, String::from("INIT MESSAGE"));<br />
+                }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Note that we added sys.init_logger() to initialize printing logs into
+      stdout, and we sent a message from the user with id 2 (id 2 transforms to
+      0x020000.. ActorId).
+    </p>
+    <p>We can then run our test using the following command:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>cargo test <em>--</em>release</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      If everything is working correctly, we should see the debug message in our
+      console:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            [DEBUG hello_test] Program was initialized with message "INIT
+            MESSAGE"<br />
+            test hello_test ... ok
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Sending functions in the gtest library will return RunResult structure. It
+      contains the final result of the processing message and others, which were
+      created during the execution.
+    </p>
+    <p>
+      For example, we can check the init message processing result. We can do
+      this by ensuring that the log is empty and that the program does not reply
+      or send any messages. To do this, we can use the
+      assert!(res.log().is_empty()) command.
+    </p>
+    <ul>
+      <li>
+        <p>
+          Contains empty log (the program doesn’t reply and does not send any
+          messages);
+        </p>
+      </li>
+    </ul>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>assert!(res.log().is_empty())<em>;</em></td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><p>Was successful:</p></li>
+    </ul>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>assert!(!res.main_failed());</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Once we have confirmed that the initialization message was successful, the
+      next messages will be processed through the handle function. We can test
+      this by sending the next message using the program.send(2,
+      String::from("HANDLE MESSAGE")) command.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>let res = program.send(2, String::from("HANDLE MESSAGE"));</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Here, we should check that the program replied with the expected hello
+      message. To do this, we can use the Log structure from the gtest lib and
+      build the log we are expecting to receive. Specifically, we can use the
+      Log::builder().dest(2).payload(String::from("Hello")) command to create
+      the expected log.
+    </p>
+    <p>
+      After creating the expected log, we can then check if the received log
+      contains the expected log. We can do this by using the
+      assert!(res.contains(&amp;expected_log)) command.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                let expected_log =
+                Log::builder().dest(2).payload(String::from("Hello"));<br />
+                assert!(res.contains(&amp;expected_log));
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      As you might guess, dest is the actor to which the program sends a message
+      and payload is the content of that message.
+    </p>
+    <p>Run the test and make sure that everything is fine.</p>
+    <p><strong>Lesson 1 Quiz: Testing Your Understanding</strong></p>
+    <ol type="1">
+      <li><p>Consider the following program:</p></li>
+    </ol>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                #![no_std]<br />
+                use gstd::{msg, prelude::*, debug};<br />
+                <br />
+                #[no_mangle]<br />
+                unsafe extern "C" fn handle() {<br />
+                msg::reply("Hello", 0).expect("Error in sending a reply
+                message");<br />
+                }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <blockquote>
+      <p>We’ll test the program using the following test suite:</p>
+    </blockquote>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                #[test]<br />
+                fn hello_test() {<br />
+                let sys = System::new();<br />
+                let program = Program::current(&amp;sys);<br />
+                let res = program.send(2, String::from("Hello"));<br />
+                let expected_log = Log::builder().dest(2);<br />
+                assert!(res.contains(&amp;expected_log));<br />
+                }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>What will be the result of running that test?</p>
+    <ul>
+      <li><p>Everything will be fine: the test will pass;</p></li>
+      <li>
+        <p>
+          The test will fail because the first message to the initialized
+          program structure is always the init message.
+        </p>
+      </li>
+      <li>
+        <p>
+          The test will fail because the expected_log does not contain the
+          payload with “Hello”.
+        </p>
+      </li>
+    </ul>
+    <ol start="2" type="1">
+      <li><p>What is the mistake in writing that test?</p></li>
+    </ol>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            #[test]<br />
+            fn hello_test() {<br />
+            let sys = System::new();<br />
+            let program_1 = Program::current(&amp;sys);<br />
+            let program_2 = Program::current(&amp;sys);<br />
+            let res = program_2.send(2, String::from("Hello"));<br />
+            assert!(res.log().is_empty());<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>- The first message should be sent to the first initialized program;</p>
+    <ul>
+      <li><p>You can not initialize two identical programs;</p></li>
+      <li>
+        <p>
+          The message to the program_2 is sent from the address that is already
+          occupied by the program.
+        </p>
+      </li>
+    </ul>
+    <ol start="3" type="1">
+      <li><p>What returns fn send() from the gtest library?</p></li>
+    </ol>
+    <ul>
+      <li>
+        <p>
+          It returns the RunResult structure that contains the result of program
+          execution;
+        </p>
+      </li>
+      <li>
+        <p>
+          It returns the Log structure that contains the information about the
+          source, destination, and payload of messages that were sent during the
+          program execution;
+        </p>
+      </li>
+      <li><p>It returns the message that was sent back to the sender.</p></li>
+    </ul>
+    <p><strong>Advanced Hello World Program Concepts</strong></p>
+    <p>
+      Let’s add more functionality to our program by introducing two new
+      messages: SendHelloTo and SendHelloReply.
+    </p>
+    <p>Our program will receive 2 messages:</p>
+    <ul>
+      <li>
+        <p>
+          SendHelloTo: having received this message, the program will send
+          “hello” to the specified address;
+        </p>
+      </li>
+      <li>
+        <p>
+          SendHelloReply: the program replies with a “hello” message to the
+          account that sent the current message.
+        </p>
+      </li>
+    </ul>
+    <p>
+      As we saw from the previous lesson, we’ll have to decode the message the
+      program received. We’ll define an enum InputMessages that will be used to
+      decode the incoming message.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            #[derive(Encode, Decode, TypeInfo)]<br />
+            enum InputMessages {<br />
+            SendHelloTo(ActorId),<br />
+            SendHelloReply,<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The SendHelloTo variant includes an ActorId field where the program will
+      send the hello message.
+    </p>
+    <p>
+      We also need to add derive macros #[derive(Encode, Decode, TypeInfo)] to
+      the enum for encoding and decoding in messages, and add appropriate
+      dependencies to the Cargo.toml file:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                codec = { package = "parity-scale-codec", version = "3.1.2",
+                default-features = false, features = ["derive", "full"] }<br />
+                scale-info = { version = "2.0.1", default-features = false,
+                features = ["derive"] }
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To initialize our program, we’ll define a static mutable variable GREETING
+      as an Option&lt;String&gt;.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>static mut GREETING: Option&lt;String&gt; = None;</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Until the program is initialized, the GREETING equals
+      <strong>None</strong>. After the initialization, the GREETING will become
+      <strong>Some(String)</strong>.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <strong>#[no_mangle]</strong><br />
+            unsafe extern "C" fn <strong>init</strong>() {<br />
+            let greeting = String::from_utf8(msg::load_bytes().expect("Can't
+            load init message"))<br />
+            .expect("Invalid message");<br />
+            debug!("Program was initialized with message {:?}", greeting);<br />
+            GREETING = Some(greeting);<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Next, we’ll decode the incoming message in the handle function and define
+      the message the program received:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <strong>#[no_mangle]</strong><br />
+            unsafe extern "C" fn <strong>handle</strong>() {<br />
+            let input_message: InputMessages = msg::load().expect("Error in
+            loading InputMessages");<br />
+            let greeting = GREETING.get_or_insert(Default::default());<br />
+            match input_message {<br />
+            InputMessages::SendHelloTo(account) =&gt; {<br />
+            debug!("Message: SendHelloTo {:?}", account);<br />
+            msg::send(account, greeting, 0)<br />
+            .expect("Error in sending Hello message to account");<br />
+            }<br />
+            InputMessages::SendHelloReply =&gt; {<br />
+            debug!("Message: SendHelloReply");<br />
+            msg::reply(greeting, 0).expect("Error in sending reply");<br />
+            }<br />
+            }<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      When the program receives SendHelloTo message, it sends a hello message to
+      the specified account through the send function. On the other hand, when
+      the contract receives a SendHelloReply message, it replies with a greeting
+      message.
+    </p>
+    <p><strong>Testing the Updated Smart Contract</strong></p>
+    <p>
+      First, we’ll test the SendHelloTo message. We define the account id that
+      will receive that message and check that in the result log there is a
+      message assigned to that account.
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <blockquote>
+              <p>
+                use gtest::{Log, Program, System};<br />
+                use hello_world::InputMessages;<br />
+                <br />
+                #[test]<br />
+                fn hello_test() {<br />
+                let sys = System::new();<br />
+                sys.init_logger();<br />
+                let program = Program::current(&amp;sys);<br />
+                let res = program.send(2, String::from("INIT MESSAGE"));<br />
+                assert!(!res.main_failed());<br />
+                assert!(res.log().is_empty());<br />
+                <br />
+                <em>//</em> test `SendHelloTo`<br />
+                let hello_recipient: u64 = 4;<br />
+                let res = program.send(2,
+                InputMessages::SendHelloTo(hello_recipient.into()));<br />
+                let expected_log = Log::builder()<br />
+                .dest(hello_recipient)<br />
+                .payload(String::from("Hello"));<br />
+                assert!(res.contains(&amp;expected_log))
+              </p>
+            </blockquote>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Understanding the program metadata and state</strong></p>
+    <p>
+      Metadata is a kind of interface map that helps transform a set of bytes
+      into an understandable structure. It determines how all incoming and
+      outgoing data will be encoded/decoded.
+    </p>
+    <p>
+      Metadata allows dApp’s parts - the smart contract and the client side
+      (JavaScript), to understand each other and exchange data.
+    </p>
+    <p>To describe the metadata interface we use `gmeta` crate:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            use gmeta::{InOut, Metadata};<br />
+            pub struct ProgramMetadata;<br />
+            impl Metadata for ProgramMetadata {<br />
+            type Init = InOut&lt;MessageInitIn, MessageInitOut&gt;;<br />
+            type Handle = InOut&lt;MessageIn, MessageOut&gt;;<br />
+            type Others = InOut&lt;MessageAsyncIn, Option&lt;u8&gt;&gt;;<br />
+            type Reply = InOut&lt;String, Vec&lt;u16&gt;&gt;;<br />
+            type Signal = ();<br />
+            type State = Vec&lt;u128&gt;;<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>where:</p>
+    <ul>
+      <li>
+        <blockquote>
+          <p>
+            <em>Init</em> - describes incoming/outgoing types for `init()`
+            function.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Handle</em> - describes incoming/outgoing types for `handle()`
+            function.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Others</em> - describes incoming/outgoing types for `main()`
+            function in case of asynchronous interaction.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Reply</em> - describes incoming/outgoing types of messages
+            performed using the `handle_reply` function.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            <em>Signal</em> - describes only the outgoing type from the program
+            while processing the system signal.
+          </p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p><em>State</em> - describes the types for the queried State</p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>
+      It is necessary to describe all the types. If any of the endpoints is
+      missing in your program, you can use () instead.
+    </p>
+    <p>Let's define metadata for our example. We’ll create a crate</p>
+    <p>hello-world-io in the directory of our hello-world program:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>cargo new hello-world-io --lib</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The Cargo.toml of this crate:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            [package]<br />
+            name = "hello-world-io"<br />
+            version = "0.1.0"<br />
+            edition = "2021"<br />
+            <br />
+            [dependencies]<br />
+            gmeta = { git = "https://github.com/gear-tech/gear.git" }<br />
+            gstd = { git = "https://github.com/gear-tech/gear.git" }<br />
+            codec = { package = "parity-scale-codec", version = "3.1.2",
+            default-features = false, features = ["derive", "full"] }<br />
+            scale-info = { version = "2.0.1", default-features = false, features
+            = ["derive"] }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      And in the lib.rs file, we’ll define an incoming message for the init
+      function, and the incoming and outcoming messages for the handle function:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <em>#![no_std]</em><br />
+            <br />
+            use codec::{Decode, Encode};<br />
+            use gmeta::{InOut, Metadata};<br />
+            use gstd::{prelude::*, ActorId};<br />
+            use scale_info::TypeInfo;<br />
+            pub struct ProgramMetadata;<br />
+            <br />
+            impl Metadata for ProgramMetadata {<br />
+            type Init = InOut&lt;String, ()&gt;;<br />
+            type Handle = InOut&lt;InputMessages, String&gt;;<br />
+            type Reply = InOut&lt;(), ()&gt;;<br />
+            type Others = InOut&lt;(), ()&gt;;<br />
+            type Signal = ();<br />
+            type State = String;<br />
+            }<br />
+            <br />
+            <em>#[derive(Encode, Decode, TypeInfo)]</em><br />
+            pub enum InputMessages {<br />
+            SendHelloTo(ActorId),<br />
+            SendHelloReply,<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The input for init function is a <em>String</em>. The input for the handle
+      function is an enum <em>InputMessage</em>, and accordingly, the output is
+      <em>String</em>. The program state is also String (It is a set greeting).
+    </p>
+    <p>
+      It is possible to read the program state using the state function. Reading
+      State is a free function and does not require gas costs. Let’s define this
+      function in lib.rs file of the hello-world program:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <strong>#[no_mangle]</strong><br />
+            extern "C" fn <strong>state</strong>() {<br />
+            let greeting = unsafe {<br />
+            GREETING.get_or_insert(Default::default())<br />
+            };<br />
+            msg::reply(greeting, 0).expect("Failed to share state");<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To make it possible to verify metadata for a program, we’ll use the
+      metahash() function:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <strong>#[no_mangle]</strong><br />
+            <em>// It returns the Hash of metadata.</em><br />
+            <em
+              >// .metahash is generating automatically while you are using
+              build.rs</em
+            ><br />
+            extern "C" fn <strong>metahash</strong>() {<br />
+            let metahash: [u8; 32] = include!("../.metahash");<br />
+            msg::reply(metahash, 0).expect("Failed to share metahash");<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      It’s necessary to add the hello-world-io crate to build-dependencies in
+      <em>Cargo.toml</em> in the hello-world program:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            [package]<br />
+            name = "hello-world"<br />
+            version = "0.1.0"<br />
+            edition = "2021"<br />
+            ...<br />
+            [build-dependencies]<br />
+            gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git"
+            }<br />
+            hello-world-io = { path = "hello-world-io" }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>We also need to change the build.rs file using the following code:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            use hello_world_io::ProgramMetadata;<br />
+            fn main() {<br />
+            gear_wasm_builder::build_with_metadata::&lt;ProgramMetadata&gt;();<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      After building the program, a meta.txt file will be generated as a result
+      of the smart-contract compilation. This metadata file can be used in UI
+      applications that will interact with this smart contract.
+    </p>
+    <p><strong>Uploading the program to the blockchain</strong></p>
+    <p>
+      The easiest way to upload the program is to use the “Upload program”
+      option in the Gear Idea portal -
+      <a href="https://idea.gear-tech.io/"
+        ><span class="underline">idea.gear-tech.io</span></a
+      >.
+    </p>
+    <p>
+      First, you need to create an account and connect to Gear Idea. Follow the
+      instructions provided at
+      <a href="https://wiki.gear-tech.io/docs/idea/account/create-account"
+        ><span class="underline"
+          >https://wiki.gear-tech.io/docs/idea/account/create-account</span
+        ></a
+      >
+      to create your account.
+    </p>
+    <p>
+      Once you've logged in, you can select the network on which you want to
+      upload the program by clicking on the gear icon in the lower left corner
+      of the screen. For the Gear Academy workshop, select the workshop node
+      (wss://node-workshop.gear.rs:443) and click the "Switch" button.
+    </p>
+    <p>
+      Select the workshop node and click on the
+      <em><strong>Switch</strong></em> button:
+    </p>
+    <p>
+      <img src="media/image1.png" style="width: 6.5in; height: 4.30556in" />
+    </p>
+    <p>
+      Next, select "Programs" in the left column and upload the hello.opt.wasm
+      file along with its metadata (meta.txt file).
+    </p>
+    <p>
+      <img src="media/image3.png" style="width: 6.5in; height: 3.83333in" />
+    </p>
+    <p>
+      Give your program a name, enter an incoming greeting message and click on
+      the <em><strong>Upload Program</strong></em> button.
+    </p>
+    <p>
+      If the program has successfully uploaded, you will see it in the program.
+    </p>
+    <p>
+      <img src="media/image5.png" style="width: 6.5in; height: 2.16667in" />
+    </p>
+    <p>You can now send messages to your program:</p>
+    <p>
+      <img src="media/image2.png" style="width: 6.5in; height: 4.09722in" />
+    </p>
+    <p>
+      You can also read the program state (It’s our greeting string that was set
+      during the program initialization).
+    </p>
+    <p>
+      <img src="media/image6.png" style="width: 6.5in; height: 3.30556in" />
+    </p>
+    <p><strong>Assignment:</strong></p>
+    <p>Let's write a smart contract for a Tamagotchi game:</p>
+    <ul>
+      <li>
+        <p>
+          Create a smart contract Tamagotchi, that will store Tamagotchi’s name
+          and date of birth. he state of your contract should be defined as
+          follows:
+        </p>
+      </li>
+    </ul>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            <strong>#[derive(Default, Encode, Decode, TypeInfo)]</strong><br />
+            pub struct <strong>Tamagotchi</strong> {<br />
+            name: String,<br />
+            date_of_birth: u64,<br />
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>
+        <p>
+          During initialization, set the name and date of birth of the
+          Tamagotchi and send a reply confirming successful initialization.
+        </p>
+      </li>
+      <li>
+        <p>Your Tamagochi program should accept the following messages:</p>
+        <ul>
+          <li>
+            <blockquote>
+              <p>Name - the program answers the name of the Tamagochi;</p>
+            </blockquote>
+          </li>
+          <li>
+            <blockquote>
+              <p>Age - the program answers about the age of the Tamagochi.</p>
+            </blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <blockquote>
+          <p>Add the state function to your program.</p>
+        </blockquote>
+      </li>
+      <li>
+        <blockquote>
+          <p>
+            Upload your contract to the workshop node at the
+            <a href="https://idea.gear-tech.io/"
+              ><span class="underline">https://idea.gear-tech.io/</span></a
+            >.
+          </p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>
+      To connect your Tamagotchi contract to the frontend application, you need
+      to ensure that the metadata is as follows:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            pub struct ProgramMetadata;<br />
+            <br />
+            impl Metadata for ProgramMetadata {<br />
+            type Init = InOut&lt;String,()&gt;;<br />
+            type Reply = InOut&lt;(),()&gt;;<br />
+            type Others = InOut&lt;(),()&gt;;<br />
+            type Signal = ();<br />
+            type Handle = InOut&lt;TmgAction, TmgEvent&gt;;<br />
+            type State = Tamagotchi;<br />
+            }<br />
+            <br />
+            <em>#[derive(Encode, Decode, TypeInfo)]</em><br />
+            pub enum TmgAction {<br />
+            Name,<br />
+            Age,<br />
+            }<br />
+            <br />
+            <em>#[derive(Encode, Decode, TypeInfo)]</em><br />
+            pub enum TmgEvent {<br />
+            Name(String),<br />
+            Age(u64),<br />
+            }<br />
+            <br />
+            <em>#[derive(Default, Encode, Decode, TypeInfo)]</em><br />
+            pub struct Tamagotchi {<br />
+            name: String,<br />
+            date_of_birth: u64,
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>}</p>
+    <p>
+      Clone the repository:
+      <a href="https://github.com/gear-dapps/smart-contract-academy"
+        ><span class="underline"
+          >https://github.com/gear-dapps/smart-contract-academy</span
+        ></a
+      >
+    </p>
+    <p>In the frontend directory, run the following commands:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>
+            yarn<br />
+            yarn start
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The .env.local file contains the following:</p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>REACT_APP_NODE_ADDRESS=wss://test-wss.gear.rs</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      It means that the application is running on the testnet node. You can also
+      run a local node, upload a Tamagotchi contract, and work with contracts on
+      a local node by indicating:
+    </p>
+    <table>
+      <tbody>
+        <tr class="odd">
+          <td>REACT_APP_NODE_ADDRESS=ws://localhost:9944</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      After running the <em><strong>yarn start</strong></em
+      >, command you will see the following window:
+    </p>
+    <p>
+      <img src="media/image4.png" style="width: 6.5in; height: 4.88889in" />
+    </p>
+    <p>
+      Select <em><strong>Lesson 1</strong></em
+      >, paste your Tamagotchi address and you’ll see your Tamagotchi!
+    </p>
+    <p>Please attach a link to the repo with your Tamagotchi contract.</p>
+  </body>
 </html>
