@@ -1,6 +1,6 @@
-第 1 课：创建第一个智能合约程序 - Hello World
+## 第 1 课：创建第一个智能合约程序 - Hello World
 
-课程总结：
+### 课程总结：
 
 -   我们将创建我们的第一个 “Hello World” 智能合约程序。
 
@@ -12,176 +12,239 @@
 
 -   了解如何读取程序的状态以检索重要信息。
 
-课程目标：
+### 课程目标：
 
 在课程结束时，我们将拥有：
 
--   定义了创建名为“Hello World”的简单智能合约程序所涉及的步骤。
+-   定义了创建名为 “Hello World” 的简单智能合约程序所涉及的步骤。
 
--   解释了初始化智能合约和定义消息处理入口点的过程。
+-   解释了初始化智能合约和定义消息处理入口函数的过程。
 
--   确定了限制智能合约可以接收的消息类型的不同方式，以及如何根据收到的消息为不同的帐户创建不同的问候语。
+-   确定了限制一个智能合约可以接收的消息类型的不同方式，以及如何根据收到的消息为不同的帐户创建不同的问候语。
 
 -   演示了如何测试智能合约程序以确保其正常运行。
 
 -   描述了读取智能合约状态以检索重要信息的过程。
 
--   总结了开发功能性智能合约程序所需的关键概念和构建块。
+-   总结了开发功能性智能合约程序所需的关键概念和构建区块。
 
-让我们开始实施我们的第一个程序吧！
+**让我们开始构建第一个程序吧！**
 
-让我们实现将发送问候消息以响应任何接收到的消息的程序。
+让我们实现发送问候语以响应任何接收到的消息的程序。
 
 首先，我们将使用以下命令创建一个新项目：
 
-[代码占位符]
-
+```
+cargo new hello-world --lib
+```
 这将为我们的项目创建一个目录结构，其中包含以下文件：
 
-[代码占位符]
+```
+└── hello-world
+    ├── Cargo.toml
+    └── src
+        └── lib.rs
+```
 
 接下来，我们需要将必要的依赖项添加到我们的 Cargo.toml 文件中。我们将使用
 
--   gstd - Gear 上智能合约的标准库
+-   gstd - Gear 智能合约的标准库
 
 -   gtest - 用于测试智能合约的库
 
--   gear-wasm-builder - 一个帮助模块，可帮助使用 Gear 构建程序。
+-   gear-wasm-builder - 一个帮助使用 Gear 构建程序的模块。
 
-[代码占位符]
+```
+[package]
+name = "hello-world"
+version = "0.1.0"
+edition = "2021"
 
-现在，让我们在 lib.rs 文件中编写 Gear
-程序的最小结构。句柄函数是程序的入口点。每次程序收到传入消息时都会调用它。
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 
-[代码占位符]
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+
+[dev-dependencies]
+gtest = { git = "https://github.com/gear-tech/gear.git" }
+```
+
+现在，让我们在 lib.rs 文件中编写 Gear 程序的最小结构。handle 函数是程序的入口函数。每次程序收到传入消息时都会调用该函数。
+```
+#![no_std]
+use gstd::{msg, prelude::*};
+
+#[no_mangle]
+unsafe extern "C" fn handle() {}
+```
 
 为了构建我们的程序，我们将使用以下代码创建 build.rs 文件：
+```
+fn main() {
+    gear_wasm_builder::build();
+}
+```
 
-[代码占位符]
+现在可以运行以下命令来构建我们的项目：
+```
+cargo build  --release
+```
 
-我们现在可以运行以下命令来构建我们的项目：
+gstd::msg 是 gstd 库中的消息传递模块，允许用户处理传入的消息，获取有关发件人或消息内容的必要信息，并向其他 actor 发送回复或新消息（链接到 gstd）。
 
-[代码占位符]
+我们将使用发送新消息的 reply 函数作为对当前正在处理的消息的回复：
+```
+#![no_std]
+use gstd::{msg, prelude::*};
 
-gstd::msg 是 gstd
-库中的消息传递模块，允许用户处理传入的消息，获取有关发件人或消息内容的必要信息，并向其他参与者发送回复或新消息（链接到
-gstd）。
+#[no_mangle]
+unsafe extern "C" fn handle() {
+    msg::reply(String::from("Hello"), 0).expect("Error in sending a reply message");
+}
+```
 
-我们将使用发送新消息的回复功能作为对当前正在处理的消息的回复：
+让我们开始构建项目：
+```
+cargo build  --release
+```
 
-[代码占位符]
-
-让我们构建我们的项目：
-
-[代码占位符]
-
-如果一切顺利，您的工作目录现在应该有一个类似于以下内容的目标目录：
-
-[代码占位符]
+如果一切顺利，你的工作目录现在应该有一个类似于以下内容的目标目录：
+```
+target
+    ├── release
+    │   └── ...
+    └── wasm32-unknown-unknown
+        └── release
+            ├── ...
+            ├── hello_world.wasm      <---- this is our built .wasm file
+            ├── hello_world.opt.wasm  <---- this is optimized .wasm file
+            └── hello_world.meta.wasm <---- this is meta .wasm file
+```
 
 target/wasm32-unknown-unknown/release 目录应该包含三个 WASM 二进制文件：
 
--   hello_world.wasm 是从源文件构建的输出 WASM 二进制文件；
+-   hello_world.wasm 是从源文件构建的 output WASM 二进制文件；
 
 -   hello_world.opt.wasm 是优化后的 WASM，旨在上传到区块链；
 
--   hello_world.meta.wasm 是包含与程序交互所需的元信息的 WASM。
+-   hello_world.meta.wasm 是包含与程序交互所需的 meta 信息的 WASM。
 
-在我们将程序上传到区块链之前，我们需要了解元数据和 *.meta.wasm
-文件的用例。在 Gear 程序的上下文中，元数据促进了客户端 (JavaScript)
-和程序 (Rust) 之间的交互。
+在我们将程序上传到区块链之前，我们需要了解 metadata 和 *.meta.wasm 文件的用例。在 Gear 程序中，metadata 促进了客户端 (JavaScript) 和程序 (Rust) 之间的交互。
 
-元数据可用作与网络中的 Gear
-程序交互的外部工具和应用程序的消息负载描述。它存储在一个单独的
-*.meta.wasm 文件中。
+元数据可用作与网络中的 Gear 程序交互的外部工具和应用程序的消息负载描述。它存储在一个单独的 *.meta.wasm 文件中。
 
-Gearmetadata!宏使用用户在宏中指定的 IO 数据从 Rust
-导出函数。在我们的示例中，我们只需要为句柄输出消息声明一个类型：
+**Gear metadata!宏从 Rust 中导出了用户在宏中指定的 IO 数据函数。** 在我们的示例中，我们只需要为 handle 输出消息声明一个类型：
+```
+gstd::metadata! {
+    title: "Hello world contract",
+    handle:
+        output: String,
+}
+```
 
-[代码占位符]
+我们已经学习了如何创建一个简单的智能合约程序，该程序以 “Hello” 消息响应任何传入消息。让我们测试一下我们的程序。
 
-我们已经学习了如何创建一个简单的智能合约程序，该程序以“Hello”消息响应任何传入消息。让我们测试一下我们的程序。
+## 使用 gtest 库测试智能合约
 
-使用 gtest 库测试智能合约
+测试智能合约是开发去中心化应用程序的一个重要方面。我们将使用 Gear gtest 库进行程序的逻辑测试。
 
-测试智能合约是开发去中心化应用程序的一个重要方面。我们将使用 Gear gtest
-库进行程序的逻辑测试。
+首先，让我们在项目目录的顶层，“src” 目录旁边创建一个名为“tests”的新目录。在该目录中，我们将创建一个 hello_world_test.rs 文件，我们将在其中为合约编写测试。
+```
+mkdir tests
+touch hello_world_test.rs
+```
 
-首先，让我们在项目目录的顶层，在“src”目录旁边创建一个名为“tests”的新目录。在该目录中，我们将创建一个文件
-hello_world_test.rs，我们将在其中为我们的合约编写测试。
+在我们的测试文件中，我们需要从 gtest 库中导入必要的模块，即 import *Log*、*Program* 和 *System*。我们还将定义一个测试函数：
+```
+use gtest::{Log, Program, System};
 
-[代码占位符]
+#[test]
+fn hello_test() {}
+```
 
-在我们的测试文件中，我们需要从 gtest 库中导入必要的模块，即 import
-Log、Program 和 System。我们还将定义一个测试函数：
+在测试我们的智能合约之前，我们需要初始化运行程序的环境。我们可以使用 gtest 的系统模块来做到这一点。系统模拟节点行为：
+```
+let sys = System::new();
+```
 
-[代码占位符]
-
-在测试我们的智能合约之前，我们需要初始化运行程序的环境。我们可以使用
-gtest 的系统模块来做到这一点。系统模拟节点行为：
-
-[代码占位符]
-
-接下来，我们需要初始化我们的程序。我们可以使用 gtest 的 Program
-模块来做到这一点。初始化程序有两种方法：从文件或当前程序：
+接下来，我们需要初始化我们的程序。我们可以使用 gtest 的 Program 模块来做到这一点。初始化程序有两种方法：从文件或当前程序：
 
 从文件初始化程序：
-
-[代码占位符]
+```
+let program = Program::from_file(&sys,
+              "./target/wasm32-unknown-unknown/release/hello_world.wasm");
+```
 
 从当前程序初始化程序：
+```
+let program = Program::current(&sys);
+```
 
-[代码占位符]
+上传的程序有自己的 id。您可以使用 from_file_with_id 构造函数手动指定程序 ID。如果不指定程序id，第一个初始化程序的 id 为 0x01000...，下一个没有指定 id 的初始化程序 id 为0x02000...，依此类推。
 
-上传的程序有自己的id。您可以使用 from_file_with_id 构造函数手动指定程序
-ID。如果不指定程序id，则第一个初始化程序的id为0x01000...，下一个没有指定id的初始化程序id为0x02000...，依此类推。
+在下一步中，我们将向程序发送消息。
 
-在下一步中，我们将向我们的程序发送消息。
+- 要向程序发送消息，请调用两个程序函数之一：send() 或 send_bytes()。它们之间的区别类似于 gstd 函数 msg::send 和 msg::send_bytes。
 
--   要向程序发送消息，请调用两个程序函数之一：send() 或
-    send_bytes()。它们之间的区别类似于 gstd 函数 msg::send 和
-    msg::send_bytes。
+- 这些函数中的第一个参数是发送者 ID，第二个参数是消息负载。
 
--   这些函数中的第一个参数是发送者 ID，第二个参数是消息负载。
+- 发件人 ID 可以指定为十六进制、数组 ([u8, 32])、字符串或 u64。但是，你不能从程序已占用的 id 发送消息！
 
--   发件人 ID 可以指定为十六进制、数组 ([u8, 32])、字符串或
-    u64。但是，您不能从程序已占用的 id 发送消息！
+- 即使程序没有 init 函数，初始化程序结构的第一条消息也始终是 init 消息。在我们的范例中，它可以是任何消息。但是让我们将 init 函数添加到我们的程序中并监控该消息是否到达程序：
+```
+#![no_std]
+use gstd::{msg, prelude::*, debug};
 
--   即使程序没有 init 函数，初始化程序结构的第一条消息也始终是 init
-    消息。在我们的例子中，它可以是任何消息。但是让我们将 init
-    函数添加到我们的程序中并监控该消息是否到达程序：
+#[no_mangle]
+unsafe extern "C" fn handle() {
+    msg::reply("Hello", 0).expect("Error in sending a reply message");
+}
 
-[代码占位符]
+#[no_mangle]
+unsafe extern "C" fn init() {
+    let init_message: String = msg::load().expect("Can't load init message");
+    debug!("Program was initialized with message {:?}", init_message);
+}
+```
 
-在我们的测试函数中，我们可以使用以下函数向程序发送消息send()：
+在我们的测试函数中，我们可以使用以下函数向程序发送消息 `send()` 函数：
+```
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    sys.init_logger();
+    let program = Program::current(&sys);
+    program.send(2, String::from("INIT MESSAGE"));
+}
+```
 
-[代码占位符]
+请注意，我们添加了 sys.init_logger() 以将打印日志初始化到 stdout，并且我们发送了一条来自 ID 2 的用户的消息（ID 2 转换为 0x020000.. ActorId）。
 
-请注意，我们添加了 sys.init_logger() 以将打印日志初始化到
-stdout，并且我们发送了一条来自 ID 为 2 的用户的消息（ID 2 转换为
-0x020000.. ActorId）。
+然后我们可以使用以下命令运行测试：
+```
+cargo test --release
+```
 
-然后我们可以使用以下命令运行我们的测试：
+如果一切正常，我们会在控制台中看到调试消息：
+```
+[DEBUG hello_test] Program was initialized with message "INIT MESSAGE"
+test hello_test ... ok
+```
 
-[代码占位符]
+gtest 库中的 Sending 函数将返回 RunResult 结构。它包含处理消息的最终结果和其他在执行期间创建的消息。
 
-如果一切正常，我们应该在控制台中看到调试消息：
+比如我们可以查看 init 消息处理结果。我们可以通过确保日志为空并且程序不回复或发送任何消息来做到这一点。为此，我们可以使用 assert!(res.log().is_empty()) 命令。
 
-[代码占位符]
+- 包含空日志（程序不回复也不发送任何消息）；
+```
+assert!(res.log().is_empty());
+```
 
-gtest 库中的发送函数将返回 RunResult
-结构。它包含处理消息的最终结果和其他在执行期间创建的消息。
-
-比如我们可以查看init消息处理结果。我们可以通过确保日志为空并且程序不回复或发送任何消息来做到这一点。为此，我们可以使用
-assert!(res.log().is_empty()) 命令。
-
--   包含空日志（程序不回复也不发送任何消息）；
-
-[代码占位符]
-
--   那是成功的：
-
-[代码占位符]
+- 成功：
+```
+assert!(!res.main_failed());
+```
 
 一旦我们确认初始化消息成功，接下来的消息将通过句柄函数处理。我们可以通过使用
 program.send(2, String::from("HANDLE MESSAGE"))
