@@ -183,12 +183,11 @@ unsafe extern "C" fn init() {
 
 ```rust
 fn create_attribute(&mut self, attribute_id: AttributeId, metadata: &Metadata, price: Price) {
-       assert_eq!(msg::source(), self.admin, "Only admin can add attributes");
+    assert_eq!(msg::source(), self.admin, "Only admin can add attributes");
 
-       if self
-           .attributes
-           .insert(attribute_id, (metadata.clone(), price))
-           .is_some()
+    if self.attributes
+        .insert(attribute_id, (metadata.clone(), price))
+        .is_some()
        {
            panic!("Attribute with that ID already exists");
        }
@@ -219,7 +218,7 @@ pub type TransactionId = u64;
 
 接下来，让我们假设以下情况：
 
-![图像占位符](img/04/pic02.png)
+![](img/04/pic02.png)
 
 1. Tamagotchi 向商店合约发送消息以购买属性；
 
@@ -250,7 +249,6 @@ pub struct AttributeStore {
 如果 Tamagotchi 没有未决交易，则存储合约会增加 transaction_id 并保存交易。
 
 ```rust
-
 async fn buy_attribute(&mut self, attribute_id: AttributeId) {
     let (transaction_id, attribute_id) = if let Some((transaction_id, prev_attribute_id)) =
     self.transactions.get(&msg::source())
