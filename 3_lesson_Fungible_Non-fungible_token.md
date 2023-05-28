@@ -34,7 +34,7 @@
 
 - Transfer(from, to, amount)：此功能允许你将代币数量（金额）从一个地址（from）转移到另一个地址（to）。它检查“from”账户是否拥有代币，从其余额中减去必要的金额，并将指定的代币数量添加到“to”账户。
 
-- Approve(spender, amount)是一个函数，它允许你授权指定的 spender 账户处置调用此函数的账户的代币（在目前的场景中，它将是 msg::source()）。换句话说，spender 账户可以调用 transfer() 函数，所以它可以将 token 从 msg::source() 账户转移到指定地址。此功能在任何合约中发生代币转移时非常有用。
+- `Approve(spender, amount)` 是一个函数，它允许你授权指定的 spender 账户处置调用此函数的账户的代币（在目前的场景中，它将是 msg::source()）。换句话说，spender 账户可以调用 transfer() 函数，所以它可以将 token 从 msg::source() 账户转移到指定地址。此功能在任何合约中发生代币转移时非常有用。
 
 我们以 escrow 智能合约为例。
 
@@ -42,8 +42,8 @@
 
 如果 escrow 合约无权处置买方的代币，那么代币合约就会 panic 并阻止代币转移。
 
-- Mint(to,amount)：这个函数增加了合约中的代币数量。通常，此函数可以由允许创建新代币的某些帐户调用。
-- Burn(from, amount) 是一个减少合约中代币数量的函数。就像 mint() 函数一样，并非所有帐户都可以销毁代币。
+- `Mint(to,amount)`：这个函数增加了合约中的代币数量。通常，此函数可以由允许创建新代币的某些帐户调用。
+- `Burn(from, amount)`：是一个减少合约中代币数量的函数。就像 mint() 函数一样，并非所有帐户都可以销毁代币。
 
 ### 非同质化代币
 
@@ -55,27 +55,26 @@
 
 - Transfer(to, token_id) 是一个函数，允许你将带有 token_id 编号的代币转移到 to 帐户。与同质化代币合约不同，该合约不需要来自该账户，因为每个代币都有自己的所有者。
 
-- Approve(approved_account, token_id) 是一个函数，允许你将处理代币的权利授予指定的approved_account。此功能可用于市场拍卖。当所有者想要出售他的代币时，他们可以将其放在 marketplace/auction 中，因此合约会将此代币发送给新的所有者。
+- Approve(approved_account, token_id) 是一个函数，允许你将处理代币的权利授予指定的 approved_account。此功能可用于市场拍卖。当所有者想要出售他的代币时，他们可以将其放在 marketplace/auction 中，因此合约会将此代币发送给新的所有者。
 
-- Mint(to, token_id, metadata) 是一个创建新 token 的函数。元数据可以包括关于 token 的任何信息：它可以是特定资源的链接、代币的描述等。
+- `Mint(to, token_id, metadata)`：是一个创建新 token 的函数。元数据可以包括关于 token 的任何信息：它可以是特定资源的链接、代币的描述等。
 
-- Burn(from, token_id)：此函数从合约中删除具有上述 token_id 的代币。
+- `Burn(from, token_id)`：此函数从合约中删除具有上述 token_id 的代币。
 
 ### 程序间的异步通信
 
-Gear Protocol 的核心特性是用于消息传递通信的 Actor 模型。Gear Protocol 利用 Actor
-模型进行消息传递通信，允许并行计算和异步消息传递以确保更快的处理时间。此开发结构为开发人员在构建复杂的 dApp 时提供了巨大的灵活性。
+Gear Protocol 的核心特性是用于消息传递通信的 Actor 模型。Gear Protocol 利用 Actor 模型进行消息传递通信，允许并行计算和异步消息传递以确保更快的处理时间。此开发结构为开发人员在构建复杂的 dApp 时提供了巨大的灵活性。
 
 如果一个程序向另一个程序发送异步消息，它需要等待那个程序的回复才能进行下一个操作。
 
-要向 Gear 程序发送消息，我们使用 send_for_reply(program, payload, value) 函数。在这个函数中：
+要向 Gear 程序发送消息，我们使用 `send_for_reply(program, payload, value)` 函数。在这个函数中：
 
 - program - 要为其发送消息的程序的地址；
 
 - payload - 给程序的消息；
 
 - value - 附加到消息的资金。
-```
+```rust
  pub fn send_for_reply_as<E: Encode, D: Decode>(
    program: ActorId,
    payload: E,
@@ -94,7 +93,7 @@ Gear Protocol 中程序之间的交互创建分布式交易，涉及具有各自
 例如，在以太坊交易中，全局状态更改仅在所有执行成功完成时发生。如果在执行期间发生错误，对状态的所有更改都将“回滚”，就好像交易从未运行过一样。
 
 让我们看看下面的代码：
-```
+```rust
 static mut COUNTER: u32 = 0;
 
 async unsafe fn non_atomic() {
@@ -109,7 +108,7 @@ async unsafe fn non_atomic() {
 }
 ```
 
-在提供的示例代码中，全局变量 COUNTER 在调用 send_for_reply 函数之前设置为 10。如果交易在 .await 之前失败，则状态回滚，COUNTER 归 0。如果交易在 .await 之后失败，COUNTER 的值保持为10。
+在提供的示例代码中，全局变量 COUNTER 在调用 send_for_reply 函数之前设置为 10。如果交易在 .await 之前失败，则状态回滚，COUNTER 归 0。如果交易在 .await 之后失败，COUNTER 的值保持为 10。
 
 让我们考虑一个简单的 marketplace 示例，其中代币被转移给卖家，然后将 NFT 转移给买家。
 ![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/5b07e4d0-8f58-4166-85ec-76dde4c91275)
@@ -146,23 +145,23 @@ async unsafe fn non_atomic() {
 存储合同状态有以下字段：
 
 - 逻辑合约的地址。存储合约必须执行仅从该地址接收的消息；
-```
+```rust
 ft_logic_id: ActorId
 ```
 
 - 已执行的交易。在每条消息中，存储合约接收正在执行的交易的哈希值，并将其执行结果存储在字段 Executed 中。如果 Executed 为 true，则消息执行成功，否则 Executed 等于 false。
-```
+```rust
 transaction_status: HashMap<H256, (Executed, Locked)>
 ```
 
 - 账户余额
-```
+```rust
 balances: HashMap<ActorId, u128>
 ```
 
 - 核准帐目
-```
-approvals: HashMap<ActorId, HashMap<ActorId, u128>>	
+```rust
+approvals: HashMap<ActorId, HashMap<ActorId, u128>>
 ```
 
 存储接受的消息：
@@ -184,17 +183,17 @@ approvals: HashMap<ActorId, HashMap<ActorId, u128>>
 逻辑合约的状态由以下字段组成：
 
 -   主代币合约地址。逻辑合约必须只执行来自该地址的消息：
-```
+```rust
 ftoken_id: ActorId
 ```
 
 - 交易。与存储合约一样，逻辑合约接收正在执行的交易的哈希值并存储其执行结果。但与消息执行是原子的存储合约不同，逻辑合约必须跟踪正在执行的消息及其阶段。
-```
-transactions: HashMap<H256, Transaction>	
+```rust
+transactions: HashMap<H256, Transaction>
 ```
 
-交易是以下结构：
-```
+交易结构如下：
+```rust
 pub struct Transaction {
    msg_source: ActorId,
    operation: Operation,
@@ -203,7 +202,7 @@ pub struct Transaction {
 ```
 
 其中 msg_source 是一个向主合约发送消息的账户。Operation 是逻辑合约应该处理的动作，status 是交易状态。它是以下枚举。
-```
+```rust
 pub enum TransactionStatus {
    InProgress,
    Success,
@@ -218,45 +217,45 @@ pub enum TransactionStatus {
 - **存储合约的代码哈希**。逻辑合约能够在必要时创建新的存储合约。存储创建实现如下：
 
     - 逻辑合约取账户地址的首字母。如果创建了这个存储合约，那么它将这个账户的余额存储在这个合约中。如果不是，它会创建一个新的存储合约
-```
+```rust
 storage_code_hash: H256
 ```
 
 -   从字母到存储地址的映射。
-```
-   id_to_storage: HashMap<String, ActorId>	
+```rust
+   id_to_storage: HashMap<String, ActorId>
 ```
 
 逻辑合约从主合约接收到以下消息：
-```
+```rust
 Message {
-       transaction_hash: H256,
-       account: ActorId,
-       payload: Vec<u8>,
-   },
+   transaction_hash: H256,
+   account: ActorId,
+   payload: Vec<u8>,
+},
 ```
 
 该帐户是向主合约发送消息的参与者。
 
 有效负载是逻辑合约必须处理的编码操作：
-```
+```rust
 pub enum Operation {
    Mint {
-       recipient: ActorId,
-       amount: u128,
+      recipient: ActorId,
+      amount: u128,
    },
    Burn {
-       sender: ActorId,
-       amount: u128,
+      sender: ActorId,
+      amount: u128,
    },
    Transfer {
-       sender: ActorId,
-       recipient: ActorId,
-       amount: u128,
+      sender: ActorId,
+      recipient: ActorId,
+      amount: u128,
    },
    Approve {
-       approved_account: ActorId,
-       amount: u128,
+      approved_account: ActorId,
+      amount: u128,
    },
 }
 ```
@@ -280,23 +279,23 @@ pub enum Operation {
 
 主合约的状态包括以下字段：
 - 合约管理员的地址。他有升级逻辑合约的权利。
-```
+```rust
 admin: ActorId,
 ```
-    
+
 -   逻辑合约的地址
-```
+```rust
 ft_logic_id: ActorId,
 ```
-    
+
 -   交易历史。
-```
+```rust
 transactions: HashMap<H256, TransactionStatus>
 ```
 ![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/4b93f94e-c36c-4ef5-bdb4-4b6fcd2d61a6)
 
 其中 TransactionStatus:
-```
+```rust
 pub enum TransactionStatus {
    InProgress,
    Success,
@@ -320,7 +319,7 @@ pub enum TransactionStatus {
 将你的合约上传到区块链，运行前端应用程序并选择第三课。
 
 为确保你的合约与前端应用程序兼容，请确保将元数据设置为以下内容：
-```
+```rust
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
@@ -370,4 +369,3 @@ pub struct Tamagotchi {
    pub allowed_account: Option<ActorId>,
 }
 ```
-
