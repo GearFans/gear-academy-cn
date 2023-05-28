@@ -246,260 +246,410 @@ assert!(res.log().is_empty());
 assert!(!res.main_failed());
 ```
 
-一旦我们确认初始化消息成功，接下来的消息将通过句柄函数处理。我们可以通过使用
-program.send(2, String::from("HANDLE MESSAGE"))
+一旦我们确认初始化消息成功，接下来的消息将通过句柄函数处理。我们可以通过使用 program.send(2, String::from("HANDLE MESSAGE"))
 命令发送下一条消息来测试这一点。
+```
+let res = program.send(2, String::from("HANDLE MESSAGE"));
+```
 
-[代码占位符]
+在这里，我们应该检查程序是否回复了预期的问候消息。为此，我们可以使用 gtest 库中的日志结构并构建我们期望接收的日志。具体来说，我们可以使用Log::builder().dest(2).payload(String::from("Hello")) 命令来创建预期的日志。
 
-在这里，我们应该检查程序是否回复了预期的问候消息。为此，我们可以使用
-gtest 库中的日志结构并构建我们期望接收的日志。具体来说，我们可以使用
-Log::builder().dest(2).payload(String::from("Hello"))
-命令来创建预期的日志。
+创建预期日志后，我们可以检查接收到的日志是否包含预期日志。我们可以使用 assert!(res.contains(&expected_log)) 命令来做到这一点。
 
-创建预期日志后，我们可以检查接收到的日志是否包含预期日志。我们可以使用
-assert!(res.contains(&expected_log)) 命令来做到这一点。
-
-[代码占位符]
+```
+let expected_log = Log::builder().dest(2).payload(String::from("Hello"));
+assert!(res.contains(&expected_log));
+```
 
 您可能会猜到，dest 是程序向其发送消息的参与者，有效负载是该消息的内容。
 
 运行测试并确保一切正常。
 
-第 1 课测验：测试您的理解力
+## 第 1 课测验：测试你的理解力
 
 1.  考虑以下程序：
+```
+#![no_std]
+use gstd::{msg, prelude::*, debug};
 
-[代码占位符]
-
+#[no_mangle]
+unsafe extern "C" fn handle() {
+    msg::reply("Hello", 0).expect("Error in sending a reply message");
+}
+```
 我们将使用以下测试套件测试该程序：
-
-[代码占位符]
+```
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    let program = Program::current(&sys);
+    let res = program.send(2, String::from("Hello"));
+    let expected_log = Log::builder().dest(2);
+    assert!(res.contains(&expected_log));
+}
+```
 
 运行该测试的结果是什么？
 
--   一切都会好起来的：测试会通过；
+- 一切顺利：测试会通过；
 
--   测试将失败，因为初始化程序结构的第一条消息始终是初始化消息。
+- 测试将失败，因为初始化程序结构的第一条消息始终是初始化消息。
 
--   测试将失败，因为 expected_log 不包含带有“Hello”的有效负载。
+- 测试将失败，因为 expected_log 不包含带有“Hello”的有效负载。
 
 2.  编写该测试的错误是什么？
+```
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    let program_1 = Program::current(&sys);
+    let program_2 = Program::current(&sys);
+    let res = program_2.send(2, String::from("Hello"));
+    assert!(res.log().is_empty());
+}
+```
 
-[代码占位符]
+- 第一条消息应该发送给第一个初始化的程序；
 
--   第一条消息应该发送给第一个初始化的程序；
+- 你不能初始化两个相同的程序；
 
--   您不能初始化两个相同的程序；
+- 发给 program_2 的消息是从程序已经占用的地址发出的。
 
--   发给program_2的消息是从程序已经占用的地址发出的。
+3. 从 gtest 库返回 fn send() 的结果是什么？
 
-3.  什么从 gtest 库返回 fn send() ？
+- 它返回包含程序执行结果的 RunResult 结构；
 
--   它返回包含程序执行结果的 RunResult 结构；
+- 它返回 Log 结构，其中包含有关程序执行期间发送的消息的源、目标和有效负载的信息；
 
--   它返回 Log
-    结构，其中包含有关程序执行期间发送的消息的源、目标和有效负载的信息；
+- 它返回发送回发件人的消息。
 
--   它返回发送回发件人的消息。
+### 高级 Hello World 程序概念
 
-高级 Hello World 程序概念
-
-让我们通过引入两条新消息来为我们的程序添加更多功能：SendHelloTo 和
-SendHelloReply。
+让我们通过引入两条新消息来为我们的程序添加更多功能：SendHelloTo 和 SendHelloReply。
 
 我们的程序将收到 2 条消息：
 
--   SendHelloTo：收到这条消息后，程序将向指定地址发送“hello”；
+- SendHelloTo：收到这条消息后，程序将向指定地址发送“hello”；
 
--   SendHelloReply：程序用“hello”消息回复发送当前消息的帐户。
+- SendHelloReply：程序用“hello”消息回复发送当前消息的帐户。
 
 正如我们在上一课中看到的，我们必须对程序收到的消息进行解码。我们将定义一个用于解码传入消息的枚举
 InputMessages。
-
-[代码占位符]
+```
+#[derive(Encode, Decode, TypeInfo)]
+enum InputMessages {
+    SendHelloTo(ActorId),
+    SendHelloReply,
+}
+```
 
 SendHelloTo 变体包含一个 ActorId 字段，程序将在其中发送问候消息。
 
-我们还需要在枚举中添加派生宏#[derive(Encode, Decode,
-TypeInfo)]，用于消息中的编码和解码，并在 Cargo.toml
-文件中添加适当的依赖项：
+我们还需要在枚举中添加派生宏#[derive(Encode, Decode,TypeInfo)]，用于消息中的编码和解码，并在 Cargo.toml 文件中添加适当的依赖项：
+```
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+```
 
-[代码占位符]
+为了初始化我们的程序，我们将定义一个静态可变变量 GREETING 作为一个 Option .
+```
+static mut GREETING: Option<String> = None;
+```
 
-为了初始化我们的程序，我们将定义一个静态可变变量 GREETING 作为一个
-Option .
-
-[代码占位符]
-
-在程序初始化之前，GREETING 等于 None。初始化后，GREETING 会变成
-Some(String)。
-
-[代码占位符]
+在程序初始化之前，GREETING 等于 None。初始化后，GREETING 会变成 Some(String)。
+```
+#[no_mangle]
+unsafe extern "C" fn init() {
+   let greeting = String::from_utf8(msg::load_bytes().expect("Can't load init message"))
+       .expect("Invalid message");
+   debug!("Program was initialized with message {:?}", greeting);
+   GREETING = Some(greeting);
+}
+```
 
 接下来，我们将解码 handle 函数中的传入消息并定义程序接收到的消息：
+```
+#[no_mangle]
+unsafe extern "C" fn handle() {
+   let input_message: InputMessages = msg::load().expect("Error in loading InputMessages");
+   let greeting = GREETING.get_or_insert(Default::default());
+   match input_message {
+       InputMessages::SendHelloTo(account) => {
+           debug!("Message: SendHelloTo {:?}", account);
+           msg::send(account, greeting, 0)
+               .expect("Error in sending Hello message to account");
+       }
+       InputMessages::SendHelloReply => {
+           debug!("Message: SendHelloReply");
+           msg::reply(greeting, 0).expect("Error in sending reply");
+       }
+   }
+}
+```
 
-[代码占位符]
-
-程序收到SendHelloTo消息后，通过send函数向指定账号发送hello消息。另一方面，当合约收到
+程序收到 SendHelloTo 消息后，通过 send 函数向指定账号发送 hello 消息。另一方面，当合约收到
 SendHelloReply 消息时，它会回复一条问候消息。
 
-测试更新后的智能合约
+### 测试更新后的智能合约
 
-首先，我们将测试 SendHelloTo 消息。我们定义将接收该消息的帐户
-ID，并检查结果日志中是否有分配给该帐户的消息。
+首先，我们将测试 SendHelloTo 消息。我们定义将接收该消息的帐户 ID，并检查结果日志中是否有分配给该帐户的消息。
+```
+use gtest::{Log, Program, System};
+use hello_world::InputMessages;
 
-[代码占位符]
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    sys.init_logger();
+    let program = Program::current(&sys);
+    let res = program.send(2, String::from("INIT MESSAGE"));
+    assert!(!res.main_failed());
+    assert!(res.log().is_empty());
 
-了解程序元数据和状态
+    // test `SendHelloTo`
+    let hello_recipient: u64 = 4;
+    let res = program.send(2, InputMessages::SendHelloTo(hello_recipient.into()));
+    let expected_log = Log::builder()
+        .dest(hello_recipient)
+        .payload(String::from("Hello"));
+    assert!(res.contains(&expected_log))
+```
+
+### 了解程序元数据和状态
 
 元数据是一种接口映射，有助于将一组字节转换为可理解的结构。它决定了所有传入和传出数据的编码/解码方式。
 
-元数据允许 dApp 的部分——智能合约和客户端 (JavaScript)
-相互理解并交换数据。
+元数据允许 dApp 的部分——智能合约和客户端 (JavaScript) 相互理解并交换数据。
 
 我们使用 crate 来描述元数据接口gmeta：
+```
+use gmeta::{InOut, Metadata};
+pub struct ProgramMetadata;
+impl Metadata for ProgramMetadata {
+    type Init = InOut<MessageInitIn, MessageInitOut>;
+    type Handle = InOut<MessageIn, MessageOut>;
+    type Others = InOut<MessageAsyncIn, Option<u8>>;
+    type Reply = InOut<String, Vec<u16>>;
+    type Signal = ();
+    type State = Vec<u128>;
+}
+```
 
-[代码占位符]
+位置：
 
-在哪里：
+- Init - 描述 init() 函数的传入/传出类型。
 
--   Init - 描述init()函数的传入/传出类型。
+- 句柄 - 描述 handle() 函数的传入/传出类型。
 
--   句柄 - 描述handle()函数的传入/传出类型。
+- 其他 - 描述 main() 异步交互情况下函数的传入/传出类型。
 
--   其他 - 描述main()异步交互情况下函数的传入/传出类型。
+- 回复 - 描述使用该功能执行的传入/传出消息类型 handle_reply。
 
--   回复 - 描述使用该功能执行的传入/传出消息类型handle_reply。
+- 信号 - 仅描述处理系统信号时从程序传出的类型。
 
--   信号 - 仅描述处理系统信号时从程序传出的类型。
+- State - 描述查询状态的类型
 
--   State - 描述查询状态的类型
+需要描述所有类型。如果你的程序中缺少任何端点，您可以使用 () 代替。
 
-有必要描述所有类型。如果您的程序中缺少任何端点，您可以使用 () 代替。
+让我们为示例定义元数据。我们将创建一个 crate hello-world-io 在我们的 hello-world 程序的目录中：
+```
+cargo new hello-world-io --lib  
+```
 
-让我们为示例定义元数据。我们将创建一个箱子
+这个 crate 的 Cargo.toml：
+```
+[package]
+name = "hello-world-io"
+version = "0.1.0"
+edition = "2021"
 
-hello-world-io 在我们的 hello-world 程序的目录中：
+[dependencies]
+gmeta = {  git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git" }
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+```
 
-[代码占位符]
+在 lib.rs 文件中，我们将为 init 函数定义传入消息，为 handle 函数定义传入和传出消息：
 
-这个箱子的 Cargo.toml：
+```
+#![no_std]
 
-[代码占位符]
+use codec::{Decode, Encode};
+use gmeta::{InOut, Metadata};
+use gstd::{prelude::*, ActorId};
+use scale_info::TypeInfo;
+pub struct ProgramMetadata;
 
-在 lib.rs 文件中，我们将为 init 函数定义传入消息，为 handle
-函数定义传入和传出消息：
+impl Metadata for ProgramMetadata {
+   type Init = InOut<String, ()>;
+   type Handle = InOut<InputMessages, String>;
+   type Reply = InOut<(), ()>;
+   type Others = InOut<(), ()>;
+   type Signal = ();
+   type State = String;
+}
 
-[代码占位符]
+#[derive(Encode, Decode, TypeInfo)]
+pub enum InputMessages {
+   SendHelloTo(ActorId),
+   SendHelloReply,
+}
+```
 
-init 函数的输入是一个字符串。handle 函数的输入是枚举
-InputMessage，因此输出是 String。程序状态也是String（是一组问候语）。
+init 函数的输入是一个字符串。handle 函数的输入是枚举 InputMessage，因此输出是 String。程序状态也是 String（一组问候语）。
 
-可以使用状态函数读取程序状态。Reading State 是一项免费功能，不需要 gas
-费用。让我们在 hello-world 程序的 lib.rs 文件中定义这个函数：
+可以使用状态函数读取程序状态。Reading State 是一项免费功能，不需要 gas 费用。让我们在 hello-world 程序的 lib.rs 文件中定义这个函数：
+```
+#[no_mangle]
+extern "C" fn state() {
+   let greeting = unsafe {
+        GREETING.get_or_insert(Default::default())
+   };
+   msg::reply(greeting, 0).expect("Failed to share state");
+}
 
-[代码占位符]
+```
 
 为了能够验证程序的元数据，我们将使用 metahash() 函数：
+```
+#[no_mangle]
+// It returns the Hash of metadata.
+// .metahash is generating automatically while you are using build.rs
+extern "C" fn metahash() {
+   let metahash: [u8; 32] = include!("../.metahash");
+   msg::reply(metahash, 0).expect("Failed to share metahash");
+}
+```
 
-[代码占位符]
-
-有必要在 hello-world 程序的 Cargo.toml 中将 hello-world-io crate 添加到
-build-dependencies 中：
-
-[代码占位符]
+有必要在 hello-world 程序的 Cargo.toml 中将 hello-world-io crate 添加到 build-dependencies 中：
+```
+[package]
+name = "hello-world"
+version = "0.1.0"
+edition = "2021"
+...
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+hello-world-io = { path = "hello-world-io" }
+```
 
 我们还需要使用以下代码更改 build.rs 文件：
+```
+use hello_world_io::ProgramMetadata;
+fn main() {
+   gear_wasm_builder::build_with_metadata::<ProgramMetadata>();
+}
+```
 
-[代码占位符]
+构建程序后，将生成一个 meta.txt 文件作为智能合约编译的结果。此元数据文件可用于将与此智能合约交互的 UI 应用程序。
 
-构建程序后，将生成一个 meta.txt
-文件作为智能合约编译的结果。此元数据文件可用于将与此智能合约交互的 UI
-应用程序。
+### 将程序上传到区块链
 
-将程序上传到区块链
+上传程序最简单的方法是使用 Gear Idea - idea.gear-tech.io 中的“上传程序”选项。
 
-上传程序最简单的方法是使用 Gear Idea 门户 - idea.gear-tech.io
-中的“上传程序”选项。
+首先，你需要创建一个帐户并连接到 Gear Idea。按照 https://wiki.gear-tech.io/docs/idea/account/create-account 中提供的说明创建您的帐户。
 
-首先，您需要创建一个帐户并连接到 Gear
-Idea。按照https://wiki.gear-tech.io/docs/idea/account/create-account中提供的说明创建您的帐户。
+登录后，你可以通过单击屏幕左下角的 gear 图标来选择要上传程序的网络。对于 Gear Academy Workshop，选择 workshop 节点 (wss://node-workshop.gear.rs:443) 并单击“切换”按钮。
 
-登录后，您可以通过单击屏幕左下角的齿轮图标来选择要上传程序的网络。对于
-Gear Academy 车间，选择车间节点 (wss://node-workshop.gear.rs:443)
-并单击“切换”按钮。
+选择 workshop 节点，点击切换按钮：
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/90a6bd4a-8c47-44e8-a6e1-7baaff508be1)
 
-选择工坊节点，点击切换按钮：
+接下来，在左侧栏中选择“程序”并上传 hello.opt.wasm 文件及其元数据（meta.txt 文件）。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/fac0bd31-30ca-47df-9754-baa4785855f2)
 
-[图像占位符]
+为你的程序命名，输入传入的问候消息，然后单击“上传程序”按钮。
 
-接下来，在左侧栏中选择“程序”并上传 hello.opt.wasm
-文件及其元数据（meta.txt 文件）。
+如果程序已成功上传，你将在程序中看到它。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/fb0c3ba3-fa09-40ed-a3dd-8b116a0b48ff)
 
-[图像占位符]
+现在你可以向你的程序发送消息：
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/183726aa-bcdd-445b-8e99-2a78351b4cc5)
 
-为您的程序命名，输入传入的问候消息，然后单击“上传程序”按钮。
+你还可以读取程序状态（这是我们在程序初始化期间设置的问候字符串）。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/b2ac2692-1444-461c-8f30-28ca4cf7001d)
 
-如果程序已成功上传，您将在程序中看到它。
-
-[图像占位符]
-
-您现在可以向您的程序发送消息：
-
-[图像占位符]
-
-您还可以读取程序状态（这是我们在程序初始化期间设置的问候字符串）。
-
-[图像占位符]
-
-任务：
+### 任务：
 
 让我们为 Tamagotchi 游戏编写智能合约：
 
--   创建一个智能合约 Tamagotchi，它将存储 Tamagotchi
-    的姓名和出生日期。您的合同状态应定义如下：
+- 创建一个智能合约 Tamagotchi，它将存储 Tamagotchi 的姓名和出生日期。你的合约状态应定义如下：
+```
+#[derive(Default, Encode, Decode, TypeInfo)]
+pub struct Tamagotchi {
+   name: String,
+   date_of_birth: u64,
+}
+```
 
-[代码占位符]
+- 初始化时，设置电子宠物的姓名和出生日期，并发送确认初始化成功的回复。
 
--   初始化时，设置电子宠物的姓名和出生日期，并发送确认初始化成功的回复。
+- 你的 Tamagochi 程序应该接受以下消息：
 
--   你的 Tamagochi 程序应该接受以下消息：
+    - 名称 - 程序回答 Tamagochi 的名称；
 
-    -   名称 - 程序回答电子蛋的名称；
+    - 年龄 - 该程序会回答 Tamagochi 的年龄。
 
-    -   年龄 - 该程序会回答关于电子蛋的年龄。
+- 将状态函数添加到你的程序中。
 
--   将状态函数添加到您的程序中。
+- 将你的合约上传到 https://idea.gear-tech.io/ 上的 workshop 节点。
 
--   将您的合约上传到https://idea.gear-tech.io/上的工作坊节点。
+将你的 Tamagotchi 合约连接到前端应用程序，你需要确保元数据如下：
+```
+pub struct ProgramMetadata;
 
-要将你的 Tamagotchi 合约连接到前端应用程序，你需要确保元数据如下：
+impl Metadata for ProgramMetadata {
+   type Init = InOut<String,()>;
+   type Reply = InOut<(),()>;
+   type Others = InOut<(),()>;
+   type Signal = ();
+   type Handle = InOut<TmgAction, TmgEvent>;
+   type State = Tamagotchi;
+}
 
-[代码占位符]
+#[derive(Encode, Decode, TypeInfo)]
+pub enum TmgAction {
+   Name,
+   Age,
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub enum TmgEvent {
+   Name(String),
+   Age(u64),
+}
+
+#[derive(Default, Encode, Decode, TypeInfo)]
+pub struct Tamagotchi {
+   name: String,
+   date_of_birth: u64,
+```
 
 }
 
 克隆存储库：https://github.com/gear-dapps/smart-contract-academy
 
 在前端目录中，运行以下命令：
-
-[代码占位符]
+```
+yarn
+yarn start
+```
 
 .env.local 文件包含以下内容：
+```
+REACT_APP_NODE_ADDRESS=wss://test-wss.gear.rs
+```
 
-[代码占位符]
-
-这意味着应用程序正在测试网节点上运行。您还可以运行本地节点，上传
-Tamagotchi 合约，并通过指示在本地节点上使用合约：
-
-[代码占位符]
+这意味着应用程序正在测试网节点上运行。您还可以运行本地节点，上传 Tamagotchi 合约，并通过指示在本地节点上使用合约：
+```
+REACT_APP_NODE_ADDRESS=ws://localhost:9944
+```
 
 运行 yarn start 命令后，您将看到以下窗口：
 
-[图像占位符]
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/5da1b95c-4ffc-4972-b266-82a7320daff8)
 
-选择第 1 课，粘贴您的电子鸡地址，您将看到您的电子鸡！
+选择**第 1 课**，粘贴你的 Tamagotchi 地址，你将看到你的 Tamagotchi！
 
-请在您的 Tamagotchi 合约中附上指向 repo 的链接。
+请在你的 Tamagotchi 合约中附上指向 repo 的链接。
 
