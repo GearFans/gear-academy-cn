@@ -2,7 +2,7 @@
 
 ### 课程总结：
 
--   我们将创建我们的第一个 “Hello World” 智能合约程序。
+-   我们将创建我们的第一个“Hello World”智能合约程序。
 
 -   了解如何初始化程序并定义消息处理的入口函数。
 
@@ -16,7 +16,7 @@
 
 在课程结束时，我们将拥有：
 
--   定义了创建名为 “Hello World” 的简单智能合约程序所涉及的步骤。
+-   定义了创建名为“Hello World”的简单智能合约程序所涉及的步骤。
 
 -   解释了初始化智能合约和定义消息处理入口函数的过程。
 
@@ -71,7 +71,8 @@ gtest = { git = "https://github.com/gear-tech/gear.git" }
 ```
 
 现在，让我们在 lib.rs 文件中编写 Gear 程序的最小结构。handle 函数是程序的入口函数。每次程序收到传入消息时都会调用该函数。
-```
+
+```rust
 #![no_std]
 use gstd::{msg, prelude::*};
 
@@ -80,13 +81,15 @@ unsafe extern "C" fn handle() {}
 ```
 
 为了构建我们的程序，我们将使用以下代码创建 build.rs 文件：
-```
+
+```rust
 fn main() {
     gear_wasm_builder::build();
 }
 ```
 
 现在可以运行以下命令来构建我们的项目：
+
 ```
 cargo build  --release
 ```
@@ -94,7 +97,7 @@ cargo build  --release
 gstd::msg 是 gstd 库中的消息传递模块，允许用户处理传入的消息，获取有关发件人或消息内容的必要信息，并向其他 actor 发送回复或新消息（链接到 gstd）。
 
 我们将使用发送新消息的 reply 函数作为对当前正在处理的消息的回复：
-```
+```rust
 #![no_std]
 use gstd::{msg, prelude::*};
 
@@ -134,8 +137,8 @@ target/wasm32-unknown-unknown/release 目录应该包含三个 WASM 二进制文
 
 元数据可用作与网络中的 Gear 程序交互的外部工具和应用程序的消息负载描述。它存储在一个单独的 *.meta.wasm 文件中。
 
-**Gear metadata!宏从 Rust 中导出了用户在宏中指定的 IO 数据函数。** 在我们的示例中，我们只需要为 handle 输出消息声明一个类型：
-```
+**Gear metadata! 宏从 Rust 中导出了用户在宏中指定的 IO 数据函数。** 在我们的示例中，我们只需要为 handle 输出消息声明一个类型：
+```rust
 gstd::metadata! {
     title: "Hello world contract",
     handle:
@@ -143,20 +146,21 @@ gstd::metadata! {
 }
 ```
 
-我们已经学习了如何创建一个简单的智能合约程序，该程序以 “Hello” 消息响应任何传入消息。让我们测试一下我们的程序。
+我们已经学习了如何创建一个简单的智能合约程序，该程序以“Hello”消息响应任何传入消息。让我们测试一下我们的程序。
 
 ## 使用 gtest 库测试智能合约
 
 测试智能合约是开发去中心化应用程序的一个重要方面。我们将使用 Gear gtest 库进行程序的逻辑测试。
 
-首先，让我们在项目目录的顶层，“src” 目录旁边创建一个名为“tests”的新目录。在该目录中，我们将创建一个 hello_world_test.rs 文件，我们将在其中为合约编写测试。
+首先，让我们在项目目录的顶层，“src”目录旁边创建一个名为“tests”的新目录。在该目录中，我们将创建一个 hello_world_test.rs 文件，我们将在其中为合约编写测试。
 ```
 mkdir tests
 touch hello_world_test.rs
 ```
 
 在我们的测试文件中，我们需要从 gtest 库中导入必要的模块，即 import *Log*、*Program* 和 *System*。我们还将定义一个测试函数：
-```
+
+```rust
 use gtest::{Log, Program, System};
 
 #[test]
@@ -164,24 +168,24 @@ fn hello_test() {}
 ```
 
 在测试我们的智能合约之前，我们需要初始化运行程序的环境。我们可以使用 gtest 的系统模块来做到这一点。系统模拟节点行为：
-```
+```rust
 let sys = System::new();
 ```
 
 接下来，我们需要初始化我们的程序。我们可以使用 gtest 的 Program 模块来做到这一点。初始化程序有两种方法：从文件或当前程序：
 
 从文件初始化程序：
-```
+```rust
 let program = Program::from_file(&sys,
-              "./target/wasm32-unknown-unknown/release/hello_world.wasm");
+    "./target/wasm32-unknown-unknown/release/hello_world.wasm");
 ```
 
 从当前程序初始化程序：
-```
+```rust
 let program = Program::current(&sys);
 ```
 
-上传的程序有自己的 id。您可以使用 from_file_with_id 构造函数手动指定程序 ID。如果不指定程序id，第一个初始化程序的 id 为 0x01000...，下一个没有指定 id 的初始化程序 id 为0x02000...，依此类推。
+上传的程序有自己的 id。您可以使用 from_file_with_id 构造函数手动指定程序 ID。如果不指定程序 id，第一个初始化程序的 id 为 0x01000...，下一个没有指定 id 的初始化程序 id 为 0x02000...，依此类推。
 
 在下一步中，我们将向程序发送消息。
 
@@ -192,7 +196,7 @@ let program = Program::current(&sys);
 - 发件人 ID 可以指定为十六进制、数组 ([u8, 32])、字符串或 u64。但是，你不能从程序已占用的 id 发送消息！
 
 - 即使程序没有 init 函数，初始化程序结构的第一条消息也始终是 init 消息。在我们的范例中，它可以是任何消息。但是让我们将 init 函数添加到我们的程序中并监控该消息是否到达程序：
-```
+```rust
 #![no_std]
 use gstd::{msg, prelude::*, debug};
 
@@ -209,7 +213,7 @@ unsafe extern "C" fn init() {
 ```
 
 在我们的测试函数中，我们可以使用以下函数向程序发送消息 `send()` 函数：
-```
+```rust
 #[test]
 fn hello_test() {
     let sys = System::new();
@@ -237,26 +241,26 @@ gtest 库中的 Sending 函数将返回 RunResult 结构。它包含处理消息
 比如我们可以查看 init 消息处理结果。我们可以通过确保日志为空并且程序不回复或发送任何消息来做到这一点。为此，我们可以使用 assert!(res.log().is_empty()) 命令。
 
 - 包含空日志（程序不回复也不发送任何消息）；
-```
+```rust
 assert!(res.log().is_empty());
 ```
 
 - 成功：
-```
+```rust
 assert!(!res.main_failed());
 ```
 
 一旦我们确认初始化消息成功，接下来的消息将通过句柄函数处理。我们可以通过使用 program.send(2, String::from("HANDLE MESSAGE"))
 命令发送下一条消息来测试这一点。
-```
+```rust
 let res = program.send(2, String::from("HANDLE MESSAGE"));
 ```
 
-在这里，我们应该检查程序是否回复了预期的问候消息。为此，我们可以使用 gtest 库中的日志结构并构建我们期望接收的日志。具体来说，我们可以使用Log::builder().dest(2).payload(String::from("Hello")) 命令来创建预期的日志。
+在这里，我们应该检查程序是否回复了预期的问候消息。为此，我们可以使用 gtest 库中的日志结构并构建我们期望接收的日志。具体来说，我们可以使用 Log::builder().dest(2).payload(String::from("Hello")) 命令来创建预期的日志。
 
 创建预期日志后，我们可以检查接收到的日志是否包含预期日志。我们可以使用 assert!(res.contains(&expected_log)) 命令来做到这一点。
 
-```
+```rust
 let expected_log = Log::builder().dest(2).payload(String::from("Hello"));
 assert!(res.contains(&expected_log));
 ```
@@ -268,7 +272,7 @@ assert!(res.contains(&expected_log));
 ## 第 1 课测验：测试你的理解力
 
 1.  考虑以下程序：
-```
+```rust
 #![no_std]
 use gstd::{msg, prelude::*, debug};
 
@@ -278,7 +282,7 @@ unsafe extern "C" fn handle() {
 }
 ```
 我们将使用以下测试套件测试该程序：
-```
+```rust
 #[test]
 fn hello_test() {
     let sys = System::new();
@@ -298,7 +302,7 @@ fn hello_test() {
 - 测试将失败，因为 expected_log 不包含带有“Hello”的有效负载。
 
 2.  编写该测试的错误是什么？
-```
+```rust
 #[test]
 fn hello_test() {
     let sys = System::new();
@@ -333,9 +337,8 @@ fn hello_test() {
 
 - SendHelloReply：程序用“hello”消息回复发送当前消息的帐户。
 
-正如我们在上一课中看到的，我们必须对程序收到的消息进行解码。我们将定义一个用于解码传入消息的枚举
-InputMessages。
-```
+正如我们在上一课中看到的，我们必须对程序收到的消息进行解码。我们将定义一个用于解码传入消息的枚举 InputMessages。
+```rust
 #[derive(Encode, Decode, TypeInfo)]
 enum InputMessages {
     SendHelloTo(ActorId),
@@ -346,18 +349,18 @@ enum InputMessages {
 SendHelloTo 变体包含一个 ActorId 字段，程序将在其中发送问候消息。
 
 我们还需要在枚举中添加派生宏#[derive(Encode, Decode,TypeInfo)]，用于消息中的编码和解码，并在 Cargo.toml 文件中添加适当的依赖项：
-```
+```rust
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 ```
 
 为了初始化我们的程序，我们将定义一个静态可变变量 GREETING 作为一个 Option .
-```
+```rust
 static mut GREETING: Option<String> = None;
 ```
 
 在程序初始化之前，GREETING 等于 None。初始化后，GREETING 会变成 Some(String)。
-```
+```rust
 #[no_mangle]
 unsafe extern "C" fn init() {
    let greeting = String::from_utf8(msg::load_bytes().expect("Can't load init message"))
@@ -368,7 +371,7 @@ unsafe extern "C" fn init() {
 ```
 
 接下来，我们将解码 handle 函数中的传入消息并定义程序接收到的消息：
-```
+```rust
 #[no_mangle]
 unsafe extern "C" fn handle() {
    let input_message: InputMessages = msg::load().expect("Error in loading InputMessages");
@@ -387,13 +390,12 @@ unsafe extern "C" fn handle() {
 }
 ```
 
-程序收到 SendHelloTo 消息后，通过 send 函数向指定账号发送 hello 消息。另一方面，当合约收到
-SendHelloReply 消息时，它会回复一条问候消息。
+程序收到 SendHelloTo 消息后，通过 send 函数向指定账号发送 hello 消息。另一方面，当合约收到 SendHelloReply 消息时，它会回复一条问候消息。
 
 ### 测试更新后的智能合约
 
 首先，我们将测试 SendHelloTo 消息。我们定义将接收该消息的帐户 ID，并检查结果日志中是否有分配给该帐户的消息。
-```
+```rust
 use gtest::{Log, Program, System};
 use hello_world::InputMessages;
 
@@ -421,8 +423,8 @@ fn hello_test() {
 
 元数据允许 dApp 的部分——智能合约和客户端 (JavaScript) 相互理解并交换数据。
 
-我们使用 crate 来描述元数据接口gmeta：
-```
+我们使用 crate 来描述元数据接口 gmeta：
+```rust
 use gmeta::{InOut, Metadata};
 pub struct ProgramMetadata;
 impl Metadata for ProgramMetadata {
@@ -453,7 +455,7 @@ impl Metadata for ProgramMetadata {
 
 让我们为示例定义元数据。我们将创建一个 crate hello-world-io 在我们的 hello-world 程序的目录中：
 ```
-cargo new hello-world-io --lib  
+cargo new hello-world-io --lib
 ```
 
 这个 crate 的 Cargo.toml：
@@ -472,7 +474,7 @@ scale-info = { version = "2.0.1", default-features = false, features = ["derive"
 
 在 lib.rs 文件中，我们将为 init 函数定义传入消息，为 handle 函数定义传入和传出消息：
 
-```
+```rust
 #![no_std]
 
 use codec::{Decode, Encode};
@@ -500,7 +502,7 @@ pub enum InputMessages {
 init 函数的输入是一个字符串。handle 函数的输入是枚举 InputMessage，因此输出是 String。程序状态也是 String（一组问候语）。
 
 可以使用状态函数读取程序状态。Reading State 是一项免费功能，不需要 gas 费用。让我们在 hello-world 程序的 lib.rs 文件中定义这个函数：
-```
+```rust
 #[no_mangle]
 extern "C" fn state() {
    let greeting = unsafe {
@@ -512,7 +514,7 @@ extern "C" fn state() {
 ```
 
 为了能够验证程序的元数据，我们将使用 metahash() 函数：
-```
+```rust
 #[no_mangle]
 // It returns the Hash of metadata.
 // .metahash is generating automatically while you are using build.rs
@@ -574,7 +576,7 @@ fn main() {
 让我们为 Tamagotchi 游戏编写智能合约：
 
 - 创建一个智能合约 Tamagotchi，它将存储 Tamagotchi 的姓名和出生日期。你的合约状态应定义如下：
-```
+```rust
 #[derive(Default, Encode, Decode, TypeInfo)]
 pub struct Tamagotchi {
    name: String,
@@ -595,7 +597,7 @@ pub struct Tamagotchi {
 - 将你的合约上传到 https://idea.gear-tech.io/ 上的 workshop 节点。
 
 将你的 Tamagotchi 合约连接到前端应用程序，你需要确保元数据如下：
-```
+```rust
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
@@ -652,4 +654,3 @@ REACT_APP_NODE_ADDRESS=ws://localhost:9944
 选择**第 1 课**，粘贴你的 Tamagotchi 地址，你将看到你的 Tamagotchi！
 
 请在你的 Tamagotchi 合约中附上指向 repo 的链接。
-
