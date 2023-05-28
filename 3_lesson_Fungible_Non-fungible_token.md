@@ -1,404 +1,371 @@
-Lesson 3: Understanding Fungible/Non-fungible tokens
+## 第 3 课：了解同质化/非同质化代币
 
-Lessson Summary
+### 课程总结
 
--   This lesson introduces the concept of cryptographic tokens
+- 本课介绍加密代币的概念
 
--   We explain Fungible and Non-Fungible tokens (NFTs) and their main
-      functions
+- 我们解释了同质化和非同质化代币 (NFT) 及其主要功能
 
--   We also explain the difference between fungible and non-fungible
-      tokens (NFTs)
+- 我们还解释了同质化和非同质化代币 (NFT) 之间的区别
 
--   The importance of understanding these cryptographic concepts is
-      emphasized, especially in relation to creating programs
+- 强调了理解这些密码学概念的重要性，尤其是在创建程序方面
 
-Lesson Objective
+### 课程目标
 
-By the end of the lesson, you will:
+在课程结束时，你将收获：
 
--   Define cryptographic tokens and distinguish them from other types of
-      tokens
+- 定义加密代币并将它们与其他类型的代币区分开来
 
--   Differentiate between fungible and non-fungible tokens and explain
-      their respective use cases
+- 区分同质化和非同质化代币并解释它们各自的用例
 
--   Apply their knowledge of cryptographic tokens to create programs
-      using both fungible and non-fungible tokens
+- 应用加密代币知识，使用同质化和非同质化代币创建程序
 
--   Understand how to implement fungible and non-fungible tokens in the
-      Gear Protocol
+- 了解如何在 Gear Protocol 中实现同质化和非同质化代币
 
-Let’s get started!
+### 让我们开始吧！
 
-Fungible token & their Properties
+### 同质化代币及其属性
 
-Fungible tokens offer the same value and exchangeability as fiat
-currency. Much like exchanging one paper dollar for another, these
-digital smart contracts allow users to trade tokenized assets of equal
-worth between accounts. However, at a fundamental technological level,
-fungible tokens are simply smart contracts that store a mapping between
-account addresses and the number of tokens.
+同质化代币提供与法定货币相同的价值和可兑换性。就像将一张纸币换成另一张纸币一样，这些数字智能合约允许用户在账户之间交易等值的代币化资产。然而，在基础技术层面上，同质化代币只是存储账户地址和代币数量之间映射的智能合约。
 
-аddress [Image Placeholder] amount
+аddress -> amount
 
-The main function of such smart contracts are:
+此类智能合约的主要功能是：
 
--   Transfer(from, to, amount): This function allows you to transfer the
-      number of tokens (amount) from one address (from) to another (to).
-      It checks if the “from” account owns tokens, subtracts the
-      necessary amount from its balance, and adds the specified token
-      number to the “to” account.
+- Transfer(from, to, amount)：此功能允许你将代币数量（金额）从一个地址（from）转移到另一个地址（to）。它检查“from”账户是否拥有代币，从其余额中减去必要的金额，并将指定的代币数量添加到“to”账户。
 
--   Approve(spender, amount) is a function that allows you to give the
-      specified spender account the right to dispose of the tokens of
-      the account that called this function (in our case, it'll be
-      msg::source()). In the other words, the spender account can call
-      the transfer() function, so it can transfer tokens from the
-      msg::source() account to the specified address. This functionality
-      is useful when the transfer of tokens occurs in any of the
-      contracts.
+- `Approve(spender, amount)` 是一个函数，它允许你授权指定的 spender 账户处置调用此函数的账户的代币（在目前的场景中，它将是 msg::source()）。换句话说，spender 账户可以调用 transfer() 函数，所以它可以将 token 从 msg::source() 账户转移到指定地址。此功能在任何合约中发生代币转移时非常有用。
 
-  Let's take an escrow smart contract as an example.
+我们以 escrow 智能合约为例。
 
-  In this example, the goods are paid using tokens and not a
-  msg::value(). The buyer sends a deposit() message, and the escrow
-  smart contract accesses the token contract and sends a token transfer
-  message. In this particular message, the from address is the buyer
-  address.
+在这个例子中，货物是使用代币支付的，而不是 msg::value()。买方发送 deposit() 消息，escorw 智能合约访问代币合约并发送代币转移消息。在此特定消息中，发件人地址是买家地址。
 
-  If the escrow contract does not have the right to dispose of the
-  buyer's tokens, then the token contract will panic and prevent the
-  token transfer.
+如果 escrow 合约无权处置买方的代币，那么代币合约就会 panic 并阻止代币转移。
 
--   Mint(to, amount): This function increases the number of tokens in
-      the contract. Usually, this function can be called by certain
-      accounts that are allowed to create new tokens.
+- `Mint(to,amount)`：这个函数增加了合约中的代币数量。通常，此函数可以由允许创建新代币的某些帐户调用。
+- `Burn(from, amount)`：是一个减少合约中代币数量的函数。就像 mint() 函数一样，并非所有帐户都可以销毁代币。
 
--   Burn(from, amount) is a function that reduces the token number in
-      the contract. Just like with the mint() function, not all accounts
-      are allowed to burn tokens.
+### 非同质化代币
 
-  Non-Fungible Tokens
+非同质化代币或者说 NFT 提供了一种独特的方式来证明数字资产的所有权。虽然传统的同质化代币可以互换并存储价值，NFT 带有加密凭证，证明所有者对数字艺术或游戏资产等资产的所有权。
 
-  Non-fungible tokens, or NFTs, offer a unique way to prove digital
-  asset ownership. While traditional fungible tokens are interchangeable
-  and store a value, NFTs carry cryptographic certificates that
-  demonstrate the owner's authority over an asset, like digital art or
-  gaming assets.
+аddress -> token_id
 
-  аddress [Image Placeholder]token_id
+此类代币合约的主要功能类似于同质化代币：
 
-  The main functions of the contract of such tokens are similar to
-  fungible tokens:
+- Transfer(to, token_id) 是一个函数，允许你将带有 token_id 编号的代币转移到 to 帐户。与同质化代币合约不同，该合约不需要来自该账户，因为每个代币都有自己的所有者。
 
--   Transfer(to, token_id) is a function that allows you to transfer a
-      token with the token_id number to the to account. Unlike the
-      fungible token contract, this contract does not require a from the
-      account, since each token has its own owner.
+- Approve(approved_account, token_id) 是一个函数，允许你将处理代币的权利授予指定的 approved_account。此功能可用于市场拍卖。当所有者想要出售他的代币时，他们可以将其放在 marketplace/auction 中，因此合约会将此代币发送给新的所有者。
 
--   Approve(approved_account, token_id) is a function that allows you to
-      give the right to dispose of the token to the specified
-      approved_account. This functionality can be useful on marketplaces
-      for auctions. When the owner wants to sell his token, they can put
-      it on a marketplace/auction, so the contract sends this token to
-      the new owner.
+- `Mint(to, token_id, metadata)`：是一个创建新 token 的函数。元数据可以包括关于 token 的任何信息：它可以是特定资源的链接、代币的描述等。
 
--   Mint(to, token_id, metadata) is a function that creates a new token.
-      Metadata can include any information about the token: it can be a
-      link to a specific resource, a description of the token, etc.
+- `Burn(from, token_id)`：此函数从合约中删除具有上述 token_id 的代币。
 
--   Burn(from, token_id): This function removes the token with the
-      mentioned token_id from the contract.
+### 程序间的异步通信
 
-Asynchronous communication between programs
+Gear Protocol 的核心特性是用于消息传递通信的 Actor 模型。Gear Protocol 利用 Actor 模型进行消息传递通信，允许并行计算和异步消息传递以确保更快的处理时间。此开发结构为开发人员在构建复杂的 dApp 时提供了巨大的灵活性。
 
-One of the key and distinguished features of the Gear Protocol is the
-Actor model for message-passing communications. Gear Protocol leverages
-the Actor model for message-passing communication, allowing parallel
-computation and asynchronous messaging to ensure faster processing
-times. The development structure provides developers with immense
-flexibility when building complex dApps.
+如果一个程序向另一个程序发送异步消息，它需要等待那个程序的回复才能进行下一个操作。
 
-If a program sends an asynchronous message to another program, it needs
-to wait for the reply from that program before it can proceed to the
-next operation.
+要向 Gear 程序发送消息，我们使用 `send_for_reply(program, payload, value)` 函数。在这个函数中：
 
-To send a message to a Gear program, we use the send_for_reply(program,
-payload, value) function. In this function:
+- program - 要为其发送消息的程序的地址；
 
--   program - the address of the program to send the message for;
+- payload - 给程序的消息；
 
--   payload - the message to the program;
+- value - 附加到消息的资金。
+```rust
+ pub fn send_for_reply_as<E: Encode, D: Decode>(
+   program: ActorId,
+   payload: E,
+   value: u128
+) -> Result<CodecMessageFuture<D>>
+```
 
--   value - the funds attached to the message.
+### 分布式交易
 
-[Code Placeholder]
+Gear Protocol 中程序之间的交互创建分布式交易，涉及具有各自状态的参与者之间的操作。在我们的例子中，操作是在具有状态的参与者之间执行的。分布式交易必须具备以下特性：
 
-Distributed transactions
+- 原子性：所有数据更改都被视为单个操作。也就是说，要么进行所有修改，要么不进行任何修改。
 
-Interactions between programs in the Gear Protocol create distributed
-transactions that involve operations across actors with their respective
-states. In our case, operations are performed across actors with their
-states. The distributed transactions must possess the following
-features:
+- 一致性：这个属性意味着当一个交易开始和结束时，数据的状态是一致的。
 
--   Atomicity: All data changes are treated as if they were a single
-      operation. That is, either all of the modifications are made or
-      none.
+例如，在以太坊交易中，全局状态更改仅在所有执行成功完成时发生。如果在执行期间发生错误，对状态的所有更改都将“回滚”，就好像交易从未运行过一样。
 
--   Consistency: This property implies that when a transaction begins
-      and ends, the state of data is consistent.
+让我们看看下面的代码：
+```rust
+static mut COUNTER: u32 = 0;
 
-For instance, in Ethereum transactions, global state changes only occur
-when all executions finish successfully. If an error occurs during
-execution, all changes to the state are "rolled back," as if the
-transaction had never been running.
+async unsafe fn non_atomic() {
+   COUNTER = 10;
 
-Let’s look at the following code:
+   send_for_reply(msg::source(), "PING", 0)
+       .expect("Error during sending message")
+       .await
+       .expect("Error during message execution");
 
-[Code Placeholder]
+   COUNTER = 20;
+}
+```
 
-In the example code provided, the global variable COUNTER is set to 10
-before the send_for_reply function is called. If the transaction fails
-before .await, the state is rolled back, and COUNTER returns to 0. If
-the transaction fails after .await, COUNTER retains its value of 10.
+在提供的示例代码中，全局变量 COUNTER 在调用 send_for_reply 函数之前设置为 10。如果交易在 .await 之前失败，则状态回滚，COUNTER 归 0。如果交易在 .await 之后失败，COUNTER 的值保持为 10。
 
-Let’s consider an example of a simple marketplace where tokens are
-transferred to the seller, and then transfers NFT to the buyer.
+让我们考虑一个简单的 marketplace 示例，其中代币被转移给卖家，然后将 NFT 转移给买家。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/5b07e4d0-8f58-4166-85ec-76dde4c91275)
 
-  [Image Placeholder]
+图片显示了以下情况：
 
-The picture shows the following situation:
+1. Marketplace 成功将代币转移给卖家；
 
-1.  The marketplace successfully transfers tokens to the seller;
+2. NFT 转给买方过程中，交易失败。
 
-2.  During the NFT transfer to the buyer, the transaction fails.
+代币转移成功后，NFT 从卖方转移到买方的过程中的交易失败将导致不一致的状态，即卖方收到付款但买方没有收到 NFT。因此，在开发应用程序和不同标准时，我们必须考虑导致状态不一致的潜在故障。
 
-The failed transaction during the transfer of NFTs from the seller to
-the buyer after the successful transfer of tokens would result in an
-inconsistent state, with the seller receiving payment but the buyer not
-receiving the NFT. Thus, we must consider potential failures leading to
-state inconsistency when developing applications and different
-standards.
+### 在 Gear 上实现同质化代币
 
-  Implementation of Fungible Tokens on Gear
+我们建议将同质化代币拆分为三个合约：
 
-We propose to split the fungible token into three contracts:
+1. 作为代理程序的主同质代币，将消息重定向到逻辑合约。
 
-1.  The master fungible token that serves as a proxy program that
-      redirects the message to the logic contract.
+2. 代币逻辑合约 —— 负责实现主要的标准代币功能。我们将逻辑放在一个单独的合约中，以在不丢失同质化代币地址和合约状态的情况下添加更多功能。
 
-2.  The Token Logic Contract - responsible for realizing the main
-      standard token functions. We place the logic in a separate
-      contract to add more functions without losing the address of the
-      fungible token and the contract state.;
+3. 存储合约：这些合约存储用户的余额。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/721a5ea7-3d92-4e35-bfb8-be5462173f1c)
 
-3.  Storage Contracts: These contracts store the balances of the users.
+代币标准有一个防止重复交易（保持幂等性）的特性：发送交易时有两种可能的风险：
 
-[Image Placeholder]
+- 发送重复交易
 
-The token standard has a feature of Preventing Duplicate Transaction
-(Maintaining idempotency): There are two possible risks when sending a
-transaction:
+- 由于网络故障而不知道交易状态。
 
--   Sending duplicate transactions
+发送方可以放心，交易只会执行一次（幂等性）。
 
--   Not knowing the transaction status due to a network failure.
+### 存储合约架构
 
-The sender can be assured that the transaction will only be executed
-once (idempotency).
+存储合同状态有以下字段：
 
-Storage contract architecture
+- 逻辑合约的地址。存储合约必须执行仅从该地址接收的消息；
+```rust
+ft_logic_id: ActorId
+```
 
-The storage contracts state has the following fields:
+- 已执行的交易。在每条消息中，存储合约接收正在执行的交易的哈希值，并将其执行结果存储在字段 Executed 中。如果 Executed 为 true，则消息执行成功，否则 Executed 等于 false。
+```rust
+transaction_status: HashMap<H256, (Executed, Locked)>
+```
 
--   The address of the logic contract. The storage contract must execute
-      messages received only from that address;
+- 账户余额
+```rust
+balances: HashMap<ActorId, u128>
+```
 
-[Code Placeholder]
+- 核准帐目
+```rust
+approvals: HashMap<ActorId, HashMap<ActorId, u128>>
+```
 
--   The executed transactions. In each message, the storage contract
-      receives the hash of the transaction that is being executed and
-      stores its execution results in the field Executed. If Executed is
-      true, then the message executed successfully, otherwise Executed
-      equals false.
+存储接受的消息：
 
-[Code Placeholder]
+- 增加余额：存储增加指定账户的余额；
 
--   Balances of accounts
+- 减少余额：存储减少指定账户的余额；
 
-[Code Placeholder]
+- 批准：存储允许账户授予另一个账户转移其代币的权限；
 
--   Approvals of accounts
+- 转账：将代币从一个账户转移到另一个账户。当代币转移发生在一个存储中时，将从逻辑合约调用消息。
 
-[Code Placeholder]
+- 清除：删除已执行交易的哈希。
 
-The messages that the storage accepts:
+该存储合约不进行任何异步调用，因此它的执行是原子性的。
 
--   Increase balance: the storage raises the balance of the indicated
-      account;
+### 逻辑合约架构
 
--   Decrease balance: The storage reduces the balance of the indicated
-      account;
+逻辑合约的状态由以下字段组成：
 
--   Approve: The storage allow the account to give another account
-      permission to transfer his tokens;
+-   主代币合约地址。逻辑合约必须只执行来自该地址的消息：
+```rust
+ftoken_id: ActorId
+```
 
--   Transfer: Transfer tokens from one account to another. The message
-      is called from the logic contract when the token transfer occurs
-      in one storage.
+- 交易。与存储合约一样，逻辑合约接收正在执行的交易的哈希值并存储其执行结果。但与消息执行是原子的存储合约不同，逻辑合约必须跟踪正在执行的消息及其阶段。
+```rust
+transactions: HashMap<H256, Transaction>
+```
 
--   Clear: Remove the hash of the executed transaction.
+交易结构如下：
+```rust
+pub struct Transaction {
+   msg_source: ActorId,
+   operation: Operation,
+   status: TransactionStatus,
+}
+```
 
-That storage contract doesn't make any asynchronous calls, so its
-execution is atomic.
+其中 msg_source 是一个向主合约发送消息的账户。Operation 是逻辑合约应该处理的动作，status 是交易状态。它是以下枚举。
+```rust
+pub enum TransactionStatus {
+   InProgress,
+   Success,
+   Failure,
+}
+```
 
-The logic contract architecture
+- InProgress - 交易执行开始；
 
-The state of the logic contract consists of the following fields:
+- 成功或失败 - 交易已完成（成功或失败）。在这种情况下，逻辑合约只发送一个响应，表明这个哈希值的交易已经完成。
 
--   The master token contract address. The logic contract must execute
-      messages only from that address:
+- **存储合约的代码哈希**。逻辑合约能够在必要时创建新的存储合约。存储创建实现如下：
 
-[Code Placeholder]
+    - 逻辑合约取账户地址的首字母。如果创建了这个存储合约，那么它将这个账户的余额存储在这个合约中。如果不是，它会创建一个新的存储合约
+```rust
+storage_code_hash: H256
+```
 
--   The transactions. As in the storage contract, the logic contract
-      receives the hash of the transaction that is being executed and
-      stores the result of its execution. But unlike the storage
-      contract, where message executions are atomic, the logic contract
-      has to keep track of the message being executed and its stage.
+-   从字母到存储地址的映射。
+```rust
+   id_to_storage: HashMap<String, ActorId>
+```
 
-[Code Placeholder]
+逻辑合约从主合约接收到以下消息：
+```rust
+Message {
+   transaction_hash: H256,
+   account: ActorId,
+   payload: Vec<u8>,
+},
+```
 
-The Transaction is the following struct:
+该帐户是向主合约发送消息的参与者。
 
-[Code Placeholder]
+有效负载是逻辑合约必须处理的编码操作：
+```rust
+pub enum Operation {
+   Mint {
+      recipient: ActorId,
+      amount: u128,
+   },
+   Burn {
+      sender: ActorId,
+      amount: u128,
+   },
+   Transfer {
+      sender: ActorId,
+      recipient: ActorId,
+      amount: u128,
+   },
+   Approve {
+      approved_account: ActorId,
+      amount: u128,
+   },
+}
+```
 
-  Where msg_source is an account that sends a message to the main
-  contract. Operation is the action that the logic contract should
-  process and status is the transaction status. it's the following enum.
+升级逻辑合约时，枚举操作可能会发生变化，这意味着负载结构也可能会发生变化。因此，主合约不知道负载结构的具体类型，而是将其作为字节数组发送（Vec<u8>).
 
-[Code Placeholder]
+消息期间只向存储合约发送一条消息。收到消息后，逻辑合约将有效负载从字节数组解码为预期的枚举操作。这允许逻辑合约根据特定操作类型（Mint、Burn 或 Transfer）处理消息
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/659e04ec-5170-485b-948d-3472f957e82f)
 
--   InProgress - the transaction execution started;
+当传输发生在 2 个不同的存储之间时，合约的行为如下：
 
--   Success or Failure - the transaction was completed (successfully or
-      not). In this case, the logic contract only sends a response that
-      the transaction with this hash has already been completed.
+1. 逻辑合约将 DecreaseBalance 消息发送到存储合约。
 
--   The code hash of the storage contract. The logic contract is able to
-      create a new storage contract when it's necessary. The storage
-      creation is implemented as follows:
+2. 如果消息执行成功，则逻辑合约将消息 IncreaseBalance 发送到另一个存储合约。否则，逻辑合约保存失败状态并回复主合约。
 
-    -   The logic contract takes the first letter of the account
-          address. If the storage contract for this letter is created,
-          then it stores the balance of this account in this contract.
-          If not, it creates a new storage contract
+3. 如果消息 IncreaseBalance 执行成功，则逻辑合约保存状态并回复主合约。如果在存储合约中执行  IncreaseBalance 期间 gas 用完，则逻辑合约将状态保存为 DecreaseSuccess。这个状态在 handle_signal 函数中是不可追踪的。
 
-[Code Placeholder]
+如果交易执行不成功，则可能是由于合约内存出现问题。逻辑合约必须跟踪存储合约并重新运行任何失败的交易以防止失败。如果错误仍然存在，则应退还余额。
 
--   The mapping from letters to the storage addresses.
+### 主合约架构
 
-[Code Placeholder]
+主合约的状态包括以下字段：
+- 合约管理员的地址。他有升级逻辑合约的权利。
+```rust
+admin: ActorId,
+```
 
-The logic contract receives from the master contract the following
-message:
+-   逻辑合约的地址
+```rust
+ft_logic_id: ActorId,
+```
 
-[Code Placeholder]
+-   交易历史。
+```rust
+transactions: HashMap<H256, TransactionStatus>
+```
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/4b93f94e-c36c-4ef5-bdb4-4b6fcd2d61a6)
 
-The account is an actor who sends the message to the master contract.
+其中 TransactionStatus:
+```rust
+pub enum TransactionStatus {
+   InProgress,
+   Success,
+   Failure,
+}
+```
 
-The payload is the encoded operation the logic contract has to process:
+合约从具有特定随机数的帐户接收消息，该随机数用于计算交易哈希以及帐户地址。用户有责任跟踪他们的随机数并在每次后续交易中增加它。但是，可以以自动跟踪用户随机数的方式设计合约，使随机数字段成为可选的。
 
-[Code Placeholder]
+主合约只是将该消息重定向到逻辑合约，指示向其发送消息的帐户。
 
-When upgrading the logic contract, there may be changes to the enum
-Operation, which means the payload structure may also change. As a
-result, the master contract does not know the specific type of payload
-structure and instead sends it as a byte array (Vec<u8>).
+**任务**
 
-The logic contract sends only one message to the storage contract during
-the message Mint, Burn or Transfer between accounts in the same storage.
-Upon receiving the message, the logic contract decodes the payload from
-a byte array into the expected enum Operation. This allows the logic
-contract to process the message based on the specific operation type
-(Mint, Burn, orTransfer)
+在此作业中，你将向你的 Tamagotchi 智能合约添加功能，以允许更改所有权并授权其他帐户更改所有权。这将涉及实现以下功能：
+- Transfer(new_owner) - 该操作必须将字段所有者更改为指定的帐户；
 
-[Image Placeholder]
+- Approve(allowed_account) - 该操作必须填写指定帐户的 approved_account 字段；
 
-When the transfer occurs between 2 different storages, the contract acts
-as follows:
+- RevokeApproval - 该操作删除当前的 approved_account。
 
-1.  The logic contract sends the DecreaseBalance message to the storage
-      contract.
+将你的合约上传到区块链，运行前端应用程序并选择第三课。
 
-2.  If the message executes successfully, the logic contract sends the
-      message IncreaseBalance to another storage contract. Otherwise,
-      the logic contract saves the status failure and replies to the
-      main contract.
+为确保你的合约与前端应用程序兼容，请确保将元数据设置为以下内容：
+```rust
+pub struct ProgramMetadata;
 
-3.  If the message IncreaseBalance executes successfully, the logic
-      contract saves the status and replies to the main contract. If the
-      gas ran out during the IncreaseBalance execution in the storage
-      contract, the logic contract saves the status DecreaseSuccess.
-      This status is untrackable in the handle_signal function.
+impl Metadata for ProgramMetadata {
+   type Init = InOut<String, ()>;
+   type Reply = InOut<(), ()>;
+   type Others = InOut<(), ()>;
+   type Signal = ();
+   type Handle = InOut<TmgAction, TmgEvent>;
+   type State = Tamagotchi;
+}
 
-  If a transaction has been executed unsuccessfully, it could be due to
-  an issue with the contract memory. The logic contract must trace
-  storage contracts and re-run any failed transactions to prevent
-  failure. If the errors persist, then the balance should be returned.
+#[derive(Encode, Decode, TypeInfo)]
+pub enum TmgAction {
+   Name,
+   Age,
+   Feed,
+   Play,
+   Sleep,
+   Transfer(ActorId),
+   Approve(ActorId),
+   RevokeApproval,
+}
 
-The master contract architecture
+#[derive(Encode, Decode, TypeInfo)]
+pub enum TmgEvent {
+   Name(String),
+   Age(u64),
+   Fed,
+   Entertained,
+   Slept,
+   Transfer(ActorId),
+   Approve(ActorId),
+   RevokeApproval,
+}
 
-The state of the master contract includes the following fields:
-
--   The address of the contract admin. He has the right to upgrade the
-      logic contract.
-
-[Code Placeholder]
-
--   The address of the logic contract
-
-[Code Placeholder]
-
--   The transaction history.
-
-[Code Placeholder]
-
-Where the TransactionStatus:[Image Placeholder]
-
-[Code Placeholder]
-
-The contract receives a message from an account with a specific nonce,
-which is used to compute the transaction hash, along with the account
-address. It is the user's responsibility to keep track of their nonce
-and increase it with each subsequent transaction. However, it is
-possible to design the contract in a way that automatically tracks the
-user's nonce, making the nonce field optional.
-
-The main contract just redirects that message to the logic contract
-indicating the account that sends a message to it.
-
-  Assignment
-
-In this assignment, you will add the functionality to your Tamagotchi
-smart contract to allow for changing ownership and approving other
-accounts to change ownership. This will involve implementing the
-following functions:
-
--   Transfer(new_owner) - that action must change the field owner to the
-      indicated account;
-
--   Approve(allowed_account) - that action must fill the field
-      approved_account the indicated account;
-
--   RevokeApproval - that action removes the current approved_account.
-
-Upload your contract to the blockchain, run the frontend application and
-select the third lesson.
-
-To ensure that your contract is compatible with the frontend
-application, please make sure that the metadata is set to the following:
-
-[Code Placeholder]
+#[derive(Default, Encode, Decode, TypeInfo)]
+pub struct Tamagotchi {
+   pub name: String,
+   pub date_of_birth: u64,
+   pub owner: ActorId,
+   pub fed: u64,
+   pub fed_block: u64,
+   pub entertained: u64,
+   pub entertained_block: u64,
+   pub rested: u64,
+   pub rested_block: u64,
+   pub allowed_account: Option<ActorId>,
+}
+```

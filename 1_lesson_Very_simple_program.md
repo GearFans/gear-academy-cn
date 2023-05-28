@@ -1,528 +1,656 @@
-Lesson 1: Creating the First Smart Contract Program - Hello World
+## 第 1 课：创建第一个智能合约程序 - Hello World
 
-Lesson Summary:
+### 课程总结：
 
--   We will create our first smart contract program called "Hello
-      World."
+-   我们将创建我们的第一个“Hello World”智能合约程序。
 
--   Learn how to initialize a program and define the entry point for
-      message processing.
+-   了解如何初始化程序并定义消息处理的入口函数。
 
--   Add complexity to the program by restricting the type of messages it
-      can receive and creating different greetings for different
-      accounts, depending on the message.
+-   通过限制程序可以接收的消息类型并根据消息为不同的帐户创建不同的问候语来增加程序的复杂性。
 
--   Explore testing smart contracts to ensure they work as intended.
+-   探索测试智能合约以确保它们按预期工作。
 
--   Learn how to read the program's state to retrieve important
-      information.
+-   了解如何读取程序的状态以检索重要信息。
 
-Lesson Objectives:
+### 课程目标：
 
-By the end of the lesson, we will have:
+在课程结束时，我们将拥有：
 
--   Defined the steps involved in creating a simple smart contract
-      program named "Hello World."
+-   定义了创建名为“Hello World”的简单智能合约程序所涉及的步骤。
 
--   Explained the process of initializing a smart contract and defining
-      the entry point for message processing.
+-   解释了初始化智能合约和定义消息处理入口函数的过程。
 
--   Identified different ways of restricting the type of messages a
-      smart contract can receive, and how to create different greetings
-      for different accounts based on the message received.
+-   确定了限制一个智能合约可以接收的消息类型的不同方式，以及如何根据收到的消息为不同的帐户创建不同的问候语。
 
--   Demonstrated how to test a smart contract program to ensure it
-      functions correctly.
+-   演示了如何测试智能合约程序以确保其正常运行。
 
--   Described the process of reading a smart contract's state to
-      retrieve important information.
+-   描述了读取智能合约状态以检索重要信息的过程。
 
--   Summarized the key concepts and building blocks required to develop
-      functional smart contract programs.
+-   总结了开发功能性智能合约程序所需的关键概念和构建区块。
 
-Let’s get started Implementing our First Program!
+**让我们开始构建第一个程序吧！**
 
-Let’s implement the program that’ll send a hello message in response to
-any received messages.
+让我们实现发送问候语以响应任何接收到的消息的程序。
 
-To get started, we'll create a new project using the following command:
+首先，我们将使用以下命令创建一个新项目：
 
-[Code Placeholder]
+```
+cargo new hello-world --lib
+```
+这将为我们的项目创建一个目录结构，其中包含以下文件：
 
-This will create a directory structure for our project with the
-following files:
+```
+└── hello-world
+    ├── Cargo.toml
+    └── src
+        └── lib.rs
+```
 
-[Code Placeholder]
+接下来，我们需要将必要的依赖项添加到我们的 Cargo.toml 文件中。我们将使用
 
-Next, we need to add the necessary dependencies to our Cargo.toml file.
-We'll use
+-   gstd - Gear 智能合约的标准库
 
--   gstd - a standard library for smart contracts on Gear
+-   gtest - 用于测试智能合约的库
 
--   gtest - a library for testing smart contracts
+-   gear-wasm-builder - 一个帮助使用 Gear 构建程序的模块。
 
--   gear-wasm-builder - a helping module that aids in building programs
-      using Gear.
+```
+[package]
+name = "hello-world"
+version = "0.1.0"
+edition = "2021"
 
-[Code Placeholder]
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 
-Now, let's write the minimum structure of our Gear program in the lib.rs
-file. The handle function is the program's entry point. It will be
-called every time the program receives an incoming message.
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
 
-[Code Placeholder]
+[dev-dependencies]
+gtest = { git = "https://github.com/gear-tech/gear.git" }
+```
 
-To build our program, we’ll create build.rs file with the following
-code:
+现在，让我们在 lib.rs 文件中编写 Gear 程序的最小结构。handle 函数是程序的入口函数。每次程序收到传入消息时都会调用该函数。
 
-[Code Placeholder]
+```rust
+#![no_std]
+use gstd::{msg, prelude::*};
 
-We can now run the following command to build our project:
+#[no_mangle]
+unsafe extern "C" fn handle() {}
+```
 
-[Code Placeholder]
+为了构建我们的程序，我们将使用以下代码创建 build.rs 文件：
 
-gstd::msg is the messaging module from the gstd library, allowing users
-to process incoming messages, obtain the necessary information about the
-sender or the message content, and send replies or new messages to other
-actors (link to gstd).
+```rust
+fn main() {
+    gear_wasm_builder::build();
+}
+```
 
-We'll use the reply function that sends a new message as a reply to the
-message currently being processed:
+现在可以运行以下命令来构建我们的项目：
 
-[Code Placeholder]
+```
+cargo build  --release
+```
 
-Let's build our project:
+gstd::msg 是 gstd 库中的消息传递模块，允许用户处理传入的消息，获取有关发件人或消息内容的必要信息，并向其他 actor 发送回复或新消息（链接到 gstd）。
 
-[Code Placeholder]
+我们将使用发送新消息的 reply 函数作为对当前正在处理的消息的回复：
+```rust
+#![no_std]
+use gstd::{msg, prelude::*};
 
-If everything goes well, your working directory should now have a target
-directory that resembles this:
+#[no_mangle]
+unsafe extern "C" fn handle() {
+    msg::reply(String::from("Hello"), 0).expect("Error in sending a reply message");
+}
+```
 
-[Code Placeholder]
+让我们开始构建项目：
+```
+cargo build  --release
+```
 
-The target/wasm32-unknown-unknown/release directory should contain three
-WASM binaries:
+如果一切顺利，你的工作目录现在应该有一个类似于以下内容的目标目录：
+```
+target
+    ├── release
+    │   └── ...
+    └── wasm32-unknown-unknown
+        └── release
+            ├── ...
+            ├── hello_world.wasm      <---- this is our built .wasm file
+            ├── hello_world.opt.wasm  <---- this is optimized .wasm file
+            └── hello_world.meta.wasm <---- this is meta .wasm file
+```
+
+target/wasm32-unknown-unknown/release 目录应该包含三个 WASM 二进制文件：
 
--   hello_world.wasm is the output WASM binary built from source files;
+-   hello_world.wasm 是从源文件构建的 output WASM 二进制文件；
+
+-   hello_world.opt.wasm 是优化后的 WASM，旨在上传到区块链；
 
--   hello_world.opt.wasm is the optimized WASM aimed to be uploaded to
-    the blockchain;
+-   hello_world.meta.wasm 是包含与程序交互所需的 meta 信息的 WASM。
+
+在我们将程序上传到区块链之前，我们需要了解 metadata 和 *.meta.wasm 文件的用例。在 Gear 程序中，metadata 促进了客户端 (JavaScript) 和程序 (Rust) 之间的交互。
+
+元数据可用作与网络中的 Gear 程序交互的外部工具和应用程序的消息负载描述。它存储在一个单独的 *.meta.wasm 文件中。
+
+**Gear metadata! 宏从 Rust 中导出了用户在宏中指定的 IO 数据函数。** 在我们的示例中，我们只需要为 handle 输出消息声明一个类型：
+```rust
+gstd::metadata! {
+    title: "Hello world contract",
+    handle:
+        output: String,
+}
+```
 
--   hello_world.meta.wasm is the WASM containing meta information needed
-    to interact with the program.
+我们已经学习了如何创建一个简单的智能合约程序，该程序以“Hello”消息响应任何传入消息。让我们测试一下我们的程序。
+
+## 使用 gtest 库测试智能合约
+
+测试智能合约是开发去中心化应用程序的一个重要方面。我们将使用 Gear gtest 库进行程序的逻辑测试。
+
+首先，让我们在项目目录的顶层，“src”目录旁边创建一个名为“tests”的新目录。在该目录中，我们将创建一个 hello_world_test.rs 文件，我们将在其中为合约编写测试。
+```
+mkdir tests
+touch hello_world_test.rs
+```
+
+在我们的测试文件中，我们需要从 gtest 库中导入必要的模块，即 import *Log*、*Program* 和 *System*。我们还将定义一个测试函数：
+
+```rust
+use gtest::{Log, Program, System};
 
-Before we upload our program to the blockchain, we need to understand
-the metadata and *.meta.wasm file's use case. In the context of Gear
-programs, metadata facilitates the interaction between the client-side
-(JavaScript) and the program (Rust).
+#[test]
+fn hello_test() {}
+```
 
-Metadata can be used as a message payload description for external tools
-and applications that interact with Gear programs in the network. It is
-stored in a separate *.meta.wasm file.
+在测试我们的智能合约之前，我们需要初始化运行程序的环境。我们可以使用 gtest 的系统模块来做到这一点。系统模拟节点行为：
+```rust
+let sys = System::new();
+```
 
-The Gear `metadata!` macro exports functions from Rust with IO data
-specified by the user in the macro. In our example, we only need to
-declare a type for the handle output message:
+接下来，我们需要初始化我们的程序。我们可以使用 gtest 的 Program 模块来做到这一点。初始化程序有两种方法：从文件或当前程序：
 
-[Code Placeholder]
+从文件初始化程序：
+```rust
+let program = Program::from_file(&sys,
+    "./target/wasm32-unknown-unknown/release/hello_world.wasm");
+```
 
-We've learned how to create a simple smart contract program that
-responds with a "Hello" message to any incoming message. Let's test our
-program.
+从当前程序初始化程序：
+```rust
+let program = Program::current(&sys);
+```
+
+上传的程序有自己的 id。您可以使用 from_file_with_id 构造函数手动指定程序 ID。如果不指定程序 id，第一个初始化程序的 id 为 0x01000...，下一个没有指定 id 的初始化程序 id 为 0x02000...，依此类推。
+
+在下一步中，我们将向程序发送消息。
+
+- 要向程序发送消息，请调用两个程序函数之一：send() 或 send_bytes()。它们之间的区别类似于 gstd 函数 msg::send 和 msg::send_bytes。
+
+- 这些函数中的第一个参数是发送者 ID，第二个参数是消息负载。
+
+- 发件人 ID 可以指定为十六进制、数组 ([u8, 32])、字符串或 u64。但是，你不能从程序已占用的 id 发送消息！
+
+- 即使程序没有 init 函数，初始化程序结构的第一条消息也始终是 init 消息。在我们的范例中，它可以是任何消息。但是让我们将 init 函数添加到我们的程序中并监控该消息是否到达程序：
+```rust
+#![no_std]
+use gstd::{msg, prelude::*, debug};
+
+#[no_mangle]
+unsafe extern "C" fn handle() {
+    msg::reply("Hello", 0).expect("Error in sending a reply message");
+}
+
+#[no_mangle]
+unsafe extern "C" fn init() {
+    let init_message: String = msg::load().expect("Can't load init message");
+    debug!("Program was initialized with message {:?}", init_message);
+}
+```
+
+在我们的测试函数中，我们可以使用以下函数向程序发送消息 `send()` 函数：
+```rust
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    sys.init_logger();
+    let program = Program::current(&sys);
+    program.send(2, String::from("INIT MESSAGE"));
+}
+```
 
-Testing smart contract with gtest library
+请注意，我们添加了 sys.init_logger() 以将打印日志初始化到 stdout，并且我们发送了一条来自 ID 2 的用户的消息（ID 2 转换为 0x020000.. ActorId）。
 
-Testing smart contracts is an important aspect of developing
-decentralized applications. We’ll use the Gear gtest library for our
-program’s logic testing.
+然后我们可以使用以下命令运行测试：
+```
+cargo test --release
+```
 
-To get started, let's create a new directory called "tests" at the top
-level of our project directory, next to the "src" director. In that
-directory, we’ll create a file hello_world_test.rs where we’ll write
-tests for our contract.
+如果一切正常，我们会在控制台中看到调试消息：
+```
+[DEBUG hello_test] Program was initialized with message "INIT MESSAGE"
+test hello_test ... ok
+```
 
-[Code Placeholder]
+gtest 库中的 Sending 函数将返回 RunResult 结构。它包含处理消息的最终结果和其他在执行期间创建的消息。
 
-In our test file, we’ll need to import the necessary modules from the
-gtest library, which are import Log, Program and System. We’ll also
-define a test function:
+比如我们可以查看 init 消息处理结果。我们可以通过确保日志为空并且程序不回复或发送任何消息来做到这一点。为此，我们可以使用 assert!(res.log().is_empty()) 命令。
 
-[Code Placeholder]
+- 包含空日志（程序不回复也不发送任何消息）；
+```rust
+assert!(res.log().is_empty());
+```
 
-Before testing our smart contract, we need to initialize the environment
-for running programs. We can do this using the System module from gtest.
-The system emulates the node behaviour:
+- 成功：
+```rust
+assert!(!res.main_failed());
+```
 
-[Code Placeholder]
+一旦我们确认初始化消息成功，接下来的消息将通过句柄函数处理。我们可以通过使用 program.send(2, String::from("HANDLE MESSAGE"))
+命令发送下一条消息来测试这一点。
+```rust
+let res = program.send(2, String::from("HANDLE MESSAGE"));
+```
 
-Next, we need to initialize our program. We can do this using the
-Program module from gtest. There are two ways to initialize a program:
-from a file or the current program:
+在这里，我们应该检查程序是否回复了预期的问候消息。为此，我们可以使用 gtest 库中的日志结构并构建我们期望接收的日志。具体来说，我们可以使用 Log::builder().dest(2).payload(String::from("Hello")) 命令来创建预期的日志。
 
-To initialize a program from a file:
+创建预期日志后，我们可以检查接收到的日志是否包含预期日志。我们可以使用 assert!(res.contains(&expected_log)) 命令来做到这一点。
 
-[Code Placeholder]
+```rust
+let expected_log = Log::builder().dest(2).payload(String::from("Hello"));
+assert!(res.contains(&expected_log));
+```
 
-To initialize a program from the current program:
+您可能会猜到，dest 是程序向其发送消息的参与者，有效负载是该消息的内容。
 
-[Code Placeholder]
+运行测试并确保一切正常。
 
-The uploaded program has its own id. You can specify the program id
-manually using the from_file_with_id constructor. If you don't specify
-the program id, the id of the first initialized program will be
-0x01000…, and the next program initialized without an id specification
-will have an id of 0x02000... and so on.
+## 第 1 课测验：测试你的理解力
 
-In the next step, we’ll send messages to our program.
-
--   To send a message to the program, call one of two program functions:
-      send() or send_bytes(). The difference between them is similar to
-      gstd functions msg::send and msg::send_bytes.
-
--   The first argument in these functions is a sender id, the second one
-      is a message payload.
-
--   The sender id can be specified as hex, array ([u8, 32]), string or
-      u64. However, you can’t send a message from the id already taken
-      by the program!
-
--   The first message to the initialized program structure is always the
-      init message even if the program does not have the init function.
-      In our case, it can be any message. But let’s add the init
-      function to our program and monitor if that message reaches the
-      program:
-
-[Code Placeholder]
-
-In our test function, we can send a message to the program using the
-`send()` function:
-
-[Code Placeholder]
-
-Note that we added sys.init_logger() to initialize printing logs into
-stdout, and we sent a message from the user with id 2 (id 2 transforms
-to 0x020000.. ActorId).
-
-We can then run our test using the following command:
-
-[Code Placeholder]
-
-If everything is working correctly, we should see the debug message in
-our console:
-
-[Code Placeholder]
-
-Sending functions in the gtest library will return RunResult structure.
-It contains the final result of the processing message and others, which
-were created during the execution.
-
-For example, we can check the init message processing result. We can do
-this by ensuring that the log is empty and that the program does not
-reply or send any messages. To do this, we can use the
-assert!(res.log().is_empty()) command.
-
--   Contains empty log (the program doesn’t reply and does not send any
-    messages);
-
-[Code Placeholder]
-
--   Was successful:
-
-[Code Placeholder]
-
-Once we have confirmed that the initialization message was successful,
-the next messages will be processed through the handle function. We can
-test this by sending the next message using the program.send(2,
-String::from("HANDLE MESSAGE")) command.
-
-[Code Placeholder]
-
-Here, we should check that the program replied with the expected hello
-message. To do this, we can use the Log structure from the gtest lib and
-build the log we are expecting to receive. Specifically, we can use the
-Log::builder().dest(2).payload(String::from("Hello")) command to create
-the expected log.
-
-After creating the expected log, we can then check if the received log
-contains the expected log. We can do this by using the
-assert!(res.contains(&expected_log)) command.
-
-[Code Placeholder]
-
-As you might guess, dest is the actor to which the program sends a
-message and payload is the content of that message.
-
-Run the test and make sure that everything is fine.
-
-Lesson 1 Quiz: Testing Your Understanding
-
-1.  Consider the following program:
-
-[Code Placeholder]
-
-  We’ll test the program using the following test suite:
-
-[Code Placeholder]
-
-What will be the result of running that test?
-
--   Everything will be fine: the test will pass;
-
--   The test will fail because the first message to the initialized
-    program structure is always the init message.
-
--   The test will fail because the expected_log does not contain the
-    payload with “Hello”.
-
-2.  What is the mistake in writing that test?
-
-[Code Placeholder]
-
-- The first message should be sent to the first initialized program;
-
--   You can not initialize two identical programs;
-
--   The message to the program_2 is sent from the address that is
-    already occupied by the program.
-
-3.  What returns fn send() from the gtest library?
-
--   It returns the RunResult structure that contains the result of
-    program execution;
-
--   It returns the Log structure that contains the information about the
-    source, destination, and payload of messages that were sent during
-    the program execution;
-
--   It returns the message that was sent back to the sender.
-
-Advanced Hello World Program Concepts
-
-Let’s add more functionality to our program by introducing two new
-messages: SendHelloTo and SendHelloReply.
-
-Our program will receive 2 messages:
-
--   SendHelloTo: having received this message, the program will send
-    “hello” to the specified address;
-
--   SendHelloReply: the program replies with a “hello” message to the
-    account that sent the current message.
-
-As we saw from the previous lesson, we’ll have to decode the message the
-program received. We’ll define an enum InputMessages that will be used
-to decode the incoming message.
-
-[Code Placeholder]
-
-The SendHelloTo variant includes an ActorId field where the program will
-send the hello message.
-
-We also need to add derive macros #[derive(Encode, Decode, TypeInfo)] to
-the enum for encoding and decoding in messages, and add appropriate
-dependencies to the Cargo.toml file:
-
-[Code Placeholder]
-
-To initialize our program, we’ll define a static mutable variable
-GREETING as an Option<String>.
-
-[Code Placeholder]
-
-Until the program is initialized, the GREETING equals None. After the
-initialization, the GREETING will become Some(String).
-
-[Code Placeholder]
-
-Next, we’ll decode the incoming message in the handle function and
-define the message the program received:
-
-[Code Placeholder]
-
-When the program receives SendHelloTo message, it sends a hello message
-to the specified account through the send function. On the other hand,
-when the contract receives a SendHelloReply message, it replies with a
-greeting message.
-
-Testing the Updated Smart Contract
-
-First, we’ll test the SendHelloTo message. We define the account id that
-will receive that message and check that in the result log there is a
-message assigned to that account.
-
-[Code Placeholder]
-
-Understanding the program metadata and state
-
-Metadata is a kind of interface map that helps transform a set of bytes
-into an understandable structure. It determines how all incoming and
-outgoing data will be encoded/decoded.
-
-Metadata allows dApp’s parts - the smart contract and the client side
-(JavaScript), to understand each other and exchange data.
-
-To describe the metadata interface we use `gmeta` crate:
-
-[Code Placeholder]
-
-where:
-
--   Init - describes incoming/outgoing types for `init()` function.
-
--   Handle - describes incoming/outgoing types for `handle()` function.
-
--   Others - describes incoming/outgoing types for `main()` function in
-      case of asynchronous interaction.
-
--   Reply - describes incoming/outgoing types of messages performed
-      using the `handle_reply` function.
-
--   Signal - describes only the outgoing type from the program while
-      processing the system signal.
-
--   State - describes the types for the queried State
-
-It is necessary to describe all the types. If any of the endpoints is
-missing in your program, you can use () instead.
-
-Let's define metadata for our example. We’ll create a crate
-
-hello-world-io in the directory of our hello-world program:
-
-[Code Placeholder]
-
-The Cargo.toml of this crate:
-
-[Code Placeholder]
-
-And in the lib.rs file, we’ll define an incoming message for the init
-function, and the incoming and outcoming messages for the handle
-function:
-
-[Code Placeholder]
-
-The input for init function is a String. The input for the handle
-function is an enum InputMessage, and accordingly, the output is String.
-The program state is also String (It is a set greeting).
-
-It is possible to read the program state using the state function.
-Reading State is a free function and does not require gas costs. Let’s
-define this function in lib.rs file of the hello-world program:
-
-[Code Placeholder]
-
-To make it possible to verify metadata for a program, we’ll use the
-metahash() function:
-
-[Code Placeholder]
-
-It’s necessary to add the hello-world-io crate to build-dependencies in
-Cargo.toml in the hello-world program:
-
-[Code Placeholder]
-
-We also need to change the build.rs file using the following code:
-
-[Code Placeholder]
-
-After building the program, a meta.txt file will be generated as a
-result of the smart-contract compilation. This metadata file can be used
-in UI applications that will interact with this smart contract.
-
-Uploading the program to the blockchain
-
-The easiest way to upload the program is to use the “Upload program”
-option in the Gear Idea portal - idea.gear-tech.io.
-
-First, you need to create an account and connect to Gear Idea. Follow
-the instructions provided at
-https://wiki.gear-tech.io/docs/idea/account/create-account to create
-your account.
-
-Once you've logged in, you can select the network on which you want to
-upload the program by clicking on the gear icon in the lower left corner
-of the screen. For the Gear Academy workshop, select the workshop node
-(wss://node-workshop.gear.rs:443) and click the "Switch" button.
-
-Select the workshop node and click on the Switch button:
-
-[Image Placeholder]
-
-Next, select "Programs" in the left column and upload the hello.opt.wasm
-file along with its metadata (meta.txt file).
-
-[Image Placeholder]
-
-Give your program a name, enter an incoming greeting message and click
-on the Upload Program button.
-
-If the program has successfully uploaded, you will see it in the
-program.
-
-[Image Placeholder]
-
-You can now send messages to your program:
-
-[Image Placeholder]
-
-You can also read the program state (It’s our greeting string that was
-set during the program initialization).
-
-[Image Placeholder]
-
-Assignment:
-
-Let's write a smart contract for a Tamagotchi game:
-
--   Create a smart contract Tamagotchi, that will store Tamagotchi’s
-    name and date of birth. he state of your contract should be defined
-    as follows:
-
-[Code Placeholder]
-
--   During initialization, set the name and date of birth of the
-    Tamagotchi and send a reply confirming successful initialization.
-
--   Your Tamagochi program should accept the following messages:
-
-    -   Name - the program answers the name of the Tamagochi;
-
-    -   Age - the program answers about the age of the Tamagochi.
-
--   Add the state function to your program.
-
--   Upload your contract to the workshop node at the
-      https://idea.gear-tech.io/.
-
-To connect your Tamagotchi contract to the frontend application, you
-need to ensure that the metadata is as follows:
-
-[Code Placeholder]
+1.  考虑以下程序：
+```rust
+#![no_std]
+use gstd::{msg, prelude::*, debug};
+
+#[no_mangle]
+unsafe extern "C" fn handle() {
+    msg::reply("Hello", 0).expect("Error in sending a reply message");
+}
+```
+我们将使用以下测试套件测试该程序：
+```rust
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    let program = Program::current(&sys);
+    let res = program.send(2, String::from("Hello"));
+    let expected_log = Log::builder().dest(2);
+    assert!(res.contains(&expected_log));
+}
+```
+
+运行该测试的结果是什么？
+
+- 一切顺利：测试会通过；
+
+- 测试将失败，因为初始化程序结构的第一条消息始终是初始化消息。
+
+- 测试将失败，因为 expected_log 不包含带有“Hello”的有效负载。
+
+2.  编写该测试的错误是什么？
+```rust
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    let program_1 = Program::current(&sys);
+    let program_2 = Program::current(&sys);
+    let res = program_2.send(2, String::from("Hello"));
+    assert!(res.log().is_empty());
+}
+```
+
+- 第一条消息应该发送给第一个初始化的程序；
+
+- 你不能初始化两个相同的程序；
+
+- 发给 program_2 的消息是从程序已经占用的地址发出的。
+
+3. 从 gtest 库返回 fn send() 的结果是什么？
+
+- 它返回包含程序执行结果的 RunResult 结构；
+
+- 它返回 Log 结构，其中包含有关程序执行期间发送的消息的源、目标和有效负载的信息；
+
+- 它返回发送回发件人的消息。
+
+### 高级 Hello World 程序概念
+
+让我们通过引入两条新消息来为我们的程序添加更多功能：SendHelloTo 和 SendHelloReply。
+
+我们的程序将收到 2 条消息：
+
+- SendHelloTo：收到这条消息后，程序将向指定地址发送“hello”；
+
+- SendHelloReply：程序用“hello”消息回复发送当前消息的帐户。
+
+正如我们在上一课中看到的，我们必须对程序收到的消息进行解码。我们将定义一个用于解码传入消息的枚举 InputMessages。
+```rust
+#[derive(Encode, Decode, TypeInfo)]
+enum InputMessages {
+    SendHelloTo(ActorId),
+    SendHelloReply,
+}
+```
+
+SendHelloTo 变体包含一个 ActorId 字段，程序将在其中发送问候消息。
+
+我们还需要在枚举中添加派生宏#[derive(Encode, Decode,TypeInfo)]，用于消息中的编码和解码，并在 Cargo.toml 文件中添加适当的依赖项：
+```rust
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+```
+
+为了初始化我们的程序，我们将定义一个静态可变变量 GREETING 作为一个 Option .
+```rust
+static mut GREETING: Option<String> = None;
+```
+
+在程序初始化之前，GREETING 等于 None。初始化后，GREETING 会变成 Some(String)。
+```rust
+#[no_mangle]
+unsafe extern "C" fn init() {
+   let greeting = String::from_utf8(msg::load_bytes().expect("Can't load init message"))
+       .expect("Invalid message");
+   debug!("Program was initialized with message {:?}", greeting);
+   GREETING = Some(greeting);
+}
+```
+
+接下来，我们将解码 handle 函数中的传入消息并定义程序接收到的消息：
+```rust
+#[no_mangle]
+unsafe extern "C" fn handle() {
+   let input_message: InputMessages = msg::load().expect("Error in loading InputMessages");
+   let greeting = GREETING.get_or_insert(Default::default());
+   match input_message {
+       InputMessages::SendHelloTo(account) => {
+           debug!("Message: SendHelloTo {:?}", account);
+           msg::send(account, greeting, 0)
+               .expect("Error in sending Hello message to account");
+       }
+       InputMessages::SendHelloReply => {
+           debug!("Message: SendHelloReply");
+           msg::reply(greeting, 0).expect("Error in sending reply");
+       }
+   }
+}
+```
+
+程序收到 SendHelloTo 消息后，通过 send 函数向指定账号发送 hello 消息。另一方面，当合约收到 SendHelloReply 消息时，它会回复一条问候消息。
+
+### 测试更新后的智能合约
+
+首先，我们将测试 SendHelloTo 消息。我们定义将接收该消息的帐户 ID，并检查结果日志中是否有分配给该帐户的消息。
+```rust
+use gtest::{Log, Program, System};
+use hello_world::InputMessages;
+
+#[test]
+fn hello_test() {
+    let sys = System::new();
+    sys.init_logger();
+    let program = Program::current(&sys);
+    let res = program.send(2, String::from("INIT MESSAGE"));
+    assert!(!res.main_failed());
+    assert!(res.log().is_empty());
+
+    // test `SendHelloTo`
+    let hello_recipient: u64 = 4;
+    let res = program.send(2, InputMessages::SendHelloTo(hello_recipient.into()));
+    let expected_log = Log::builder()
+        .dest(hello_recipient)
+        .payload(String::from("Hello"));
+    assert!(res.contains(&expected_log))
+```
+
+### 了解程序元数据和状态
+
+元数据是一种接口映射，有助于将一组字节转换为可理解的结构。它决定了所有传入和传出数据的编码/解码方式。
+
+元数据允许 dApp 的部分——智能合约和客户端 (JavaScript) 相互理解并交换数据。
+
+我们使用 crate 来描述元数据接口 gmeta：
+```rust
+use gmeta::{InOut, Metadata};
+pub struct ProgramMetadata;
+impl Metadata for ProgramMetadata {
+    type Init = InOut<MessageInitIn, MessageInitOut>;
+    type Handle = InOut<MessageIn, MessageOut>;
+    type Others = InOut<MessageAsyncIn, Option<u8>>;
+    type Reply = InOut<String, Vec<u16>>;
+    type Signal = ();
+    type State = Vec<u128>;
+}
+```
+
+位置：
+
+- Init - 描述 init() 函数的传入/传出类型。
+
+- 句柄 - 描述 handle() 函数的传入/传出类型。
+
+- 其他 - 描述 main() 异步交互情况下函数的传入/传出类型。
+
+- 回复 - 描述使用该功能执行的传入/传出消息类型 handle_reply。
+
+- 信号 - 仅描述处理系统信号时从程序传出的类型。
+
+- State - 描述查询状态的类型
+
+需要描述所有类型。如果你的程序中缺少任何端点，您可以使用 () 代替。
+
+让我们为示例定义元数据。我们将创建一个 crate hello-world-io 在我们的 hello-world 程序的目录中：
+```
+cargo new hello-world-io --lib
+```
+
+这个 crate 的 Cargo.toml：
+```
+[package]
+name = "hello-world-io"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gmeta = {  git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git" }
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+```
+
+在 lib.rs 文件中，我们将为 init 函数定义传入消息，为 handle 函数定义传入和传出消息：
+
+```rust
+#![no_std]
+
+use codec::{Decode, Encode};
+use gmeta::{InOut, Metadata};
+use gstd::{prelude::*, ActorId};
+use scale_info::TypeInfo;
+pub struct ProgramMetadata;
+
+impl Metadata for ProgramMetadata {
+   type Init = InOut<String, ()>;
+   type Handle = InOut<InputMessages, String>;
+   type Reply = InOut<(), ()>;
+   type Others = InOut<(), ()>;
+   type Signal = ();
+   type State = String;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub enum InputMessages {
+   SendHelloTo(ActorId),
+   SendHelloReply,
+}
+```
+
+init 函数的输入是一个字符串。handle 函数的输入是枚举 InputMessage，因此输出是 String。程序状态也是 String（一组问候语）。
+
+可以使用状态函数读取程序状态。Reading State 是一项免费功能，不需要 gas 费用。让我们在 hello-world 程序的 lib.rs 文件中定义这个函数：
+```rust
+#[no_mangle]
+extern "C" fn state() {
+   let greeting = unsafe {
+        GREETING.get_or_insert(Default::default())
+   };
+   msg::reply(greeting, 0).expect("Failed to share state");
+}
+
+```
+
+为了能够验证程序的元数据，我们将使用 metahash() 函数：
+```rust
+#[no_mangle]
+// It returns the Hash of metadata.
+// .metahash is generating automatically while you are using build.rs
+extern "C" fn metahash() {
+   let metahash: [u8; 32] = include!("../.metahash");
+   msg::reply(metahash, 0).expect("Failed to share metahash");
+}
+```
+
+有必要在 hello-world 程序的 Cargo.toml 中将 hello-world-io crate 添加到 build-dependencies 中：
+```
+[package]
+name = "hello-world"
+version = "0.1.0"
+edition = "2021"
+...
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+hello-world-io = { path = "hello-world-io" }
+```
+
+我们还需要使用以下代码更改 build.rs 文件：
+```
+use hello_world_io::ProgramMetadata;
+fn main() {
+   gear_wasm_builder::build_with_metadata::<ProgramMetadata>();
+}
+```
+
+构建程序后，将生成一个 meta.txt 文件作为智能合约编译的结果。此元数据文件可用于将与此智能合约交互的 UI 应用程序。
+
+### 将程序上传到区块链
+
+上传程序最简单的方法是使用 Gear Idea - idea.gear-tech.io 中的“上传程序”选项。
+
+首先，你需要创建一个帐户并连接到 Gear Idea。按照 https://wiki.gear-tech.io/docs/idea/account/create-account 中提供的说明创建您的帐户。
+
+登录后，你可以通过单击屏幕左下角的 gear 图标来选择要上传程序的网络。对于 Gear Academy Workshop，选择 workshop 节点 (wss://node-workshop.gear.rs:443) 并单击“切换”按钮。
+
+选择 workshop 节点，点击切换按钮：
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/90a6bd4a-8c47-44e8-a6e1-7baaff508be1)
+
+接下来，在左侧栏中选择“程序”并上传 hello.opt.wasm 文件及其元数据（meta.txt 文件）。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/fac0bd31-30ca-47df-9754-baa4785855f2)
+
+为你的程序命名，输入传入的问候消息，然后单击“上传程序”按钮。
+
+如果程序已成功上传，你将在程序中看到它。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/fb0c3ba3-fa09-40ed-a3dd-8b116a0b48ff)
+
+现在你可以向你的程序发送消息：
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/183726aa-bcdd-445b-8e99-2a78351b4cc5)
+
+你还可以读取程序状态（这是我们在程序初始化期间设置的问候字符串）。
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/b2ac2692-1444-461c-8f30-28ca4cf7001d)
+
+### 任务：
+
+让我们为 Tamagotchi 游戏编写智能合约：
+
+- 创建一个智能合约 Tamagotchi，它将存储 Tamagotchi 的姓名和出生日期。你的合约状态应定义如下：
+```rust
+#[derive(Default, Encode, Decode, TypeInfo)]
+pub struct Tamagotchi {
+   name: String,
+   date_of_birth: u64,
+}
+```
+
+- 初始化时，设置电子宠物的姓名和出生日期，并发送确认初始化成功的回复。
+
+- 你的 Tamagochi 程序应该接受以下消息：
+
+    - 名称 - 程序回答 Tamagochi 的名称；
+
+    - 年龄 - 该程序会回答 Tamagochi 的年龄。
+
+- 将状态函数添加到你的程序中。
+
+- 将你的合约上传到 https://idea.gear-tech.io/ 上的 workshop 节点。
+
+将你的 Tamagotchi 合约连接到前端应用程序，你需要确保元数据如下：
+```rust
+pub struct ProgramMetadata;
+
+impl Metadata for ProgramMetadata {
+   type Init = InOut<String,()>;
+   type Reply = InOut<(),()>;
+   type Others = InOut<(),()>;
+   type Signal = ();
+   type Handle = InOut<TmgAction, TmgEvent>;
+   type State = Tamagotchi;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub enum TmgAction {
+   Name,
+   Age,
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub enum TmgEvent {
+   Name(String),
+   Age(u64),
+}
+
+#[derive(Default, Encode, Decode, TypeInfo)]
+pub struct Tamagotchi {
+   name: String,
+   date_of_birth: u64,
+```
 
 }
 
-Clone the repository:
-https://github.com/gear-dapps/smart-contract-academy
+克隆存储库：https://github.com/gear-dapps/smart-contract-academy
 
-In the frontend directory, run the following commands:
+在前端目录中，运行以下命令：
+```
+yarn
+yarn start
+```
 
-[Code Placeholder]
+.env.local 文件包含以下内容：
+```
+REACT_APP_NODE_ADDRESS=wss://test-wss.gear.rs
+```
 
-The .env.local file contains the following:
+这意味着应用程序正在测试网节点上运行。您还可以运行本地节点，上传 Tamagotchi 合约，并通过指示在本地节点上使用合约：
+```
+REACT_APP_NODE_ADDRESS=ws://localhost:9944
+```
 
-[Code Placeholder]
+运行 yarn start 命令后，您将看到以下窗口：
 
-It means that the application is running on the testnet node. You can
-also run a local node, upload a Tamagotchi contract, and work with
-contracts on a local node by indicating:
+![image](https://github.com/GearFans/gear-academy-cn/assets/100750671/5da1b95c-4ffc-4972-b266-82a7320daff8)
 
-[Code Placeholder]
+选择**第 1 课**，粘贴你的 Tamagotchi 地址，你将看到你的 Tamagotchi！
 
-After running the yarn start, command you will see the following window:
-
-[Image Placeholder]
-
-Select Lesson 1, paste your Tamagotchi address and you’ll see your
-Tamagotchi!
-
-Please attach a link to the repo with your Tamagotchi contract.
+请在你的 Tamagotchi 合约中附上指向 repo 的链接。
